@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(radio)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scanline overlay — subtle retro TV effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.015) 2px,
+        rgba(0, 0, 0, 0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Static noise canvas */
+    #static-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .logo-container {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      width: min(500px, 80vw);
+      height: auto;
+      display: block;
+      /* Glitch effect via animation */
+      animation: subtle-glitch 8s infinite;
+    }
+
+    /* Subtitle */
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      letter-spacing: 0.5em;
+      text-transform: lowercase;
+      color: #000;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.8em;
+    }
+
+    .subtitle .word {
+      display: inline-block;
+      position: relative;
+    }
+
+    .subtitle .arrow {
+      display: inline-block;
+      font-weight: 400;
+    }
+
+    /* Signal animation — receive appears, holds, glitches out, transmit appears */
+    .word-receive {
+      animation: signal-in 6s infinite;
+    }
+
+    .word-arrow {
+      animation: signal-arrow 6s infinite;
+    }
+
+    .word-transmit {
+      animation: signal-out 6s infinite;
+    }
+
+    @keyframes signal-in {
+      0%   { opacity: 0; transform: translateX(-4px); }
+      8%   { opacity: 1; transform: translateX(0); }
+      42%  { opacity: 1; transform: translateX(0); }
+      46%  { opacity: 0; transform: translateX(0); }
+      48%  { opacity: 0.6; transform: translateX(1px); }
+      50%  { opacity: 0; transform: translateX(-2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes signal-arrow {
+      0%   { opacity: 0; }
+      10%  { opacity: 0; }
+      14%  { opacity: 1; }
+      42%  { opacity: 1; }
+      46%  { opacity: 0; }
+      48%  { opacity: 0.3; }
+      50%  { opacity: 0; }
+      54%  { opacity: 0; }
+      58%  { opacity: 1; }
+      88%  { opacity: 1; }
+      92%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes signal-out {
+      0%   { opacity: 0; }
+      50%  { opacity: 0; transform: translateX(4px); }
+      58%  { opacity: 1; transform: translateX(0); }
+      88%  { opacity: 1; transform: translateX(0); }
+      92%  { opacity: 0; transform: translateX(0); }
+      94%  { opacity: 0.6; transform: translateX(-1px); }
+      96%  { opacity: 0; transform: translateX(2px); }
+      100% { opacity: 0; }
+    }
+
+    /* Subtle glitch on logo — rare, quick */
+    @keyframes subtle-glitch {
+      0%, 100% { transform: translate(0); filter: none; }
+      92%  { transform: translate(0); filter: none; }
+      92.5% { transform: translate(-2px, 1px); filter: saturate(0) contrast(1.2); }
+      93%  { transform: translate(1px, -1px); filter: none; }
+      93.5% { transform: translate(0); filter: none; }
+    }
+
+    /* Glitch bar — horizontal interference line */
+    .glitch-bar {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(0, 0, 0, 0.08);
+      pointer-events: none;
+      z-index: 8;
+      animation: glitch-scan 4s linear infinite;
+      opacity: 0;
+    }
+
+    .glitch-bar:nth-child(2) {
+      animation-delay: -1.7s;
+      height: 1px;
+    }
+
+    @keyframes glitch-scan {
+      0%   { top: -2px; opacity: 0; }
+      5%   { opacity: 0.6; }
+      50%  { opacity: 0.3; }
+      95%  { opacity: 0.6; }
+      100% { top: 100vh; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="static-canvas"></canvas>
+  <div class="glitch-bar"></div>
+  <div class="glitch-bar"></div>
+
+  <div class="logo-container">
+    <img src="logo.jpg" alt="(radio)" class="logo">
+  </div>
+
+  <div class="subtitle">
+    <span class="word word-receive">receive</span>
+    <span class="word word-arrow arrow">→</span>
+    <span class="word word-transmit">transmit</span>
+  </div>
+
+  <script>
+    // Static noise generator
+    const canvas = document.getElementById('static-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function drawStatic() {
+      const imageData = ctx.createImageData(w, h);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const v = Math.random() > 0.5 ? 255 : 0;
+        data[i] = v;
+        data[i + 1] = v;
+        data[i + 2] = v;
+        data[i + 3] = Math.random() * 40;
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    // Run static at low fps to save performance
+    setInterval(drawStatic, 100);
+  </script>
+</body>
+</html>
