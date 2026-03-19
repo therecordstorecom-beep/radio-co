@@ -56,7 +56,7 @@
       position: absolute;
       inset: 0;
       width: 100%;
-      background: url('logo.jpg') center / contain no-repeat;
+      background: url('./logo.jpg') center / contain no-repeat;
       z-index: 3;
       opacity: 0;
       pointer-events: none;
@@ -98,7 +98,7 @@
 
   <div class="center">
     <div class="logo-wrap" id="logoWrap">
-      <img src="logo.jpg" alt="(radio)" id="logo">
+      <img src="./logo.jpg" alt="(radio)" id="logo">
       <div class="glitch-clone" id="glitch1"></div>
       <div class="glitch-clone" id="glitch2"></div>
     </div>
@@ -124,8 +124,8 @@
     const BASE_DOT_SIZE = 0.1;
     const MAX_DOT_SIZE = 1.2;       // Cap on dot expansion
     const BASE_OPACITY = 0.12;
-    const TILT = 0.65;               // Heavy 3D tilt — floor perspective
-    const PERSPECTIVE = 500;          // Close camera for strong depth
+    const TILT = 0.25;               // Subtle 3D tilt
+    const PERSPECTIVE = 900;          // Closer camera for more depth
 
     let cols, rows;
     let gridPoints = [];
@@ -195,7 +195,7 @@
           return {
             dx: Math.cos(angle) * wave * 3,
             dy: Math.sin(angle) * wave * 3,
-            dz: wave * 20,
+            dz: wave * 18,
             size: wave * 0.8,
             opacity: wave * 0.35,
           };
@@ -236,7 +236,7 @@
         return {
           dx: Math.cos(angle) * wave * 4,
           dy: Math.sin(angle) * wave * 4,
-          dz: wave * 10,
+          dz: wave * 9,
           size: Math.abs(wave) * 0.8,
           opacity: Math.abs(wave) * 0.35,
         };
@@ -244,19 +244,9 @@
     }
 
     function createRipple(x, y) {
-      // Iterative inverse projection — find world coords that project to click position
-      // Start with rough estimate, then refine
-      let wx = x - W / 2;
-      let wy = (y - H / 2);
-      
-      for (let i = 0; i < 5; i++) {
-        const proj = project(wx, wy, 0);
-        const errX = x - proj.x;
-        const errY = y - proj.y;
-        wx += errX / proj.scale;
-        wy += errY / proj.scale / (1 - TILT + TILT * 0.6);
-      }
-      
+      // Convert screen coords to world coords (approximate inverse of project)
+      const wx = x - W / 2;
+      const wy = (y - H / 2) / (1 - TILT + TILT * 0.6);
       return Math.random() < 0.5 ? new RippleRing(wx, wy) : new RippleWave(wx, wy);
     }
 

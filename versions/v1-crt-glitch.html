@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(radio)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Scanline overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.018) 3px,
+        rgba(0,0,0,0.018) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      user-select: none;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      position: relative;
+      width: 420px;
+      max-width: 80vw;
+    }
+
+    .logo-wrap img {
+      width: 100%;
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Glitch slices — cloned via JS */
+    .glitch-clone {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      background: url('logo.jpg') center / contain no-repeat;
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── Subtitle ── */
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      text-transform: lowercase;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 18px;
+      min-width: 200px;
+      justify-content: center;
+    }
+
+    .sub-word {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      opacity: 0;
+    }
+
+    .sub-arrow {
+      display: inline-block;
+      opacity: 0;
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <div class="logo-wrap" id="logoWrap">
+      <img src="logo.jpg" alt="(radio)" id="logo">
+      <div class="glitch-clone" id="glitch1"></div>
+      <div class="glitch-clone" id="glitch2"></div>
+    </div>
+
+    <div class="subtitle" id="subtitle">
+      <span class="sub-word" id="word-receive">receive</span>
+      <span class="sub-arrow" id="word-arrow">→</span>
+      <span class="sub-word" id="word-transmit">transmit</span>
+    </div>
+  </div>
+
+  <script>
+    // ──────────────────────────────
+    // SUBTITLE ANIMATION
+    // Sequence: receive types in → arrow flickers → transmit types in → pause → glitch out → repeat
+    // ──────────────────────────────
+    const receive   = document.getElementById('word-receive');
+    const arrow     = document.getElementById('word-arrow');
+    const transmit  = document.getElementById('word-transmit');
+
+    const RECEIVE_TEXT   = 'receive';
+    const TRANSMIT_TEXT  = 'transmit';
+    const CHAR_DELAY     = 60;   // ms per character
+    const HOLD_MS        = 1800; // hold after full text
+    const GLITCH_OUT_MS  = 300;
+    const GAP_MS         = 600;  // silence before next cycle
+
+    function typeIn(el, text, charDelay = CHAR_DELAY) {
+      return new Promise(resolve => {
+        el.style.opacity = '1';
+        let i = 0;
+        const tick = () => {
+          el.textContent = text.slice(0, i + 1);
+          // rough width: set to auto via max-width trick
+          el.style.width = 'auto';
+          i++;
+          if (i < text.length) {
+            setTimeout(tick, charDelay + (Math.random() * 30 - 15));
+          } else {
+            resolve();
+          }
+        };
+        setTimeout(tick, 0);
+      });
+    }
+
+    function glitchOut(el) {
+      return new Promise(resolve => {
+        const CHARS = '█▓▒░╳×#@!─';
+        const orig = el.textContent;
+        let steps = 4;
+        const tick = () => {
+          if (steps <= 0) {
+            el.style.opacity = '0';
+            el.textContent = '';
+            el.style.width = '0';
+            resolve();
+            return;
+          }
+          el.textContent = orig.split('').map(() =>
+            CHARS[Math.floor(Math.random() * CHARS.length)]
+          ).join('');
+          steps--;
+          setTimeout(tick, GLITCH_OUT_MS / 4);
+        };
+        tick();
+      });
+    }
+
+    function wait(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function flickerIn(el) {
+      return new Promise(resolve => {
+        let t = 0;
+        const steps = [0, 1, 0, 1, 0, 1];
+        const tick = () => {
+          if (t >= steps.length) { el.style.opacity = '1'; resolve(); return; }
+          el.style.opacity = steps[t];
+          t++;
+          setTimeout(tick, 80);
+        };
+        tick();
+      });
+    }
+
+    async function runSubtitle() {
+      while (true) {
+        // Reset
+        receive.style.opacity = '0';
+        receive.style.width = '0';
+        receive.textContent = '';
+        arrow.style.opacity = '0';
+        transmit.style.opacity = '0';
+        transmit.style.width = '0';
+        transmit.textContent = '';
+
+        await wait(GAP_MS);
+
+        // Type "receive"
+        await typeIn(receive, RECEIVE_TEXT);
+        await wait(400);
+
+        // Arrow flickers in
+        await flickerIn(arrow);
+        await wait(200);
+
+        // Type "transmit"
+        await typeIn(transmit, TRANSMIT_TEXT);
+        await wait(HOLD_MS);
+
+        // Glitch out all three
+        await Promise.all([
+          glitchOut(transmit),
+          glitchOut(receive),
+          new Promise(r => {
+            setTimeout(() => { arrow.style.opacity = '0'; r(); }, GLITCH_OUT_MS / 2);
+          })
+        ]);
+
+        await wait(GAP_MS);
+      }
+    }
+
+    // ──────────────────────────────
+    // LOGO GLITCH
+    // Occasional signal bursts — slice + shift on the clone layers
+    // ──────────────────────────────
+    const g1 = document.getElementById('glitch1');
+    const g2 = document.getElementById('glitch2');
+    const logoImg = document.getElementById('logo');
+
+    function randomBetween(a, b) {
+      return a + Math.random() * (b - a);
+    }
+
+    function doGlitchBurst() {
+      const numSlices = Math.floor(randomBetween(2, 5));
+      const duration  = randomBetween(80, 180);
+
+      // Slice 1
+      const y1s = Math.random() * 80;
+      const y1e = y1s + randomBetween(5, 25);
+      const tx1 = randomBetween(-8, 8);
+      g1.style.clipPath  = `polygon(0 ${y1s}%, 100% ${y1s}%, 100% ${y1e}%, 0 ${y1e}%)`;
+      g1.style.transform = `translateX(${tx1}px)`;
+      g1.style.opacity   = '0.85';
+      g1.style.filter    = 'invert(0)';
+
+      // Slice 2
+      const y2s = Math.random() * 80;
+      const y2e = y2s + randomBetween(3, 15);
+      const tx2 = randomBetween(-6, 6);
+      g2.style.clipPath  = `polygon(0 ${y2s}%, 100% ${y2s}%, 100% ${y2e}%, 0 ${y2e}%)`;
+      g2.style.transform = `translateX(${tx2}px)`;
+      g2.style.opacity   = '0.7';
+
+      // Brief static on main logo
+      logoImg.style.filter = `contrast(${randomBetween(0.9, 1.15)})`;
+
+      setTimeout(() => {
+        g1.style.opacity = '0';
+        g2.style.opacity = '0';
+        logoImg.style.filter = '';
+      }, duration);
+
+      scheduleGlitch();
+    }
+
+    function scheduleGlitch() {
+      // Random gap between 1.5s and 7s
+      setTimeout(doGlitchBurst, randomBetween(1500, 7000));
+    }
+
+    // ── Start everything ──
+    window.addEventListener('load', () => {
+      runSubtitle();
+      setTimeout(scheduleGlitch, 1200);
+    });
+  </script>
+</body>
+</html>
+
