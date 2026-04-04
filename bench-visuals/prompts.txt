@@ -1,0 +1,28 @@
+BENCH PRODUCT VISUAL PROMPTS
+=============================
+Upload both bench photos to Gemini Pro, then paste each prompt.
+Download the generated backgrounds, then composite with the bench cutouts.
+
+LIFESTYLE SCENES
+-----------------
+
+1. INDUSTRIAL MODERN
+Generate a photorealistic empty industrial modern loft interior. Concrete floor, exposed red brick wall, steel beam ceiling, large factory windows with warm natural light. No furniture. Eye-level perspective, slightly off-center. 4:3 aspect ratio.
+
+2. CONTEMPORARY MINIMALIST
+Generate a photorealistic empty contemporary minimalist room. All-white walls, polished concrete floor, single large abstract artwork on wall. Gallery-like atmosphere, soft diffused lighting. Eye-level. 4:3 aspect ratio.
+
+3. MID-CENTURY MODERN
+Generate a photorealistic empty mid-century modern living room. Warm walnut wood paneling, terrazzo floor, large monstera plant in corner. Warm afternoon light. Eye-level perspective. 4:3 aspect ratio.
+
+CATALOG STYLES
+--------------
+
+4. WHITE SEAMLESS
+Generate a photorealistic white seamless infinity studio backdrop. Clean professional studio lighting, soft gradient shadows on floor. Product photography setup. 4:3 aspect ratio.
+
+5. GRAY GRADIENT EDITORIAL
+Generate a photorealistic smooth gray gradient studio backdrop. Dramatic side lighting from left creating shadow on right. Editorial product photography setup. 4:3 aspect ratio.
+
+6. GROUPED WITH PROPS
+Generate a photorealistic textured concrete surface/backdrop for product photography. Warm natural light from above-left. A small potted olive branch on the right edge, folded linen towel. Styled lifestyle product photography. 4:3 aspect ratio.
