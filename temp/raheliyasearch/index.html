@@ -1105,7 +1105,9 @@ function detectSeries(title) {
   const raMatch = title.match(/Ra書塔\s*[·．]\s*([^·]+?)\s*[·．]\s*卷([^:：]+)\s*[:：]\s*([^｜|]+)/);
   if (raMatch) {
     const pageMatch = title.match(/[｜|]\s*P(\d+)/);
-    return { series: raMatch[3].trim(), page: pageMatch ? parseInt(pageMatch[1]) : null };
+    // Normalize series name: strip trailing "· 書頁N", "· 終章", "· 補篇" etc.
+    const rawSeries = raMatch[3].trim().replace(/\s*[·．]\s*(書頁|终章|終章|補篇|补篇|封印篇|附錄|附录).*$/, '').trim();
+    return { series: rawSeries, page: pageMatch ? parseInt(pageMatch[1]) : null };
   }
   if (/語頻治理書系/.test(title)) return { series: '語頻治理書系' };
   if (/主權生理學補遺卷|主权生理学补遗卷/.test(title)) return { series: '主權生理學補遺卷' };
