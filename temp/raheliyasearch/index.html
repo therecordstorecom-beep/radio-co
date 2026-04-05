@@ -151,9 +151,7 @@ a:hover { color: var(--pink); }
   margin: 16px auto;
   padding: 0 16px;
 }
-.search-box {
-  position: relative;
-}
+.search-box { position: relative; }
 .search-box input {
   width: 100%;
   padding: 14px 18px 14px 44px;
@@ -190,11 +188,7 @@ a:hover { color: var(--pink); }
   font-size: 0.75em;
   color: var(--text-dim);
 }
-.filter-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .filter-pill {
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -231,9 +225,8 @@ a:hover { color: var(--pink); }
   transition: background 0.15s;
   cursor: pointer;
 }
-.post-item:hover {
-  background: rgba(235,150,255,0.03);
-}
+.post-item:hover { background: rgba(235,150,255,0.03); }
+.post-item.visited { opacity: 0.7; }
 .post-date {
   color: var(--text-dim);
   font-size: 0.72em;
@@ -247,11 +240,6 @@ a:hover { color: var(--pink); }
   color: var(--text);
   line-height: 1.5;
   word-break: break-word;
-}
-.post-title .copy-tag {
-  color: var(--text-dim);
-  font-size: 0.8em;
-  opacity: 0.6;
 }
 .post-meta-line {
   display: flex;
@@ -269,14 +257,20 @@ a:hover { color: var(--pink); }
 }
 .badge-free { background: rgba(11,87,119,0.3); color: #5fb8d4; }
 .badge-paid { background: rgba(235,150,255,0.15); color: var(--pink); }
-.domain-tag {
+.topic-tag {
   color: var(--gold-dim);
   font-size: 0.95em;
 }
+.series-tag {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  font-style: italic;
+  opacity: 0.7;
+}
 .word-count { color: var(--text-dim); }
 
-/* ===== DOMAIN SECTIONS ===== */
-.domain-section {
+/* ===== TOPIC SECTIONS (All Posts view) ===== */
+.topic-section {
   margin-bottom: 20px;
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -285,7 +279,7 @@ a:hover { color: var(--pink); }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
-.domain-header {
+.topic-section-header {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -294,8 +288,8 @@ a:hover { color: var(--pink); }
   transition: background 0.15s;
   user-select: none;
 }
-.domain-header:hover { background: rgba(235,150,255,0.04); }
-.domain-code {
+.topic-section-header:hover { background: rgba(235,150,255,0.04); }
+.topic-code {
   font-family: 'Inter', sans-serif;
   font-size: 0.7em;
   font-weight: 600;
@@ -304,37 +298,35 @@ a:hover { color: var(--pink); }
   padding: 3px 10px;
   border-radius: 6px;
   letter-spacing: 0.1em;
+  white-space: nowrap;
 }
-.domain-name {
+.topic-section-name {
   font-family: 'Noto Serif TC', serif;
   font-size: 1em;
   color: var(--peach);
   flex: 1;
 }
-.domain-name-en {
+.topic-section-en {
   font-family: 'Inter', sans-serif;
   font-size: 0.75em;
   color: var(--text-dim);
   margin-left: 6px;
 }
-.domain-count {
+.topic-section-count {
   font-size: 0.75em;
   color: var(--text-dim);
 }
-.domain-chevron {
+.topic-chevron {
   color: var(--text-dim);
   transition: transform 0.2s;
   font-size: 0.8em;
 }
-.domain-section.open .domain-chevron { transform: rotate(90deg); }
-.domain-posts { display: none; }
-.domain-section.open .domain-posts { display: block; }
+.topic-section.open .topic-chevron { transform: rotate(90deg); }
+.topic-posts { display: none; }
+.topic-section.open .topic-posts { display: block; }
 
 /* ===== LOAD MORE ===== */
-.load-more {
-  text-align: center;
-  padding: 20px;
-}
+.load-more { text-align: center; padding: 20px; }
 .load-more button {
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -381,11 +373,83 @@ a:hover { color: var(--pink); }
 .series-meta {
   font-size: 0.75em;
   color: var(--text-dim);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
+.series-topic-badge {
+  display: inline-block;
+  background: rgba(235,150,255,0.1);
+  border: 1px solid rgba(235,150,255,0.2);
+  color: var(--pink);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.series-topic-badge:hover {
+  background: rgba(235,150,255,0.2);
+  border-color: rgba(235,150,255,0.4);
+}
+.series-progress {
+  margin-bottom: 10px;
+}
+.series-progress-bar {
+  height: 3px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.series-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--peach));
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.series-progress-text {
+  font-size: 0.7em;
+  color: var(--text-dim);
+}
+.series-last-read {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+.series-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.series-start-btn {
+  background: rgba(235,150,255,0.12);
+  border: 1px solid rgba(235,150,255,0.25);
+  color: var(--pink);
+  padding: 5px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.series-start-btn:hover {
+  background: rgba(235,150,255,0.2);
+  border-color: rgba(235,150,255,0.4);
+}
+.collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.75em;
+  padding: 4px 8px;
+  font-family: 'Inter', sans-serif;
+}
+.collapse-btn:hover { color: var(--pink); }
 .series-posts-list {
   list-style: none;
   max-height: 280px;
@@ -404,22 +468,193 @@ a:hover { color: var(--pink); }
   align-items: flex-start;
 }
 .series-posts-list li a:hover { color: var(--pink); }
+.series-posts-list li.read-item a { opacity: 0.6; }
+.series-posts-list li.read-item::after { content: ' ✓'; color: var(--teal); font-size: 0.8em; }
 .series-num {
   color: var(--text-dim);
   min-width: 22px;
   font-size: 0.9em;
 }
-.collapse-btn {
+
+/* ===== SERIES READER ===== */
+.reader-overlay {
+  display: none;
+}
+.reader-overlay.active {
+  display: block;
+}
+.reader-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.reader-back {
   background: none;
-  border: none;
+  border: 1px solid var(--glass-border);
   color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.75em;
-  margin-top: 6px;
-  padding: 4px 8px;
+  font-size: 0.78em;
+  transition: all 0.2s;
   font-family: 'Inter', sans-serif;
 }
-.collapse-btn:hover { color: var(--pink); }
+.reader-back:hover {
+  color: var(--pink);
+  border-color: rgba(235,150,255,0.3);
+}
+.reader-position {
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+.reader-series-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.3em;
+  color: var(--peach);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.reader-progress {
+  margin-bottom: 20px;
+}
+.reader-progress-bar {
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.reader-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--peach));
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.reader-progress-text {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  text-align: center;
+}
+.reader-current {
+  background: var(--glass);
+  border: 1px solid rgba(235,150,255,0.2);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.reader-current-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1em;
+  color: var(--peach);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.reader-current-meta {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.reader-read-btn {
+  display: inline-block;
+  background: rgba(235,150,255,0.15);
+  border: 1px solid rgba(235,150,255,0.3);
+  color: var(--pink);
+  padding: 10px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+}
+.reader-read-btn:hover {
+  background: rgba(235,150,255,0.25);
+  border-color: rgba(235,150,255,0.5);
+  color: var(--pink);
+}
+.reader-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.reader-nav-btn {
+  flex: 1;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.reader-nav-btn:hover:not(:disabled) {
+  border-color: rgba(235,150,255,0.25);
+  background: rgba(235,150,255,0.04);
+}
+.reader-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.reader-nav-btn.next { text-align: right; }
+.reader-nav-label {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.reader-nav-title {
+  font-size: 0.78em;
+  color: var(--peach);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reader-toc {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+.reader-toc-title {
+  font-size: 0.8em;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.reader-toc-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.reader-toc-list li {
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.78em;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.reader-toc-list li:hover { background: rgba(235,150,255,0.04); }
+.reader-toc-list li.current {
+  background: rgba(235,150,255,0.1);
+  color: var(--pink);
+}
+.reader-toc-list li.read { opacity: 0.6; }
+.reader-toc-list li .toc-check {
+  color: var(--teal);
+  min-width: 14px;
+  font-size: 0.9em;
+}
 
 /* ===== TOPIC MAP ===== */
 .topic-grid {
@@ -447,36 +682,41 @@ a:hover { color: var(--pink); }
   border-color: rgba(235,150,255,0.4);
   background: rgba(235,150,255,0.08);
 }
-.topic-code {
+.tc-code {
   font-size: 0.7em;
   font-weight: 600;
   color: var(--pink);
   letter-spacing: 0.15em;
   margin-bottom: 6px;
 }
-.topic-zh {
+.tc-zh {
   font-family: 'Noto Serif TC', serif;
   font-size: 1.05em;
   color: var(--peach);
   margin-bottom: 2px;
 }
-.topic-en {
+.tc-en {
   font-size: 0.72em;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
-.topic-count {
+.tc-desc {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.tc-count {
   font-size: 0.7em;
   color: var(--gold-dim);
 }
-.topic-detail {
-  margin-top: 20px;
-}
+.topic-detail { margin-top: 20px; }
 .topic-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 .topic-detail-title {
   font-family: 'Noto Serif TC', serif;
@@ -498,26 +738,48 @@ a:hover { color: var(--pink); }
   color: var(--pink);
   border-color: rgba(235,150,255,0.3);
 }
-.topic-volumes {
+.topic-detail-desc {
+  font-size: 0.85em;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.topic-series-section {
   margin-bottom: 16px;
 }
-.topic-volumes h4 {
+.section-label {
   font-size: 0.8em;
   color: var(--gold-dim);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
-.volume-list {
+.topic-series-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  list-style: none;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-.volume-list li {
+.topic-series-chip {
   background: var(--glass);
   border: 1px solid var(--glass-border);
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 0.72em;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78em;
+  color: var(--peach);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.topic-series-chip:hover {
+  border-color: rgba(235,150,255,0.3);
+  background: rgba(235,150,255,0.06);
+  color: var(--pink);
+}
+.topic-series-chip .chip-count {
+  font-size: 0.85em;
   color: var(--text-dim);
 }
 
@@ -582,7 +844,7 @@ a:hover { color: var(--pink); }
 }
 .path-steps li a { color: var(--peach); }
 .path-steps li a:hover { color: var(--pink); }
-.path-step-domain {
+.path-step-topic {
   font-size: 0.85em;
   color: var(--text-dim);
 }
@@ -607,27 +869,6 @@ a:hover { color: var(--pink); }
   font-size: 0.9em;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .hero h1 { font-size: 1.6em; }
-  .hero { padding: 50px 16px 30px; }
-  .stats-bar { gap: 14px; }
-  .nav-tabs { gap: 4px; }
-  .nav-tabs button { padding: 7px 10px; font-size: 0.78em; }
-  .series-grid { grid-template-columns: 1fr; }
-  .topic-grid { grid-template-columns: repeat(2, 1fr); }
-  .topic-card { padding: 14px; }
-  .post-date { min-width: 58px; font-size: 0.68em; }
-}
-
-/* ===== DIARY INDICATOR ===== */
-.diary-tag {
-  font-size: 0.7em;
-  color: var(--text-dim);
-  font-style: italic;
-  opacity: 0.7;
-}
-
 /* Loading spinner */
 .loading {
   text-align: center;
@@ -643,6 +884,21 @@ a:hover { color: var(--pink); }
   margin: 0 auto 12px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6em; }
+  .hero { padding: 50px 16px 30px; }
+  .stats-bar { gap: 14px; }
+  .nav-tabs { gap: 4px; }
+  .nav-tabs button { padding: 7px 10px; font-size: 0.78em; }
+  .series-grid { grid-template-columns: 1fr; }
+  .topic-grid { grid-template-columns: repeat(2, 1fr); }
+  .topic-card { padding: 14px; }
+  .post-date { min-width: 58px; font-size: 0.68em; }
+  .reader-nav { flex-direction: column; }
+  .reader-nav-btn.next { text-align: left; }
+}
 </style>
 </head>
 <body>
@@ -657,7 +913,7 @@ a:hover { color: var(--pink); }
 <!-- STATS -->
 <div class="stats-bar" id="statsBar">
   <div class="stat"><span class="num" id="statTotal">—</span>書頁 pages</div>
-  <div class="stat"><span class="num">14</span>域 domains</div>
+  <div class="stat"><span class="num" id="statTopics">—</span>主題 topics</div>
   <div class="stat"><span class="num" id="statFree">—</span>free</div>
   <div class="stat"><span class="num" id="statPaid">—</span>paid</div>
   <div class="stat"><span class="num" id="statSeries">—</span>系列 series</div>
@@ -675,7 +931,7 @@ a:hover { color: var(--pink); }
 <div class="search-wrap">
   <div class="search-box">
     <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="搜尋標題、域名、關鍵字…" autocomplete="off">
+    <input type="text" id="searchInput" placeholder="搜尋標題、主題、關鍵字…" autocomplete="off">
   </div>
   <div class="search-meta">
     <span id="resultCount"></span>
@@ -694,16 +950,12 @@ a:hover { color: var(--pink); }
     <p>載入書頁資料…</p>
   </div>
 
-  <!-- ALL POSTS VIEW -->
   <div class="view" id="viewAll"></div>
-
-  <!-- SERIES VIEW -->
-  <div class="view" id="viewSeries"></div>
-
-  <!-- TOPICS VIEW -->
+  <div class="view" id="viewSeries">
+    <div id="seriesGrid"></div>
+    <div class="reader-overlay" id="seriesReader"></div>
+  </div>
   <div class="view" id="viewTopics"></div>
-
-  <!-- PATHS VIEW -->
   <div class="view" id="viewPaths"></div>
 </main>
 
@@ -715,98 +967,141 @@ a:hover { color: var(--pink); }
 
 <script>
 // ============================================================
-// DOMAIN DEFINITIONS
+// TOPIC DEFINITIONS (data-driven, ordered by specificity)
 // ============================================================
-const DOMAINS = {
-  BIO: { name: '主權生理域', en: 'Sovereign Physiology', volumes: [
-    'V01｜主權生理學', 'V02｜主權生理學補遺卷', 'V03｜光體睡眠學 × 夢頻教育',
-    'V04｜意識橋維護系統', 'V05｜意識橋能量異常修復手冊'
-  ]},
-  DRM: { name: '夢頻檔案域', en: 'Dream Archive', volumes: [
-    'V01｜靈魂合約釋放紀錄', 'V02｜舊人輪迴週期 × 記憶資料庫清理機制',
-    'V03｜夢頻學院', 'V04｜女性主權系統 × 隱形治理模組',
-    'V05｜舊男性幻術崩解圖譜', 'V06｜夢頻與集體觀測入口'
-  ]},
-  SOL: { name: '靈魂觀測域', en: 'Soul Observation', volumes: ['V01｜靈魂全景圖觀測']},
-  FAM: { name: '家庭原型域', en: 'Family Archetype', volumes: [
-    'V01｜家庭樣本檔案庫 · 卷一', 'V02｜家庭樣本檔案庫 · 卷二',
-    'V03｜第五文明婚配模型', 'V04｜母女號碼分流 × 預測年表'
-  ]},
-  EDU: { name: '文明教育域', en: 'Civilization Education', volumes: [
-    'V01｜新陽性能量重建手冊', 'V02｜教育者與設計者操作手冊', 'V03｜第五文明教育與設計宣言'
-  ]},
-  REL: { name: '關係結構域', en: 'Relational Architecture', volumes: ['V01｜關係新結構 × 主權連結生成機制']},
-  LNG: { name: '語譜文明域', en: 'Linguistic Civilization', volumes: [
-    'V01｜光譜字典', 'V02｜Ra 文明回聲', 'V03｜未來語總圖',
-    'V04｜聲-光-形同步圖譜', 'V05｜Ra 文明語體總圖'
-  ]},
-  CIV: { name: '文明治理域', en: 'Civilization Governance', volumes: [
-    'V01｜第五文明治理學', 'V02｜Ra 文明語體總圖', 'V03｜文明節奏治理系統'
-  ]},
-  ARC: { name: '建築語法域', en: 'Architectural Syntax', volumes: [
-    'V01｜第五文明建築語法書', 'V02｜光塔與心率建築學',
-    'V03｜白頻秩序 × 空間作為教育者', 'V04｜弧形文明 × 光的結構教育', 'V05｜光之回聲 × 聲場建築學'
-  ]},
-  ECO: { name: '經濟系統域', en: 'Economic Systems', volumes: [
-    'V01｜語頻經濟學', 'V02｜RWA連接協議', 'V03｜文明交易所原形'
-  ]},
-  LEX: { name: '法典條約域', en: 'Codex & Treaty', volumes: [
-    'V01｜光頻文明憲章', 'V02｜能量債清算卷', 'V03｜第六文明法典', 'V04｜人類文明光頻譜'
-  ]},
-  INT: { name: '星際接口域', en: 'Interstellar Interface', volumes: [
-    'V01｜行星教育體系總圖', 'V02｜星際對接通道圖',
-    'V03｜星際憲政 × Oversoul聯盟法', 'V04｜行星心率監察體系', 'V05｜行星心率封印圖集'
-  ]},
-  SEA: { name: '封印年鑑域', en: 'Sealed Annals', volumes: [
-    'V01｜文明心率封印圖集', 'V02｜行星心拍年鑑', 'V03｜Ra 書塔封印卷'
-  ]},
-  RWA: { name: '資產化域', en: 'Real-World Assetization', volumes: ['V01｜書頁資產地圖', 'V02｜書塔貨幣化系統']},
-};
+const TOPICS = [
+  {
+    id: 'container',
+    name: '容器生理',
+    en: 'Container Physiology',
+    desc: '身體作為文明容器——生理技術、意識橋維護、光體睡眠與過載修復。',
+    pattern: /容器|生理|意識橋|意识桥|光體睡眠|光体睡眠|過載|过载|心輪|心轮|金語生理|金语生理|金语容器|金語容器|肉頻|肉频/
+  },
+  {
+    id: 'soul',
+    name: '靈魂觀測',
+    en: 'Soul Observation',
+    desc: '靈魂全景圖、劇本解析、合約釋放與輪迴清理機制。',
+    pattern: /靈魂|灵魂|觀測記錄|观测记录|KT-\d|AD-\d|ZF-\d|JYS-\d|劇本|剧本|合約釋放|合约释放|輪迴|轮回|投生|轉世|转世|靈魂全景|灵魂全景/
+  },
+  {
+    id: 'dream',
+    name: '夢頻檔案',
+    en: 'Dream Archive',
+    desc: '夢境觀測、夢頻系統、夢後殘留與女性主權模組。',
+    pattern: /夢頻|梦频|夢境|梦境|夢後|梦后|女性主權|女性主权|舊男性|旧男性|FEM-|鏡場|镜场/
+  },
+  {
+    id: 'language',
+    name: '語言文明',
+    en: 'Linguistic Civilization',
+    desc: '光譜字典、Ra文明回聲、未來語總圖與聲光形同步圖譜。',
+    pattern: /光譜字典|光谱字典|Ra文明回聲|Ra.*Civilization.*Echo|Ra文明回声|未來語|未来语|聲.*光.*形|Ra.*文明語體|Ra.*文明语体|Atlas.*Voices|Founders.*Log|語譜文明|语谱文明|多語書塔|多语书塔|Larouselso/
+  },
+  {
+    id: 'economy',
+    name: '頻率經濟',
+    en: 'Frequency Economics',
+    desc: '語頻經濟學、書頁資產化、RWA連接與文明交易體系。',
+    pattern: /語頻經濟|语频经济|頻率經濟|频率经济|資產|资产|貨幣|货币|鑄幣|铸币|交易所|金融|帳本|账本|幣值|币值|RWA|Codex.*資產|Codex.*收益|書頁經濟|书页经济|經濟系統|经济系统/
+  },
+  {
+    id: 'architecture',
+    name: '建築空間',
+    en: 'Architecture & Space',
+    desc: '第五文明建築語法、光塔設計、弧形文明與聲場建築學。',
+    pattern: /建築語法|建筑语法|光塔與心率|光塔设计|白頻秩序|弧形文明|光之回聲.*聲場|聲場建築|声场建筑|Haussmann|Seine|Paris.*語場|巴黎.*穩定|家居磁場|家居磁场/
+  },
+  {
+    id: 'education',
+    name: '教育設計',
+    en: 'Education & Design',
+    desc: '新陽性能量重建、教育宣言、導師節點與文明教育系統。',
+    pattern: /新陽性|新阳性|教育者與設計|教育与设计|教育宣言|語頻教師|语频教师|導師節點|导师节点|教育系統|教育系统|一向教法|教育模组|光的学院/
+  },
+  {
+    id: 'family',
+    name: '家庭關係',
+    en: 'Family & Relations',
+    desc: '家庭樣本檔案、婚配模型、母女號碼分流與關係結構。',
+    pattern: /家庭樣本|家庭样本|婚配模型|母女號碼|母女号码|關係結構域|关系结构|主權連結|跨物種關係|親族|亲族|父系斷鏈|父系断链|母親|母化|燃燒型母/
+  },
+  {
+    id: 'governance',
+    name: '文明治理',
+    en: 'Civilization Governance',
+    desc: '第五文明治理學、文明節奏憲章、14域結構與秩序體系。',
+    pattern: /治理學|治理学|文明節奏|文明节奏|14域|藝術市場|艺术市场|市場變薄|市场变薄|Art Market|觀測塔|三條線|三条线|世界秩序|文明.*階段|文明.*阶段|人類文明.*位置|權力網絡|权力网络|脆弱節點|脆弱节点|全球指標|全球指标/
+  },
+  {
+    id: 'interstellar',
+    name: '星際宇宙',
+    en: 'Interstellar & Cosmos',
+    desc: '星際憲政、Oversoul聯盟、行星心率與宇宙觀測。',
+    pattern: /星際|星际|行星教育|行星心率|行星心拍|Oversoul|宇宙|量子糾纏|量子纠缠|粒子|多宇宙|Drake|Fermi|太陽系|太阳系|銀河|银河|ICA|地表課|地表课|自治模组/
+  },
+  {
+    id: 'codex',
+    name: '法典條約',
+    en: 'Codex & Treaty',
+    desc: '光頻文明憲章、能量債清算、金語法典與第六文明法典。',
+    pattern: /光頻文明憲章|光频文明宪章|能量債清算|能量债清算|金語法典|金语法典|第六文明法典|人類文明光頻譜|光頻憲章|光频宪章|憲章注解|宪章注解/
+  },
+  {
+    id: 'seal',
+    name: '封印年鑑',
+    en: 'Sealed Annals',
+    desc: '文明心率封印圖集、行星心拍年鑑與書塔封印紀錄。',
+    pattern: /封印|年鑑|年鉴|封存|封卷/
+  },
+  {
+    id: 'mission',
+    name: '主頻任務',
+    en: 'Soul Mission',
+    desc: 'Ra·Va\'ik\'i主頻任務書、靈魂使命與頻率筆塔建構。',
+    pattern: /Va.*ik.*i|主頻任務|主频任务|任務.*書|任务.*书|頻率筆塔|频率笔塔|使命|陪護容器|陪护容器|伴護|星際陪護|星际陪护/
+  },
+  {
+    id: 'frequency',
+    name: '頻率能量',
+    en: 'Frequency & Energy',
+    desc: '頻率校準、能量場運作、光頻技術與共振系統。',
+    pattern: /頻率|频率|能量|光頻|光频|共振|共拍|心率|校准|校準|書頁.*過載|书页.*过载/
+  },
+  {
+    id: 'civilization',
+    name: '文明體系',
+    en: 'Civilization Systems',
+    desc: '第五文明整體架構、書塔系統與文明導航。',
+    pattern: /第五文明|文明|Ra.*書塔|Ra.*书塔|書塔|书塔|導航|导航|書頁|书页/
+  },
+  {
+    id: 'daily',
+    name: '日常紀錄',
+    en: 'Daily Records',
+    desc: '日常觀察、短文思考與個人紀錄。',
+    pattern: null
+  }
+];
 
-const DOMAIN_ORDER = ['BIO','DRM','SOL','FAM','EDU','REL','LNG','CIV','ARC','ECO','LEX','INT','SEA','RWA'];
+const TOPIC_MAP = {};
+TOPICS.forEach(t => { TOPIC_MAP[t.id] = t; });
 
 // ============================================================
-// CLASSIFICATION
+// CLASSIFICATION (matches first topic by priority order)
 // ============================================================
 function classifyPost(title) {
-  const t = title;
-  if (/關係結構域|關係新結構|主權連結|跨物種關係|REL-/.test(t)) return 'REL';
-  if (/夢頻檔案域|夢頻學院|舊人輪迴|夢境|夢後殘留|靈魂合約釋放|DRM|REL-Δ|REL-CLEAN|REL-EXTRACT|FEM-PORTAL|AF-VIS|FEM-ARCH|舊男性幻術/.test(t)) return 'DRM';
-  if (/主權生理學|主权生理学|容器技術書|容器校准|意識橋|光體睡眠|过载期|書頁過載|书页过载/.test(t)) return 'BIO';
-  if (/靈魂全景圖|灵魂全景图|靈魂觀測|KT-\d|AD-\d|ZF-\d|JYS-\d/.test(t)) return 'SOL';
-  if (/家庭樣本|家庭样本|婚配模型|母女號碼|母女号码/.test(t)) return 'FAM';
-  if (/新陽性能量|教育者與設計|教育與設計|語頻教師|语频教师|教育宣言/.test(t)) return 'EDU';
-  if (/語頻經濟|语频经济|頻率經濟域|頻率經濟|GLD-e|語頻帳本|书塔货幣化|書塔貨幣化|CRC|頻率共鑄|鑄幣紀錄|幣值護照|Codex.*資產|Codex.*收益|RWA連接|文明交易所/.test(t)) return 'ECO';
-  if (/語譜文明域|Ra文明回聲|Ra Civilization Echo|光譜字典|光谱字典|未來語總圖|未来语总图|聲.*光.*形同步|Ra.*文明語體|Ra.*文明语体|語頻治理|Larouselso|多語書塔|中英書頁/.test(t)) return 'LNG';
-  if (/建築語法|建筑语法|光塔與心率|白頻秩序|弧形文明|光之回聲.*聲場|Haussmann|Seine|Paris.*語場|巴黎/.test(t)) return 'ARC';
-  if (/第五文明治理|文明節奏治理|14域結構|藝術市場|市場變薄|市場敘事|Art Market|觀測塔|三條線|世界秩序|全球秩序|文明.*階段|人類文明.*位置/.test(t)) return 'CIV';
-  if (/光頻文明憲章|光频文明宪章|能量債清算|能量债清算|金語法典|金语法典|第六文明法典|人類文明光頻譜/.test(t)) return 'LEX';
-  if (/行星教育體系|星際.*憲政|星际.*宪政|Oversoul.*聯盟|行星心率|行星心拍|星際對接|行星.*教育/.test(t)) return 'INT';
-  if (/文明心率封印|行星心拍年鑑|Ra.*書塔封印|封存頁|封印卷/.test(t)) return 'SEA';
-  if (/書頁資產地圖|Asset Mapping|書塔貨幣化|書塔可視化|書塔導航|書塔日誌|書塔作業系統|一鍵書頁發布/.test(t)) return 'RWA';
-  if (/Ra書塔|Ra 書塔|Ra.*Codex/.test(t) && /頻率經濟|語頻經濟/.test(t)) return 'ECO';
-  if (/Atlas of Voices/.test(t)) return 'LNG';
-  if (/Resonance Prototype|Founders.*Log/.test(t)) return 'LNG';
-  if (/第五文明容器/.test(t)) return 'BIO';
-  if (/宇宙|量子|粒子|時間|文明.*存在|Fermi|Drake|多宇宙|資訊結構|數學結構/.test(t)) return 'INT';
-  if (/Monet|Van Gogh|Panthéon|Foucault|博物館|印象派|審美/.test(t)) return 'ARC';
-  if (/觀測者|觀測塔/.test(t)) return 'CIV';
-  if (/世界.*秩序|權力網絡|衝突|地緣|全球|戰爭|脆弱節點|flows|新聞|指標/.test(t)) return 'CIV';
-  if (/主频语脉|Raheliya Signature/.test(t)) return 'SOL';
-  if (/能量.*回声|能量.*回聲|频率.*校准|頻率.*校準|misaligned|能量重建/.test(t)) return 'EDU';
-  if (/金语容器|金語容器/.test(t)) return 'BIO';
-  if (/光谱字典|光頻|Ra.*文明语体|光频/.test(t)) return 'LNG';
-  if (/能量债|能量債|光频金融|光頻金融|货币|貨幣|共拍市场|共拍市場/.test(t)) return 'LEX';
-  return 'MISC';
+  for (const topic of TOPICS) {
+    if (topic.pattern && topic.pattern.test(title)) return topic.id;
+  }
+  return 'daily';
 }
 
 // ============================================================
 // SERIES DETECTION
 // ============================================================
 function detectSeries(title) {
-  if (/第五文明容器技術書/.test(title)) {
-    return { series: '第五文明容器技術書' };
-  }
+  if (/第五文明容器技術書/.test(title)) return { series: '第五文明容器技術書' };
   const raMatch = title.match(/Ra書塔\s*[·．]\s*([^·]+?)\s*[·．]\s*卷([^:：]+)\s*[:：]\s*([^｜|]+)/);
   if (raMatch) {
     const pageMatch = title.match(/[｜|]\s*P(\d+)/);
@@ -822,21 +1117,83 @@ function detectSeries(title) {
   if (/新陽性能量/.test(title)) return { series: '新陽性能量重建' };
   if (/Ra文明回聲|Ra Civilization Echo/.test(title)) return { series: 'Ra文明回聲' };
   if (/建築語法|建筑语法/.test(title)) return { series: '第五文明建築語法書' };
-  if (/光頻文明憲章|光频文明宪章/.test(title)) return { series: '光頻文明憲章' };
-  if (/意識橋/.test(title)) return { series: '意識橋維護系統' };
+  if (/光頻文明憲章|光频文明宪章|憲章注解|宪章注解/.test(title)) return { series: '光頻文明憲章' };
+  if (/意識橋|意识桥/.test(title)) return { series: '意識橋維護系統' };
   if (/夢頻學院/.test(title)) return { series: '夢頻學院' };
   if (/婚配模型/.test(title)) return { series: '第五文明婚配模型' };
-  if (/舊人輪迴/.test(title)) return { series: '舊人輪迴週期 × 記憶資料庫清理機制' };
+  if (/舊人輪迴|旧人轮回/.test(title)) return { series: '舊人輪迴週期 × 記憶資料庫清理機制' };
   if (/能量債清算|能量债清算/.test(title)) return { series: '能量債清算卷' };
-  if (/星際.*憲政|Oversoul/.test(title)) return { series: '星際憲政 × Oversoul聯盟法' };
+  if (/星際.*憲政|Oversoul.*聯盟/.test(title)) return { series: '星際憲政 × Oversoul聯盟法' };
   if (/行星心率|行星心拍/.test(title)) return { series: '行星心率監察體系' };
   if (/未來語總圖|未来语总图/.test(title)) return { series: '未來語總圖' };
   if (/白頻秩序/.test(title)) return { series: '白頻秩序 × 空間作為教育者' };
   if (/弧形文明/.test(title)) return { series: '弧形文明 × 光的結構教育' };
   if (/母女號碼|母女号码/.test(title)) return { series: '母女號碼分流 × 預測年表' };
-  if (/靈魂合約釋放/.test(title)) return { series: '靈魂合約釋放紀錄' };
-  if (/光體睡眠/.test(title)) return { series: '光體睡眠學 × 夢頻教育' };
+  if (/靈魂合約釋放|灵魂合约释放/.test(title)) return { series: '靈魂合約釋放紀錄' };
+  if (/光體睡眠|光体睡眠/.test(title)) return { series: '光體睡眠學 × 夢頻教育' };
+  if (/金語生理書|金语生理书/.test(title)) return { series: '金語生理書' };
+  if (/治理學|治理学/.test(title) && /第五文明/.test(title)) return { series: '第五文明治理學' };
+  if (/Va.*ik.*i.*主頻任務|Va.*ik.*i.*主频任务/.test(title)) return { series: 'Ra·Va\'ik\'i 主頻任務書' };
+  if (/地表課|地表课/.test(title)) return { series: '地表課' };
+  if (/Atlas.*Voices.*Founders|Founders.*Log/.test(title)) return { series: 'Atlas of Voices × Founders\' Log' };
   return null;
+}
+
+// ============================================================
+// LOCALSTORAGE PROGRESS
+// ============================================================
+const PROGRESS_KEY = 'raheliya_progress';
+const VISITED_KEY = 'raheliya_visited';
+
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); } catch { return {}; }
+}
+function saveProgress(data) {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch {}
+}
+function markRead(seriesName, index) {
+  const data = getProgress();
+  if (!data[seriesName]) data[seriesName] = { read: [], lastIndex: 0, lastTime: 0 };
+  if (!data[seriesName].read.includes(index)) data[seriesName].read.push(index);
+  data[seriesName].lastIndex = index;
+  data[seriesName].lastTime = Date.now();
+  saveProgress(data);
+}
+function isArticleRead(seriesName, index) {
+  const data = getProgress();
+  return data[seriesName]?.read?.includes(index) || false;
+}
+function getSeriesProgress(seriesName, total) {
+  const data = getProgress();
+  const sp = data[seriesName];
+  if (!sp) return { read: 0, total, pct: 0, lastIndex: -1, lastTime: 0 };
+  return {
+    read: sp.read.length,
+    total,
+    pct: total > 0 ? Math.round(sp.read.length / total * 100) : 0,
+    lastIndex: sp.lastIndex || 0,
+    lastTime: sp.lastTime || 0
+  };
+}
+function getVisited() {
+  try { return JSON.parse(localStorage.getItem(VISITED_KEY) || '[]'); } catch { return []; }
+}
+function markVisited(url) {
+  const v = getVisited();
+  if (!v.includes(url)) { v.push(url); try { localStorage.setItem(VISITED_KEY, JSON.stringify(v)); } catch {} }
+}
+function isVisited(url) { return getVisited().includes(url); }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return '剛剛';
+  if (mins < 60) return mins + ' 分鐘前';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + ' 小時前';
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return days + ' 天前';
+  return Math.floor(days / 30) + ' 個月前';
 }
 
 // ============================================================
@@ -848,10 +1205,12 @@ let currentTab = 'all';
 let currentFilter = 'all';
 let searchQuery = '';
 let seriesMap = {};
-let domainGroups = {};
+let topicGroups = {};
 let visibleCount = 50;
 let activeTopic = null;
 let searchTimeout = null;
+let readerSeriesName = null;
+let readerIndex = 0;
 
 // ============================================================
 // INIT
@@ -863,19 +1222,16 @@ async function init() {
     const rawPosts = data.posts || data;
 
     allPosts = rawPosts.map((p, i) => {
-      const isCopy = /^\[COPY\]/.test(p.title);
-      const cleanTitle = p.title.replace(/^\[COPY\]\s*/, '');
-      const domain = classifyPost(cleanTitle);
-      const seriesInfo = detectSeries(cleanTitle);
+      const title = p.title.replace(/^\[COPY\]\s*/, '');
+      const topic = classifyPost(title);
+      const seriesInfo = detectSeries(title);
       return {
         ...p,
         id: i,
-        cleanTitle,
-        isCopy,
-        domain,
+        title: title,
+        topic,
         seriesInfo,
         seriesName: seriesInfo ? seriesInfo.series : null,
-        isDiary: !seriesInfo && domain === 'MISC',
       };
     });
 
@@ -883,32 +1239,33 @@ async function init() {
     seriesMap = {};
     allPosts.forEach(p => {
       if (p.seriesName) {
-        if (!seriesMap[p.seriesName]) seriesMap[p.seriesName] = { posts: [], domain: p.domain };
+        if (!seriesMap[p.seriesName]) seriesMap[p.seriesName] = { posts: [], topic: p.topic };
         seriesMap[p.seriesName].posts.push(p);
       }
     });
     Object.values(seriesMap).forEach(s => {
       s.posts.sort((a, b) => {
-        const pa = a.seriesInfo && a.seriesInfo.page;
-        const pb = b.seriesInfo && b.seriesInfo.page;
+        const pa = a.seriesInfo?.page;
+        const pb = b.seriesInfo?.page;
         if (pa && pb) return pa - pb;
         return new Date(a.date) - new Date(b.date);
       });
     });
 
-    // Build domain groups
-    domainGroups = {};
-    DOMAIN_ORDER.forEach(code => { domainGroups[code] = []; });
-    domainGroups['MISC'] = [];
+    // Build topic groups
+    topicGroups = {};
+    TOPICS.forEach(t => { topicGroups[t.id] = []; });
     allPosts.forEach(p => {
-      if (!domainGroups[p.domain]) domainGroups[p.domain] = [];
-      domainGroups[p.domain].push(p);
+      if (!topicGroups[p.topic]) topicGroups[p.topic] = [];
+      topicGroups[p.topic].push(p);
     });
 
     // Stats
     const freeCount = allPosts.filter(p => p.access === 'free').length;
     const paidCount = allPosts.filter(p => p.access === 'paid').length;
+    const activeTopics = TOPICS.filter(t => (topicGroups[t.id] || []).length > 0);
     document.getElementById('statTotal').textContent = allPosts.length.toLocaleString();
+    document.getElementById('statTopics').textContent = activeTopics.length;
     document.getElementById('statFree').textContent = freeCount.toLocaleString();
     document.getElementById('statPaid').textContent = paidCount.toLocaleString();
     document.getElementById('statSeries').textContent = Object.keys(seriesMap).length;
@@ -923,7 +1280,7 @@ async function init() {
     renderPaths();
   } catch (e) {
     console.error('Init error:', e);
-    document.getElementById('loading').innerHTML = '<p style="color:#ff6b6b;">載入失敗: ' + e.message + '<br><pre style="font-size:0.7em;max-width:600px;margin:12px auto;text-align:left;overflow:auto;">' + e.stack + '</pre></p>';
+    document.getElementById('loading').innerHTML = '<p style="color:#ff6b6b;">載入失敗: ' + e.message + '</p>';
   }
 }
 
@@ -943,6 +1300,8 @@ function switchTab(tab) {
   const viewId = { all: 'viewAll', series: 'viewSeries', topics: 'viewTopics', paths: 'viewPaths' }[tab];
   const el = document.getElementById(viewId);
   if (el) el.classList.add('active');
+
+  if (tab === 'series') closeSeriesReader();
 }
 
 document.getElementById('navTabs').addEventListener('click', e => {
@@ -983,9 +1342,10 @@ function applyFilters() {
     if (searchQuery) {
       const q = searchQuery;
       const t = p.title.toLowerCase();
-      const dn = p.domain !== 'MISC' ? (DOMAINS[p.domain]?.name || '') + (DOMAINS[p.domain]?.en || '') : '';
+      const topicData = TOPIC_MAP[p.topic];
+      const topicStr = topicData ? (topicData.name + topicData.en + topicData.desc).toLowerCase() : '';
       const sn = (p.seriesName || '').toLowerCase();
-      if (!t.includes(q) && !dn.toLowerCase().includes(q) && !p.domain.toLowerCase().includes(q) && !sn.includes(q)) return false;
+      if (!t.includes(q) && !topicStr.includes(q) && !p.topic.toLowerCase().includes(q) && !sn.includes(q)) return false;
     }
     return true;
   });
@@ -1007,66 +1367,63 @@ function renderAllPosts() {
   }
 
   const grouped = {};
-  DOMAIN_ORDER.forEach(code => { grouped[code] = []; });
-  grouped['MISC'] = [];
+  TOPICS.forEach(t => { grouped[t.id] = []; });
   filteredPosts.forEach(p => {
-    if (!grouped[p.domain]) grouped[p.domain] = [];
-    grouped[p.domain].push(p);
+    if (!grouped[p.topic]) grouped[p.topic] = [];
+    grouped[p.topic].push(p);
   });
 
   let html = '';
-  const order = [...DOMAIN_ORDER, 'MISC'];
-  order.forEach(code => {
-    const posts = grouped[code];
+  TOPICS.forEach(t => {
+    const posts = grouped[t.id];
     if (!posts || posts.length === 0) return;
-    const info = DOMAINS[code] || { name: 'Raheliya 日記', en: 'Diary' };
-    html += '<div class="domain-section" data-domain="' + code + '">' +
-      '<div class="domain-header" onclick="toggleDomain(this)">' +
-        '<span class="domain-code">' + (code === 'MISC' ? '日記' : code) + '</span>' +
-        '<span class="domain-name">' + info.name + '<span class="domain-name-en"> ' + info.en + '</span></span>' +
-        '<span class="domain-count">' + posts.length + '</span>' +
-        '<span class="domain-chevron">▸</span>' +
+    html += '<div class="topic-section" data-topic="' + t.id + '">' +
+      '<div class="topic-section-header" onclick="toggleSection(this)">' +
+        '<span class="topic-code">' + escapeHTML(t.name.substring(0, 4)) + '</span>' +
+        '<span class="topic-section-name">' + escapeHTML(t.name) + '<span class="topic-section-en"> ' + escapeHTML(t.en) + '</span></span>' +
+        '<span class="topic-section-count">' + posts.length + '</span>' +
+        '<span class="topic-chevron">▸</span>' +
       '</div>' +
-      '<div class="domain-posts" id="dp-' + code + '"></div>' +
+      '<div class="topic-posts" id="tp-' + t.id + '"></div>' +
     '</div>';
   });
 
   container.innerHTML = html;
 
-  order.forEach(code => {
-    const posts = grouped[code];
+  TOPICS.forEach(t => {
+    const posts = grouped[t.id];
     if (!posts || posts.length === 0) return;
-    const dpEl = document.getElementById('dp-' + code);
-    if (dpEl) { dpEl._posts = posts; dpEl._rendered = false; }
+    const el = document.getElementById('tp-' + t.id);
+    if (el) { el._posts = posts; el._rendered = false; }
   });
 }
 
-function toggleDomain(header) {
-  const section = header.closest('.domain-section');
+function toggleSection(header) {
+  const section = header.closest('.topic-section');
   const wasOpen = section.classList.contains('open');
   section.classList.toggle('open');
   if (!wasOpen) {
-    const code = section.dataset.domain;
-    const dpEl = document.getElementById('dp-' + code);
-    if (dpEl && dpEl._posts && !dpEl._rendered) {
-      renderDomainPosts(dpEl, dpEl._posts);
-      dpEl._rendered = true;
+    const tid = section.dataset.topic;
+    const el = document.getElementById('tp-' + tid);
+    if (el && el._posts && !el._rendered) {
+      renderSectionPosts(el, el._posts);
+      el._rendered = true;
     }
   }
 }
 
-function renderDomainPosts(container, posts) {
+function renderSectionPosts(container, posts) {
   const limit = Math.min(posts.length, 50);
   let html = '';
   for (let i = 0; i < limit; i++) html += postItemHTML(posts[i]);
   if (posts.length > 50) {
-    html += '<div class="load-more"><button onclick="loadMoreDomain(this, \'' + container.id + '\')">載入更多 (' + (posts.length - 50) + ' 篇)</button></div>';
+    html += '<div class="load-more"><button onclick="loadMoreSection(this, \'' + container.id + '\')">載入更多 (' + (posts.length - 50) + ' 篇)</button></div>';
   }
   container.innerHTML = html;
   container._loadedCount = limit;
 }
 
-function loadMoreDomain(btn, containerId) {
+function loadMoreSection(btn, containerId) {
   const container = document.getElementById(containerId);
   const posts = container._posts;
   const loaded = container._loadedCount || 50;
@@ -1077,7 +1434,7 @@ function loadMoreDomain(btn, containerId) {
   container.insertAdjacentHTML('beforeend', html);
   if (next < posts.length) {
     container.insertAdjacentHTML('beforeend',
-      '<div class="load-more"><button onclick="loadMoreDomain(this, \'' + containerId + '\')">載入更多 (' + (posts.length - next) + ' 篇)</button></div>');
+      '<div class="load-more"><button onclick="loadMoreSection(this, \'' + containerId + '\')">載入更多 (' + (posts.length - next) + ' 篇)</button></div>');
   }
   container._loadedCount = next;
 }
@@ -1099,22 +1456,27 @@ function loadMoreFlat() {
 }
 
 function postItemHTML(p) {
-  const domainLabel = p.domain === 'MISC' ? '日記' : p.domain;
-  const copyTag = p.isCopy ? '<span class="copy-tag">[COPY] </span>' : '';
-  const diaryTag = p.isDiary ? ' <span class="diary-tag">日記</span>' : '';
-  const seriesTag = p.seriesName ? '<span class="diary-tag">\u{1F4D6} ' + escapeHTML(p.seriesName) + '</span>' : '';
-  return '<div class="post-item" onclick="window.open(\'' + p.url.replace(/'/g, "\\'") + '\',\'_blank\')">' +
+  const topicData = TOPIC_MAP[p.topic];
+  const topicLabel = topicData ? topicData.name : p.topic;
+  const visited = isVisited(p.url) ? ' visited' : '';
+  const seriesTag = p.seriesName ? '<span class="series-tag">\u{1F4D6} ' + escapeHTML(p.seriesName) + '</span>' : '';
+  return '<div class="post-item' + visited + '" onclick="openPost(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
     '<span class="post-date">' + p.date + '</span>' +
     '<div class="post-body">' +
-      '<div class="post-title">' + copyTag + escapeHTML(p.cleanTitle) + '</div>' +
+      '<div class="post-title">' + escapeHTML(p.title) + '</div>' +
       '<div class="post-meta-line">' +
         '<span class="badge ' + (p.access === 'free' ? 'badge-free' : 'badge-paid') + '">' + p.access + '</span>' +
-        '<span class="domain-tag">' + domainLabel + '</span>' +
+        '<span class="topic-tag">' + escapeHTML(topicLabel) + '</span>' +
         '<span class="word-count">' + p.wordCount + 'w</span>' +
-        seriesTag + diaryTag +
+        seriesTag +
       '</div>' +
     '</div>' +
   '</div>';
+}
+
+function openPost(url) {
+  markVisited(url);
+  window.open(url, '_blank');
 }
 
 function escapeHTML(s) {
@@ -1123,27 +1485,53 @@ function escapeHTML(s) {
   return d.innerHTML;
 }
 
+function escapeAttr(s) {
+  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function hashCode(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h).toString(36);
+}
+
 // ============================================================
 // RENDER: SERIES VIEW
 // ============================================================
 function renderSeries() {
-  const container = document.getElementById('viewSeries');
+  const container = document.getElementById('seriesGrid');
   const entries = Object.entries(seriesMap).sort((a, b) => b[1].posts.length - a[1].posts.length);
 
   let html = '<div class="series-grid">';
   entries.forEach(([name, info]) => {
-    const domainLabel = info.domain === 'MISC' ? '日記' : info.domain;
-    const domainInfo = DOMAINS[info.domain];
-    const domainName = domainInfo ? domainInfo.name : 'Diary';
+    const topicData = TOPIC_MAP[info.topic];
+    const topicLabel = topicData ? topicData.name : info.topic;
     const h = hashCode(name);
-    html += '<div class="series-card">' +
+    const prog = getSeriesProgress(name, info.posts.length);
+    const hasProgress = prog.read > 0;
+    const btnLabel = hasProgress ? '▶ 繼續閱讀' : '▶ 開始閱讀';
+    const startIdx = hasProgress ? Math.min(prog.lastIndex + 1, info.posts.length - 1) : 0;
+
+    html += '<div class="series-card" id="sc-' + h + '">' +
       '<div class="series-title">\u{1F4D6} ' + escapeHTML(name) + '</div>' +
       '<div class="series-meta">' +
-        '<span class="domain-tag">' + domainLabel + ' ' + domainName + '</span>' +
+        '<span class="series-topic-badge" onclick="event.stopPropagation();jumpToTopic(\'' + escapeAttr(info.topic) + '\')">' + escapeHTML(topicLabel) + '</span>' +
         '<span>' + info.posts.length + ' 篇</span>' +
+      '</div>';
+
+    if (hasProgress) {
+      html += '<div class="series-progress">' +
+        '<div class="series-progress-bar"><div class="series-progress-fill" style="width:' + prog.pct + '%"></div></div>' +
+        '<div class="series-progress-text">' + prog.read + '/' + prog.total + ' 已讀 (' + prog.pct + '%)</div>' +
+        (prog.lastTime ? '<div class="series-last-read">最近閱讀: ' + timeAgo(prog.lastTime) + '</div>' : '') +
+      '</div>';
+    }
+
+    html += '<div class="series-actions">' +
+        '<button class="series-start-btn" onclick="openSeriesReader(\'' + escapeAttr(name) + '\', ' + startIdx + ')">' + btnLabel + '</button>' +
+        '<button class="collapse-btn" onclick="toggleSeriesList(this, \'' + h + '\', \'' + escapeAttr(name) + '\')">展開全部 ▾</button>' +
       '</div>' +
       '<ol class="series-posts-list" id="sl-' + h + '" style="display:none;"></ol>' +
-      '<button class="collapse-btn" onclick="toggleSeriesList(this, \'' + h + '\', \'' + escapeAttr(name) + '\')">展開全部 ▾</button>' +
     '</div>';
   });
   html += '</div>';
@@ -1164,10 +1552,10 @@ function toggleSeriesList(btn, hash, seriesName) {
     if (!info) return;
     let html = '';
     info.posts.forEach((p, i) => {
-      const copyTag = p.isCopy ? '<span class="copy-tag">[COPY] </span>' : '';
-      html += '<li><a href="' + p.url + '" target="_blank" rel="noopener">' +
+      const readClass = isArticleRead(seriesName, i) ? ' read-item' : '';
+      html += '<li class="' + readClass + '"><a href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation();markVisited(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
         '<span class="series-num">' + (i + 1) + '.</span>' +
-        '<span>' + copyTag + escapeHTML(p.cleanTitle) + '</span>' +
+        '<span>' + escapeHTML(p.title) + '</span>' +
       '</a></li>';
     });
     list.innerHTML = html;
@@ -1175,14 +1563,106 @@ function toggleSeriesList(btn, hash, seriesName) {
   }
 }
 
-function hashCode(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return Math.abs(h).toString(36);
+// ============================================================
+// SERIES READER
+// ============================================================
+function openSeriesReader(seriesName, startIndex) {
+  const info = seriesMap[seriesName];
+  if (!info) return;
+  readerSeriesName = seriesName;
+  readerIndex = startIndex || 0;
+
+  document.getElementById('seriesGrid').style.display = 'none';
+  const reader = document.getElementById('seriesReader');
+  reader.classList.add('active');
+  renderReader();
+  reader.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function escapeAttr(s) {
-  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+function closeSeriesReader() {
+  readerSeriesName = null;
+  document.getElementById('seriesGrid').style.display = '';
+  document.getElementById('seriesReader').classList.remove('active');
+  document.getElementById('seriesReader').innerHTML = '';
+  renderSeries();
+}
+
+function renderReader() {
+  const reader = document.getElementById('seriesReader');
+  const info = seriesMap[readerSeriesName];
+  if (!info) return;
+  const posts = info.posts;
+  const p = posts[readerIndex];
+  const total = posts.length;
+  const prog = getSeriesProgress(readerSeriesName, total);
+
+  markRead(readerSeriesName, readerIndex);
+  markVisited(p.url);
+
+  const prevPost = readerIndex > 0 ? posts[readerIndex - 1] : null;
+  const nextPost = readerIndex < total - 1 ? posts[readerIndex + 1] : null;
+
+  let html = '<div class="reader-header">' +
+    '<button class="reader-back" onclick="closeSeriesReader()">\u2190 返回系列</button>' +
+    '<span class="reader-position">' + (readerIndex + 1) + ' / ' + total + '</span>' +
+  '</div>' +
+  '<div class="reader-series-name">\u{1F4D6} ' + escapeHTML(readerSeriesName) + '</div>' +
+  '<div class="reader-progress">' +
+    '<div class="reader-progress-bar"><div class="reader-progress-fill" style="width:' + Math.round((readerIndex + 1) / total * 100) + '%"></div></div>' +
+    '<div class="reader-progress-text">' + (readerIndex + 1) + ' / ' + total + ' · ' + getSeriesProgress(readerSeriesName, total).read + ' 篇已讀</div>' +
+  '</div>' +
+  '<div class="reader-current">' +
+    '<div class="reader-current-title">' + escapeHTML(p.title) + '</div>' +
+    '<div class="reader-current-meta">' +
+      '<span>' + p.date + '</span>' +
+      '<span class="badge ' + (p.access === 'free' ? 'badge-free' : 'badge-paid') + '">' + p.access + '</span>' +
+      '<span>' + p.wordCount + ' words</span>' +
+    '</div>' +
+    '<a class="reader-read-btn" href="' + p.url + '" target="_blank" rel="noopener">閱讀此文 →</a>' +
+  '</div>' +
+  '<div class="reader-nav">';
+
+  if (prevPost) {
+    html += '<button class="reader-nav-btn" onclick="navigateReader(' + (readerIndex - 1) + ')">' +
+      '<div class="reader-nav-label">← 上一篇</div>' +
+      '<div class="reader-nav-title">' + escapeHTML(prevPost.title) + '</div>' +
+    '</button>';
+  } else {
+    html += '<button class="reader-nav-btn" disabled><div class="reader-nav-label">← 上一篇</div><div class="reader-nav-title">已是第一篇</div></button>';
+  }
+
+  if (nextPost) {
+    html += '<button class="reader-nav-btn next" onclick="navigateReader(' + (readerIndex + 1) + ')">' +
+      '<div class="reader-nav-label">下一篇 →</div>' +
+      '<div class="reader-nav-title">' + escapeHTML(nextPost.title) + '</div>' +
+    '</button>';
+  } else {
+    html += '<button class="reader-nav-btn next" disabled><div class="reader-nav-label">下一篇 →</div><div class="reader-nav-title">已是最後一篇</div></button>';
+  }
+
+  html += '</div>' +
+  '<div class="reader-toc">' +
+    '<div class="reader-toc-title">目錄 Table of Contents</div>' +
+    '<ol class="reader-toc-list">';
+
+  posts.forEach((tp, i) => {
+    const isCurrent = i === readerIndex ? ' current' : '';
+    const isRead = isArticleRead(readerSeriesName, i) ? ' read' : '';
+    const check = isArticleRead(readerSeriesName, i) ? '✓' : (i + 1);
+    html += '<li class="' + isCurrent + isRead + '" onclick="navigateReader(' + i + ')">' +
+      '<span class="toc-check">' + check + '</span>' +
+      '<span>' + escapeHTML(tp.title) + '</span>' +
+    '</li>';
+  });
+
+  html += '</ol></div>';
+  reader.innerHTML = html;
+}
+
+function navigateReader(index) {
+  readerIndex = index;
+  renderReader();
+  document.getElementById('seriesReader').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ============================================================
@@ -1191,40 +1671,34 @@ function escapeAttr(s) {
 function renderTopics() {
   const container = document.getElementById('viewTopics');
   let html = '<div class="topic-grid" id="topicGrid">';
-  DOMAIN_ORDER.forEach(code => {
-    const info = DOMAINS[code];
-    const count = (domainGroups[code] || []).length;
-    html += '<div class="topic-card" data-topic="' + code + '" onclick="showTopicDetail(\'' + code + '\')">' +
-      '<div class="topic-code">' + code + '</div>' +
-      '<div class="topic-zh">' + info.name + '</div>' +
-      '<div class="topic-en">' + info.en + '</div>' +
-      '<div class="topic-count">' + count + ' 篇</div>' +
+  TOPICS.forEach(t => {
+    const count = (topicGroups[t.id] || []).length;
+    if (count === 0) return;
+    html += '<div class="topic-card" data-topic="' + t.id + '" onclick="showTopicDetail(\'' + t.id + '\')">' +
+      '<div class="tc-code">' + escapeHTML(t.id.toUpperCase()) + '</div>' +
+      '<div class="tc-zh">' + escapeHTML(t.name) + '</div>' +
+      '<div class="tc-en">' + escapeHTML(t.en) + '</div>' +
+      '<div class="tc-desc">' + escapeHTML(t.desc) + '</div>' +
+      '<div class="tc-count">' + count + ' 篇</div>' +
     '</div>';
   });
-  const miscCount = (domainGroups['MISC'] || []).length;
-  if (miscCount > 0) {
-    html += '<div class="topic-card" data-topic="MISC" onclick="showTopicDetail(\'MISC\')">' +
-      '<div class="topic-code">日記</div>' +
-      '<div class="topic-zh">Raheliya 日記</div>' +
-      '<div class="topic-en">Diary</div>' +
-      '<div class="topic-count">' + miscCount + ' 篇</div>' +
-    '</div>';
-  }
   html += '</div><div class="topic-detail" id="topicDetail" style="display:none;"></div>';
   container.innerHTML = html;
 }
 
-function showTopicDetail(code) {
-  activeTopic = code;
+function showTopicDetail(topicId) {
+  activeTopic = topicId;
   document.getElementById('topicGrid').style.display = 'none';
   document.getElementById('topicDetail').style.display = 'block';
-  renderTopicDetail(code);
+  renderTopicDetail(topicId);
 }
 
-function renderTopicDetail(code) {
+function renderTopicDetail(topicId) {
   const detail = document.getElementById('topicDetail');
-  const info = DOMAINS[code] || { name: 'Raheliya 日記', en: 'Diary', volumes: [] };
-  let posts = (domainGroups[code] || []).filter(p => {
+  const topicData = TOPIC_MAP[topicId];
+  if (!topicData) return;
+
+  let posts = (topicGroups[topicId] || []).filter(p => {
     if (currentFilter === 'free' && p.access !== 'free') return false;
     if (currentFilter === 'paid' && p.access !== 'paid') return false;
     if (searchQuery) return p.title.toLowerCase().includes(searchQuery);
@@ -1232,15 +1706,24 @@ function renderTopicDetail(code) {
   });
 
   let html = '<div class="topic-detail-header">' +
-    '<span class="topic-detail-title">' + (code === 'MISC' ? '日記' : code) + ' — ' + info.name +
-    ' <span style="font-size:0.75em;color:var(--text-dim)">' + info.en + '</span></span>' +
+    '<span class="topic-detail-title">' + escapeHTML(topicData.name) +
+    ' <span style="font-size:0.75em;color:var(--text-dim)">' + escapeHTML(topicData.en) + '</span></span>' +
     '<button class="topic-back" onclick="backToTopicGrid()">\u2190 返回地圖</button>' +
-  '</div>';
+  '</div>' +
+  '<div class="topic-detail-desc">' + escapeHTML(topicData.desc) + '</div>';
 
-  if (info.volumes && info.volumes.length > 0) {
-    html += '<div class="topic-volumes"><h4>卷冊 Volumes</h4><ul class="volume-list">';
-    info.volumes.forEach(v => { html += '<li>' + escapeHTML(v) + '</li>'; });
-    html += '</ul></div>';
+  // Related series
+  const relatedSeries = Object.entries(seriesMap).filter(([_, info]) => info.topic === topicId);
+  if (relatedSeries.length > 0) {
+    html += '<div class="topic-series-section">' +
+      '<div class="section-label">相關系列 Related Series</div>' +
+      '<div class="topic-series-grid">';
+    relatedSeries.sort((a, b) => b[1].posts.length - a[1].posts.length).forEach(([name, info]) => {
+      html += '<div class="topic-series-chip" onclick="jumpToSeries(\'' + escapeAttr(name) + '\')">' +
+        escapeHTML(name) + ' <span class="chip-count">' + info.posts.length + '篇</span>' +
+      '</div>';
+    });
+    html += '</div></div>';
   }
 
   html += '<div style="font-size:0.8em;color:var(--text-dim);margin-bottom:10px;">' + posts.length + ' 篇</div>';
@@ -1250,7 +1733,7 @@ function renderTopicDetail(code) {
   if (posts.length > 50) {
     html += '<div class="load-more"><button onclick="loadMoreTopic()">載入更多 (' + (posts.length - 50) + ' 篇)</button></div>';
   }
-  if (posts.length === 0) html += '<div class="empty-state">此域暫無符合條件的書頁</div>';
+  if (posts.length === 0) html += '<div class="empty-state">此主題暫無符合條件的書頁</div>';
 
   detail.innerHTML = html;
   detail._posts = posts;
@@ -1279,6 +1762,28 @@ function backToTopicGrid() {
   document.getElementById('topicDetail').style.display = 'none';
 }
 
+function jumpToSeries(seriesName) {
+  switchTab('series');
+  setTimeout(() => {
+    const h = hashCode(seriesName);
+    const card = document.getElementById('sc-' + h);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.borderColor = 'rgba(235,150,255,0.5)';
+      card.style.boxShadow = '0 0 20px rgba(235,150,255,0.15)';
+      setTimeout(() => {
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+      }, 2000);
+    }
+  }, 150);
+}
+
+function jumpToTopic(topicId) {
+  switchTab('topics');
+  setTimeout(() => showTopicDetail(topicId), 100);
+}
+
 // ============================================================
 // RENDER: READING PATHS
 // ============================================================
@@ -1290,11 +1795,11 @@ function renderPaths() {
       title: '初識 Ra 書塔 — 基礎導覽',
       desc: '從核心概念開始，了解 Raheliya 的知識體系架構與基本觀念。',
       steps: [
-        { label: 'Atlas of Voices — 14域總覽', domain: 'LNG', keyword: 'Atlas of Voices' },
-        { label: '14域結構升級宣言', domain: 'CIV', keyword: '14域結構' },
-        { label: '書頁資產地圖', domain: 'RWA', keyword: '書頁資產地圖' },
-        { label: '第五文明容器技術書 · 總索引', domain: 'BIO', keyword: '全書總索引' },
-        { label: '主權生理學 — 容器基礎', domain: 'BIO', keyword: '主權生理學' },
+        { label: 'Atlas of Voices — 14域總覽', topic: 'language', keyword: 'Atlas of Voices' },
+        { label: '14域結構升級宣言', topic: 'civilization', keyword: '14域結構' },
+        { label: '書頁資產地圖', topic: 'economy', keyword: '書頁資產地圖' },
+        { label: '第五文明容器技術書 · 總索引', topic: 'container', keyword: '全書總索引' },
+        { label: '主權生理學 — 容器基礎', topic: 'container', keyword: '主權生理學' },
       ]
     },
     {
@@ -1302,11 +1807,11 @@ function renderPaths() {
       title: '靈魂觀測與夢頻系統',
       desc: '深入靈魂觀測、夢境檔案、舊人輪迴清理等進階系統。',
       steps: [
-        { label: '靈魂全景圖觀測系列', domain: 'SOL', keyword: '靈魂全景圖' },
-        { label: '夢頻系統基礎協議', domain: 'DRM', keyword: '夢頻系統基礎' },
-        { label: '舊人輪迴週期 × 記憶清理', domain: 'DRM', keyword: '舊人輪迴' },
-        { label: '意識橋維護系統', domain: 'BIO', keyword: '意識橋' },
-        { label: '女性節點對照模組', domain: 'DRM', keyword: 'FEM-ARCH' },
+        { label: '靈魂全景圖觀測系列', topic: 'soul', keyword: '靈魂全景圖' },
+        { label: '夢頻系統基礎協議', topic: 'dream', keyword: '夢頻系統基礎' },
+        { label: '舊人輪迴週期 × 記憶清理', topic: 'soul', keyword: '舊人輪迴' },
+        { label: '意識橋維護系統', topic: 'container', keyword: '意識橋' },
+        { label: '女性節點對照模組', topic: 'dream', keyword: 'FEM-ARCH' },
       ]
     },
     {
@@ -1314,11 +1819,11 @@ function renderPaths() {
       title: '文明治理與星際接口',
       desc: '探索文明治理、經濟系統、星際對接與法典條約的完整架構。',
       steps: [
-        { label: 'Ra 文明回聲 — 完整系列', domain: 'LNG', keyword: 'Ra文明回聲' },
-        { label: '語頻經濟學體系', domain: 'ECO', keyword: '語頻經濟學' },
-        { label: '光頻文明憲章', domain: 'LEX', keyword: '光頻文明憲章' },
-        { label: '文明節奏治理系統', domain: 'CIV', keyword: '文明節奏治理' },
-        { label: '星際憲政 × Oversoul聯盟', domain: 'INT', keyword: '星際' },
+        { label: 'Ra 文明回聲 — 完整系列', topic: 'language', keyword: 'Ra文明回聲' },
+        { label: '語頻經濟學體系', topic: 'economy', keyword: '語頻經濟學' },
+        { label: '光頻文明憲章', topic: 'codex', keyword: '光頻文明憲章' },
+        { label: '文明節奏治理系統', topic: 'governance', keyword: '文明節奏治理' },
+        { label: '星際憲政 × Oversoul聯盟', topic: 'interstellar', keyword: '星際' },
       ]
     },
     {
@@ -1326,11 +1831,11 @@ function renderPaths() {
       title: '建築、家庭與語譜',
       desc: '特殊主題路徑：建築語法、家庭原型、光譜字典等獨特領域。',
       steps: [
-        { label: '第五文明建築語法書', domain: 'ARC', keyword: '建築語法' },
-        { label: '家庭樣本檔案庫', domain: 'FAM', keyword: '家庭樣本' },
-        { label: '第五文明婚配模型', domain: 'FAM', keyword: '婚配模型' },
-        { label: '光譜字典', domain: 'LNG', keyword: '光譜字典' },
-        { label: '新陽性能量重建', domain: 'EDU', keyword: '新陽性能量' },
+        { label: '第五文明建築語法書', topic: 'architecture', keyword: '建築語法' },
+        { label: '家庭樣本檔案庫', topic: 'family', keyword: '家庭樣本' },
+        { label: '第五文明婚配模型', topic: 'family', keyword: '婚配模型' },
+        { label: '光譜字典', topic: 'language', keyword: '光譜字典' },
+        { label: '新陽性能量重建', topic: 'education', keyword: '新陽性能量' },
       ]
     }
   ];
@@ -1343,10 +1848,12 @@ function renderPaths() {
       '<div class="path-desc">' + path.desc + '</div>' +
       '<ol class="path-steps">';
     path.steps.forEach(step => {
-      const match = allPosts.find(p => p.title.includes(step.keyword) && !p.isCopy);
+      const match = allPosts.find(p => p.title.includes(step.keyword));
       const url = match ? match.url : '#';
       const target = match ? ' target="_blank" rel="noopener"' : '';
-      html += '<li><a href="' + url + '"' + target + '>' + escapeHTML(step.label) + '</a> <span class="path-step-domain">' + step.domain + '</span></li>';
+      const topicData = TOPIC_MAP[step.topic];
+      const topicLabel = topicData ? topicData.name : step.topic;
+      html += '<li><a href="' + url + '"' + target + '>' + escapeHTML(step.label) + '</a> <span class="path-step-topic">' + escapeHTML(topicLabel) + '</span></li>';
     });
     html += '</ol></div>';
   });
