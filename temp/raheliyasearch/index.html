@@ -1159,6 +1159,12 @@ function extractPageNum(title) {
   // Try 書頁/书页 + Arabic numeral
   const arMatch = title.match(/[書书][頁页](\d+)/);
   if (arMatch) return parseInt(arMatch[1]);
+  // Try 第N章 (chapter numbers)
+  const chapCnMatch = title.match(/第([\u4e00-\u9fff]{1,3})[章節节篇]/);
+  if (chapCnMatch && CN_NUMS[chapCnMatch[1]] !== undefined) return CN_NUMS[chapCnMatch[1]];
+  // Try 第N章 with Arabic numerals
+  const chapArMatch = title.match(/第(\d+)[章節节篇]/);
+  if (chapArMatch) return parseInt(chapArMatch[1]);
   // Try 卷N patterns
   const volMatch = title.match(/卷([一二三四五六七八九十]{1,3})/);
   if (volMatch && CN_NUMS[volMatch[1]] !== undefined) return CN_NUMS[volMatch[1]] * 1000;
