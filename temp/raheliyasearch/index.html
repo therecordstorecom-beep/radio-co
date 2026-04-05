@@ -655,6 +655,43 @@ a:hover { color: var(--pink); }
   min-width: 14px;
   font-size: 0.9em;
 }
+.reader-toc-list li .toc-toggle {
+  margin-left: auto;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  opacity: 0;
+  transition: opacity 0.15s;
+  cursor: pointer;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.reader-toc-list li:hover .toc-toggle { opacity: 1; }
+.reader-toc-list li .toc-toggle:hover { color: var(--pink); }
+.reader-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.reader-action-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.72em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.reader-action-btn:hover {
+  color: var(--pink);
+  border-color: rgba(235,150,255,0.3);
+}
+.reader-action-btn.danger:hover {
+  color: #ff6b6b;
+  border-color: rgba(255,107,107,0.3);
+}
 
 /* ===== TOPIC MAP ===== */
 .topic-grid {
@@ -1198,6 +1235,17 @@ function isArticleRead(seriesName, index) {
   const data = getProgress();
   return data[seriesName]?.read?.includes(index) || false;
 }
+function unmarkRead(seriesName, index) {
+  const data = getProgress();
+  if (!data[seriesName]) return;
+  data[seriesName].read = data[seriesName].read.filter(i => i !== index);
+  saveProgress(data);
+}
+function resetSeriesProgress(seriesName) {
+  const data = getProgress();
+  delete data[seriesName];
+  saveProgress(data);
+}
 function getSeriesProgress(seriesName, total) {
   const data = getProgress();
   const sp = data[seriesName];
@@ -1599,7 +1647,7 @@ function toggleSeriesList(btn, hash, seriesName) {
     let html = '';
     info.posts.forEach((p, i) => {
       const readClass = isArticleRead(seriesName, i) ? ' read-item' : '';
-      html += '<li class="' + readClass + '"><a href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation();markVisited(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
+      html += '<li class="' + readClass + '"><a href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation();markRead(\'' + escapeAttr(seriesName) + '\',' + i + ');markVisited(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
         '<span class="series-num">' + (i + 1) + '.</span>' +
         '<span>' + escapeHTML(p.title) + '</span>' +
       '</a></li>';
@@ -1687,17 +1735,24 @@ function renderReader() {
   }
 
   html += '</div>' +
+  '<div class="reader-actions">' +
+    '<button class="reader-action-btn" onclick="markAllRead()">全部標為已讀</button>' +
+    '<button class="reader-action-btn danger" onclick="confirmResetProgress()">重置進度</button>' +
+  '</div>' +
   '<div class="reader-toc">' +
     '<div class="reader-toc-title">目錄 Table of Contents</div>' +
     '<ol class="reader-toc-list">';
 
   posts.forEach((tp, i) => {
     const isCurrent = i === readerIndex ? ' current' : '';
-    const isRead = isArticleRead(readerSeriesName, i) ? ' read' : '';
-    const check = isArticleRead(readerSeriesName, i) ? '✓' : (i + 1);
-    html += '<li class="' + isCurrent + isRead + '" onclick="navigateReader(' + i + ')">' +
+    const read = isArticleRead(readerSeriesName, i);
+    const isReadClass = read ? ' read' : '';
+    const check = read ? '✓' : (i + 1);
+    const toggleLabel = read ? '標為未讀' : '標為已讀';
+    html += '<li class="' + isCurrent + isReadClass + '">' +
       '<span class="toc-check">' + check + '</span>' +
-      '<span>' + escapeHTML(tp.title) + '</span>' +
+      '<span style="flex:1;cursor:pointer" onclick="navigateReader(' + i + ')">' + escapeHTML(tp.title) + '</span>' +
+      '<span class="toc-toggle" onclick="event.stopPropagation();toggleReadState(' + i + ')">' + toggleLabel + '</span>' +
     '</li>';
   });
 
@@ -1709,6 +1764,29 @@ function navigateReader(index) {
   readerIndex = index;
   renderReader();
   document.getElementById('seriesReader').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleReadState(index) {
+  if (isArticleRead(readerSeriesName, index)) {
+    unmarkRead(readerSeriesName, index);
+  } else {
+    markRead(readerSeriesName, index);
+  }
+  renderReader();
+}
+
+function markAllRead() {
+  const info = seriesMap[readerSeriesName];
+  if (!info) return;
+  info.posts.forEach((_, i) => markRead(readerSeriesName, i));
+  renderReader();
+}
+
+function confirmResetProgress() {
+  if (confirm('確定要重置「' + readerSeriesName + '」的閱讀進度嗎？')) {
+    resetSeriesProgress(readerSeriesName);
+    renderReader();
+  }
 }
 
 // ============================================================
