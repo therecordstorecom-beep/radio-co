@@ -922,7 +922,8 @@ async function init() {
     renderTopics();
     renderPaths();
   } catch (e) {
-    document.getElementById('loading').innerHTML = '<p style="color:#ff6b6b;">載入失敗: ' + e.message + '</p>';
+    console.error('Init error:', e);
+    document.getElementById('loading').innerHTML = '<p style="color:#ff6b6b;">載入失敗: ' + e.message + '<br><pre style="font-size:0.7em;max-width:600px;margin:12px auto;text-align:left;overflow:auto;">' + e.stack + '</pre></p>';
   }
 }
 
