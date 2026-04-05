@@ -1624,6 +1624,8 @@ function renderSeries() {
     html += '<div class="series-actions">' +
         '<button class="series-start-btn" onclick="openSeriesReader(\'' + escapeAttr(name) + '\', ' + startIdx + ')">' + btnLabel + '</button>' +
         '<button class="collapse-btn" onclick="toggleSeriesList(this, \'' + h + '\', \'' + escapeAttr(name) + '\')">展開全部 ▾</button>' +
+        (hasProgress ? '<button class="collapse-btn" onclick="markAllReadFromCard(\'' + escapeAttr(name) + '\')">全部已讀</button>' : '') +
+        (hasProgress ? '<button class="collapse-btn" style="color:#ff6b6b55" onclick="resetFromCard(\'' + escapeAttr(name) + '\')">重置</button>' : '') +
       '</div>' +
       '<ol class="series-posts-list" id="sl-' + h + '" style="display:none;"></ol>' +
     '</div>';
@@ -1786,6 +1788,20 @@ function confirmResetProgress() {
   if (confirm('確定要重置「' + readerSeriesName + '」的閱讀進度嗎？')) {
     resetSeriesProgress(readerSeriesName);
     renderReader();
+  }
+}
+
+function markAllReadFromCard(seriesName) {
+  const info = seriesMap[seriesName];
+  if (!info) return;
+  info.posts.forEach((_, i) => markRead(seriesName, i));
+  renderSeries();
+}
+
+function resetFromCard(seriesName) {
+  if (confirm('確定要重置「' + seriesName + '」的閱讀進度嗎？')) {
+    resetSeriesProgress(seriesName);
+    renderSeries();
   }
 }
 
