@@ -1140,6 +1140,33 @@ function detectSeries(title) {
 }
 
 // ============================================================
+// PAGE NUMBER EXTRACTION (for series ordering)
+// ============================================================
+const CN_NUMS = {'零':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,
+  '十一':11,'十二':12,'十三':13,'十四':14,'十五':15,'十六':16,'十七':17,'十八':18,'十九':19,
+  '二十':20,'二十一':21,'二十二':22,'二十三':23,'二十四':24,'二十五':25,'二十六':26,'二十七':27,'二十八':28,'二十九':29,
+  '三十':30,'三十一':31,'三十二':32,'三十三':33,'三十四':34,'三十五':35};
+
+function extractPageNum(title) {
+  // Try P001, P002 style
+  const pMatch = title.match(/[｜|]\s*P(\d+)/);
+  if (pMatch) return parseInt(pMatch[1]);
+  // Try 書頁/书页 + Chinese numeral (match longest first)
+  const cnMatch = title.match(/[書书][頁页]([\u4e00-\u9fff]{1,3})/);
+  if (cnMatch && CN_NUMS[cnMatch[1]] !== undefined) return CN_NUMS[cnMatch[1]];
+  // Try 書頁/书页 + Arabic numeral
+  const arMatch = title.match(/[書书][頁页](\d+)/);
+  if (arMatch) return parseInt(arMatch[1]);
+  // Try 卷N patterns
+  const volMatch = title.match(/卷([一二三四五六七八九十]{1,3})/);
+  if (volMatch && CN_NUMS[volMatch[1]] !== undefined) return CN_NUMS[volMatch[1]] * 1000;
+  // Try Vol.N
+  const volNumMatch = title.match(/Vol\.?\s*(\d+)/i);
+  if (volNumMatch) return parseInt(volNumMatch[1]) * 1000;
+  return null;
+}
+
+// ============================================================
 // LOCALSTORAGE PROGRESS
 // ============================================================
 const PROGRESS_KEY = 'raheliya_progress';
@@ -1244,10 +1271,21 @@ async function init() {
       }
     });
     Object.values(seriesMap).forEach(s => {
+      // Deduplicate by title
+      const seen = new Set();
+      s.posts = s.posts.filter(p => {
+        const key = p.title.replace(/\s+/g, '');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      // Sort by page number (extracted from title), then by date
       s.posts.sort((a, b) => {
-        const pa = a.seriesInfo?.page;
-        const pb = b.seriesInfo?.page;
-        if (pa && pb) return pa - pb;
+        const pa = a.seriesInfo?.page ?? extractPageNum(a.title);
+        const pb = b.seriesInfo?.page ?? extractPageNum(b.title);
+        if (pa !== null && pb !== null) return pa - pb;
+        if (pa !== null) return -1;
+        if (pb !== null) return 1;
         return new Date(a.date) - new Date(b.date);
       });
     });
