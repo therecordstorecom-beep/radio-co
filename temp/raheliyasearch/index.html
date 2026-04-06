@@ -103,6 +103,45 @@ a:hover { color: var(--pink); }
   letter-spacing: 0.1em;
 }
 
+/* Active entry state (after clicking) */
+.hero-entry-btn.active-entry {
+  background: rgba(196,168,130,0.1);
+  flex: 2;
+  padding: 28px 20px;
+  border-bottom: 2px solid rgba(196,168,130,0.3);
+}
+.hero-entry-btn:not(.active-entry) {
+  /* only apply when site is entered (not landing) */
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry) {
+  flex: 0.6;
+  padding: 20px 12px;
+  opacity: 0.45;
+  font-size: 0.88em;
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry):hover {
+  opacity: 0.8;
+  background: rgba(196,168,130,0.06);
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry) .entry-label {
+  display: none;
+}
+body:not(.landing) .hero-entries {
+  margin-top: 16px;
+  gap: 10px;
+}
+body:not(.landing) .hero h1,
+body:not(.landing) .hero-purpose,
+body:not(.landing) .hero-risk { display: none; }
+body:not(.landing) .hero {
+  padding: 16px 20px 0;
+}
+body:not(.landing) .disclaimer {
+  margin-top: 10px;
+  font-size: 0.7em;
+  padding: 8px 16px;
+}
+
 /* ===== DISCLAIMER ===== */
 .disclaimer {
   max-width: 700px;
@@ -1079,8 +1118,12 @@ body.landing .content { display: none; }
 @media (max-width: 600px) {
   .hero h1 { font-size: 1.6em; }
   .hero { padding: 50px 16px 30px; }
-  .hero-entries { flex-direction: column; align-items: center; }
+  .hero-entries { flex-direction: column; align-items: stretch; gap: 8px; }
   .hero-entry-btn { max-width: 100%; min-width: 0; width: 100%; padding: 28px 20px; }
+  body:not(.landing) .hero-entries { flex-direction: row; flex-wrap: nowrap; gap: 6px; }
+  body:not(.landing) .hero-entry-btn { padding: 12px 8px; min-width: 0; max-width: none; font-size: 0.78em; }
+  body:not(.landing) .hero-entry-btn.active-entry { flex: 2; padding: 14px 12px; font-size: 0.88em; }
+  body:not(.landing) .hero-entry-btn:not(.active-entry) { flex: 1; padding: 12px 6px; font-size: 0.72em; }
   .series-grid { grid-template-columns: 1fr; }
   .series-card { min-height: auto; }
   .topic-grid { grid-template-columns: repeat(2, 1fr); }
@@ -2232,6 +2275,11 @@ function renderPaths() {
 // ============================================================
 function enterSite(tab) {
   document.body.classList.remove('landing');
+  // Mark active entry button
+  document.querySelectorAll('.hero-entry-btn').forEach(btn => btn.classList.remove('active-entry'));
+  const tabMap = { series: 0, topics: 1, all: 2 };
+  const btns = document.querySelectorAll('.hero-entry-btn');
+  if (btns[tabMap[tab]]) btns[tabMap[tab]].classList.add('active-entry');
   switchTab(tab);
 }
 // If URL has a hash, skip landing
