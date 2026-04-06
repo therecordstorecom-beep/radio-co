@@ -256,6 +256,10 @@ body.creator-safe .hero-risk { display: none; }
   margin: 0 auto 10px;
   flex-wrap: wrap;
 }
+body.landing .stats-bar,
+body.landing .nav-tabs,
+body.landing .search-wrap,
+body.landing .content { display: none; }
 .stat {
   text-align: center;
   font-size: 0.8em;
@@ -1101,7 +1105,7 @@ body.creator-safe .hero-risk { display: none; }
 }
 </style>
 </head>
-<body>
+<body class="landing">
 
 <!-- HERO -->
 <header class="hero">
@@ -1109,9 +1113,9 @@ body.creator-safe .hero-risk { display: none; }
   <p class="hero-purpose">A reading interface for navigating Raheliya's writings</p>
   <p class="hero-risk">AI-assisted organization · Unofficial · Exploratory</p>
   <div class="hero-entries">
-    <a class="hero-entry-btn" onclick="switchTab('series')">📖 Read by Series</a>
-    <a class="hero-entry-btn" onclick="switchTab('topics')">🌐 Explore Topics</a>
-    <a class="hero-entry-btn" onclick="switchTab('all');document.getElementById('searchInput').focus()">🔍 Search Articles</a>
+    <a class="hero-entry-btn" onclick="enterSite('series')">📖 Read by Series</a>
+    <a class="hero-entry-btn" onclick="enterSite('topics')">🌐 Explore Topics</a>
+    <a class="hero-entry-btn" onclick="enterSite('all');setTimeout(()=>document.getElementById('searchInput').focus(),100)">🔍 Search Articles</a>
   </div>
 </header>
 
@@ -2238,6 +2242,18 @@ function renderPaths() {
 // ============================================================
 // BOOT
 // ============================================================
+// ============================================================
+// LANDING / ENTER SITE
+// ============================================================
+function enterSite(tab) {
+  document.body.classList.remove('landing');
+  switchTab(tab);
+}
+// If URL has a hash, skip landing
+if (location.hash && location.hash !== '#' && location.hash !== '#all') {
+  document.body.classList.remove('landing');
+}
+
 // ============================================================
 // CREATOR-SAFE MODE
 // ============================================================
