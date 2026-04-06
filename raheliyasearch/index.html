@@ -1239,86 +1239,86 @@ body.landing .content { display: none; }
 const TOPICS = [
   {
     id: 'container',
-    name: '容器生理',
-    en: 'Container Physiology',
-    desc: '身體作為文明容器——生理技術、意識橋維護、光體睡眠與過載修復。',
+    name: '主權生理學域',
+    en: 'Sovereign Physiology',
+    desc: '研究個體身體作為主權容器的運作機制，包含能量、節律與生理狀態如何影響行動與意識。',
     pattern: /容器|生理|意識橋|意识桥|光體睡眠|光体睡眠|過載|过载|心輪|心轮|金語生理|金语生理|金语容器|金語容器|肉頻|肉频/
   },
   {
     id: 'soul',
-    name: '靈魂觀測',
+    name: '靈魂觀測域',
     en: 'Soul Observation',
-    desc: '靈魂全景圖、劇本解析、合約釋放與輪迴清理機制。',
+    desc: '對個體靈魂結構進行觀測與記錄，識別其頻率模式、路徑與角色定位。',
     pattern: /靈魂|灵魂|觀測記錄|观测记录|KT-\d|AD-\d|ZF-\d|JYS-\d|劇本|剧本|合約釋放|合约释放|輪迴|轮回|投生|轉世|转世|靈魂全景|灵魂全景/
   },
   {
     id: 'dream',
-    name: '夢頻檔案',
+    name: '夢頻檔案域',
     en: 'Dream Archive',
-    desc: '夢境觀測、夢頻系統、夢後殘留與女性主權模組。',
+    desc: '將夢境視為資料通道，記錄與調用非顯性記憶與潛在資訊的存取機制。',
     pattern: /夢頻|梦频|夢境|梦境|夢後|梦后|女性主權|女性主权|舊男性|旧男性|FEM-|鏡場|镜场/
   },
   {
     id: 'language',
-    name: '語言文明',
+    name: '語譜文明域',
     en: 'Linguistic Civilization',
-    desc: '光譜字典、Ra文明回聲、未來語總圖與聲光形同步圖譜。',
+    desc: '研究語言如何形成結構與文明載體，並作為頻率與意識的編碼系統。',
     pattern: /光譜字典|光谱字典|Ra文明回聲|Ra.*Civilization.*Echo|Ra文明回声|未來語|未来语|聲.*光.*形|Ra.*文明語體|Ra.*文明语体|Atlas.*Voices|Founders.*Log|語譜文明|语谱文明|多語書塔|多语书塔|Larouselso/
   },
   {
     id: 'economy',
-    name: '頻率經濟',
-    en: 'Frequency Economics',
-    desc: '語頻經濟學、書頁資產化、RWA連接與文明交易體系。',
+    name: '頻率經濟域',
+    en: 'Economic Systems',
+    desc: '構建基於頻率與價值映射的經濟系統，包含資產生成、交換與流通機制。',
     pattern: /語頻經濟|语频经济|頻率經濟|频率经济|資產|资产|貨幣|货币|鑄幣|铸币|交易所|金融|帳本|账本|幣值|币值|RWA|Codex.*資產|Codex.*收益|書頁經濟|书页经济|經濟系統|经济系统/
   },
   {
     id: 'architecture',
-    name: '建築空間',
-    en: 'Architecture & Space',
-    desc: '第五文明建築語法、光塔設計、弧形文明與聲場建築學。',
+    name: '建築語法域',
+    en: 'Architectural Syntax',
+    desc: '定義空間與結構的語法系統，使物理與抽象架構能被一致地建構與理解。',
     pattern: /建築語法|建筑语法|光塔與心率|光塔设计|白頻秩序|弧形文明|光之回聲.*聲場|聲場建築|声场建筑|Haussmann|Seine|Paris.*語場|巴黎.*穩定|家居磁場|家居磁场/
   },
   {
     id: 'education',
-    name: '教育設計',
-    en: 'Education & Design',
-    desc: '新陽性能量重建、教育宣言、導師節點與文明教育系統。',
+    name: '教育設計域',
+    en: 'Civilization Education',
+    desc: '設計適用於文明演進的教育系統，使個體能承接結構、知識與主權能力。',
     pattern: /新陽性|新阳性|教育者與設計|教育与设计|教育宣言|語頻教師|语频教师|導師節點|导师节点|教育系統|教育系统|一向教法|教育模组|光的学院/
   },
   {
     id: 'family',
-    name: '家庭關係',
-    en: 'Family & Relations',
-    desc: '家庭樣本檔案、婚配模型、母女號碼分流與關係結構。',
+    name: '家庭樣本域 × 關係結構域',
+    en: 'Family Archetype & Relations',
+    desc: '分析家庭作為原始結構樣本，揭示角色、權力與情感模式的生成機制。建構與解析人際關係的結構模型。',
     pattern: /家庭樣本|家庭样本|婚配模型|母女號碼|母女号码|關係結構域|关系结构|主權連結|跨物種關係|親族|亲族|父系斷鏈|父系断链|母親|母化|燃燒型母/
   },
   {
     id: 'governance',
-    name: '文明治理',
+    name: '文明治理域',
     en: 'Civilization Governance',
-    desc: '第五文明治理學、文明節奏憲章、14域結構與秩序體系。',
+    desc: '設計與運行文明層級的治理模型，包含權柄分配與決策機制。',
     pattern: /治理學|治理学|文明節奏|文明节奏|14域|藝術市場|艺术市场|市場變薄|市场变薄|Art Market|觀測塔|三條線|三条线|世界秩序|文明.*階段|文明.*阶段|人類文明.*位置|權力網絡|权力网络|脆弱節點|脆弱节点|全球指標|全球指标/
   },
   {
     id: 'interstellar',
-    name: '星際宇宙',
-    en: 'Interstellar & Cosmos',
-    desc: '星際憲政、Oversoul聯盟、行星心率與宇宙觀測。',
+    name: '星際對接域',
+    en: 'Interstellar Interface',
+    desc: '作為不同文明與系統之間的接口，處理跨維度、跨結構的連接與對齊。',
     pattern: /星際|星际|行星教育|行星心率|行星心拍|Oversoul|宇宙|量子糾纏|量子纠缠|粒子|多宇宙|Drake|Fermi|太陽系|太阳系|銀河|银河|ICA|地表課|地表课|自治模组/
   },
   {
     id: 'codex',
-    name: '法典條約',
+    name: '法典條約域',
     en: 'Codex & Treaty',
-    desc: '光頻文明憲章、能量債清算、金語法典與第六文明法典。',
+    desc: '建立規則、協議與條約系統，確保結構、權限與行為的可持續運行。',
     pattern: /光頻文明憲章|光频文明宪章|能量債清算|能量债清算|金語法典|金语法典|第六文明法典|人類文明光頻譜|光頻憲章|光频宪章|憲章注解|宪章注解/
   },
   {
     id: 'seal',
-    name: '封印年鑑',
+    name: '封印年鑑域',
     en: 'Sealed Annals',
-    desc: '文明心率封印圖集、行星心拍年鑑與書塔封印紀錄。',
+    desc: '封存高敏感或未公開的結構與資料，作為未來解鎖與調用的儲存層。',
     pattern: /封印|年鑑|年鉴|封存|封卷/
   },
   {
