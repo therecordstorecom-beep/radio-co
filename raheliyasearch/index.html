@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☉ Ra 書塔 × Atlas of Voices — Exploratory Reading System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a1a1f;
+  --bg2: #1f1f26;
+  --bg3: #28282f;
+  --gold: #d4c4a8;
+  --gold-dim: #9a8e78;
+  --text: #d4d0c8;
+  --text-dim: #8a8578;
+  --accent: #5a7a6a;
+  --free: #5a7a6a;
+  --paid: #c4a882;
+  --border: #2a2a32;
+  --pink: #c4a882;
+  --peach: #d4c4a8;
+  --teal: #5a7a6a;
+  --deep: #28282f;
+  --glass: rgba(255,255,255,0.03);
+  --glass-border: rgba(255,255,255,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a1f;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+a { color: var(--peach); text-decoration: none; transition: color 0.2s; }
+a:hover { color: var(--pink); }
+
+/* ===== HERO ENTRY BUTTONS ===== */
+.hero-purpose {
+  color: var(--text);
+  font-size: 0.92em;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+.hero-risk {
+  font-size: 0.78em;
+  opacity: 0.6;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.hero-entries {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 0 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.hero-entry-btn {
+  flex: 1;
+  min-width: 180px;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(196,168,130,0.04);
+  border: none;
+  color: var(--peach);
+  padding: 48px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1em;
+  letter-spacing: 0.04em;
+  transition: all 0.25s;
+  text-decoration: none;
+  text-align: center;
+  line-height: 1.4;
+}
+.hero-entry-btn:hover {
+  background: rgba(196,168,130,0.08);
+  color: var(--peach);
+  transform: translateY(-2px);
+}
+.hero-entry-btn .entry-label {
+  font-size: 0.65em;
+  font-family: 'Noto Serif TC', serif;
+  opacity: 0.35;
+  letter-spacing: 0.1em;
+}
+
+/* Active entry state (after clicking) */
+.hero-entry-btn.active-entry {
+  background: rgba(196,168,130,0.1);
+  flex: 2;
+  padding: 28px 20px;
+}
+.hero-entry-btn:not(.active-entry) {
+  /* only apply when site is entered (not landing) */
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry) {
+  flex: 0.6;
+  padding: 20px 12px;
+  opacity: 0.45;
+  font-size: 0.88em;
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry):hover {
+  opacity: 0.8;
+  background: rgba(196,168,130,0.06);
+}
+body:not(.landing) .hero-entry-btn:not(.active-entry) .entry-label {
+  display: none;
+}
+body:not(.landing) .hero-entries {
+  margin-top: 16px;
+  gap: 10px;
+}
+body:not(.landing) .hero {
+  padding: 40px 20px 0;
+}
+body:not(.landing) .disclaimer {
+  margin-top: 10px;
+  font-size: 0.7em;
+  padding: 8px 16px;
+}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  max-width: 700px;
+  margin: 0 auto 0;
+  padding: 14px 20px;
+  background: rgba(196,168,130,0.04);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.78em;
+  line-height: 1.6;
+  color: var(--text-dim);
+  text-align: center;
+}
+.disclaimer strong {
+  color: rgba(196,168,130,0.85);
+  font-size: 1.05em;
+}
+.disclaimer-zh {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95em;
+}
+.tag-ai {
+  display: inline-block;
+  background: rgba(196,168,130,0.1);
+  border: 1px solid rgba(196,168,130,0.2);
+  color: rgba(196,168,130,0.7);
+  padding: 0px 6px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.topic-note {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  opacity: 0.6;
+  font-style: italic;
+  margin-top: 4px;
+}
+.path-note {
+  font-size: 0.78em;
+  color: var(--text-dim);
+  opacity: 0.7;
+  font-style: italic;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.about-section {
+  max-width: 700px;
+  margin: 30px auto 0;
+  padding: 24px;
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.about-section h3 {
+  font-size: 1.1em;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.about-section ul {
+  list-style: none;
+  padding: 0;
+}
+.about-section ul li::before {
+  content: '- ';
+  color: var(--text-dim);
+}
+.ai-note {
+  font-size: 0.68em;
+  color: rgba(196,168,130,0.55);
+  font-style: italic;
+}
+.creator-toggle {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 200;
+  background: rgba(15,27,46,0.9);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.72em;
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+.creator-toggle:hover {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+}
+body.creator-safe .nav-tabs button[data-tab="topics"],
+body.creator-safe .nav-tabs button[data-tab="paths"] { display: none; }
+body.creator-safe .topic-section { display: none; }
+body.creator-safe .disclaimer { display: none; }
+body.creator-safe .about-section { display: none; }
+body.creator-safe .topic-tag { display: none; }
+body.creator-safe .series-tag { display: none; }
+body.creator-safe .ai-note { display: none; }
+body.creator-safe .tag-ai { display: none; }
+body.creator-safe .topic-note { display: none; }
+body.creator-safe .hero-entry-btn[onclick*="topics"] { display: none; }
+body.creator-safe .hero-risk { display: none; }
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 70px 20px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: 20%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(ellipse, rgba(196,168,130,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
+.hero h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 2.2em;
+  color: var(--peach);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  text-shadow: 0 0 30px rgba(196,168,130,0.1);
+}
+.hero .subtitle {
+  color: var(--text-dim);
+  font-size: 0.92em;
+  max-width: 600px;
+  margin: 0 auto 14px;
+  font-style: italic;
+}
+.hero .author {
+  color: var(--gold-dim);
+  font-size: 0.85em;
+}
+
+/* ===== STATS BAR ===== */
+.stats-bar { display: none; }
+body.landing .stats-bar,
+body.landing .nav-tabs,
+body.landing .search-wrap,
+body.landing .content { display: none; }
+.stat {
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+.stat .num {
+  display: block;
+  font-size: 1.6em;
+  font-weight: 600;
+  color: var(--peach);
+  line-height: 1.2;
+}
+
+/* ===== NAV TABS ===== */
+.nav-tabs {
+  display: none;
+}
+.nav-tabs button {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+.nav-tabs button:hover {
+  color: var(--pink);
+  background: rgba(196,168,130,0.06);
+}
+.nav-tabs button.active {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+  background: rgba(196,168,130,0.1);
+}
+
+/* ===== SEARCH BAR ===== */
+.search-wrap {
+  max-width: 860px;
+  margin: 16px auto;
+  padding: 0 20px;
+}
+.search-box { position: relative; }
+.search-box input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.03);
+  border: none;
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 0.95em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.search-box input::placeholder { color: var(--text-dim); }
+.search-box input:focus {
+  background: rgba(255,255,255,0.05);
+}
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 1em;
+  pointer-events: none;
+}
+.search-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px 0;
+  font-size: 0.75em;
+  color: var(--text-dim);
+}
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-pill {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 3px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.filter-pill:hover, .filter-pill.active {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+  background: rgba(196,168,130,0.08);
+}
+
+/* ===== CONTENT AREA ===== */
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 20px 60px;
+}
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== POST CARDS ===== */
+.post-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.post-item:hover { background: rgba(196,168,130,0.03); }
+.post-item.visited { opacity: 0.7; }
+.post-date {
+  color: var(--text-dim);
+  font-size: 0.72em;
+  min-width: 68px;
+  padding-top: 3px;
+  white-space: nowrap;
+}
+.post-body { flex: 1; min-width: 0; }
+.post-title {
+  font-size: 0.88em;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.post-meta-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 0.72em;
+  flex-wrap: wrap;
+}
+.badge {
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.badge-free { background: rgba(90,122,106,0.2); color: #7aa892; }
+.badge-paid { background: rgba(196,168,130,0.15); color: var(--paid); }
+.topic-tag {
+  color: var(--gold-dim);
+  font-size: 0.95em;
+}
+.series-tag {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  font-style: italic;
+  opacity: 0.7;
+}
+.word-count { color: var(--text-dim); }
+
+/* ===== TOPIC SECTIONS (All Posts view) ===== */
+.topic-section {
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.topic-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.topic-section-header:hover { background: rgba(196,168,130,0.04); }
+.topic-code {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--pink);
+  background: rgba(196,168,130,0.12);
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.topic-section-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1em;
+  color: var(--peach);
+  flex: 1;
+}
+.topic-section-en {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  margin-left: 6px;
+}
+.topic-section-count {
+  font-size: 0.75em;
+  color: var(--text-dim);
+}
+.topic-chevron {
+  color: var(--text-dim);
+  transition: transform 0.2s;
+  font-size: 0.8em;
+}
+.topic-section.open .topic-chevron { transform: rotate(90deg); }
+.topic-posts { display: none; }
+.topic-section.open .topic-posts { display: block; }
+
+/* ===== LOAD MORE ===== */
+.load-more { text-align: center; padding: 20px; }
+.load-more button {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--gold-dim);
+  padding: 10px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.load-more button:hover {
+  border-color: rgba(196,168,130,0.3);
+  color: var(--pink);
+  background: rgba(196,168,130,0.06);
+}
+
+/* ===== SERIES VIEW ===== */
+.series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.series-card {
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 28px 20px 22px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.2s, transform 0.15s;
+}
+.series-card:hover {
+  background: rgba(196,168,130,0.06);
+  transform: translateY(-2px);
+}
+.series-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1em;
+  color: var(--peach);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.series-meta {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.series-topic-badge {
+  display: inline-block;
+  background: rgba(196,168,130,0.1);
+  border: 1px solid rgba(196,168,130,0.2);
+  color: var(--pink);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.series-topic-badge:hover {
+  background: rgba(196,168,130,0.2);
+  border-color: rgba(196,168,130,0.4);
+}
+.series-progress {
+  margin-bottom: 10px;
+}
+.series-progress-bar {
+  height: 3px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.series-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--peach));
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.series-progress-text {
+  font-size: 0.7em;
+  color: var(--text-dim);
+}
+.series-last-read {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+.series-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.series-start-btn {
+  background: rgba(196,168,130,0.12);
+  border: 1px solid rgba(196,168,130,0.25);
+  color: var(--pink);
+  padding: 5px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.series-start-btn:hover {
+  background: rgba(196,168,130,0.2);
+  border-color: rgba(196,168,130,0.4);
+}
+.collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.75em;
+  padding: 4px 8px;
+  font-family: 'Inter', sans-serif;
+}
+.collapse-btn:hover { color: var(--pink); }
+.series-posts-list {
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-top: 14px;
+}
+.series-posts-list li {
+  padding: 6px 0;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.8em;
+}
+.series-posts-list li:first-child { border-top: none; }
+.series-posts-list li a {
+  color: var(--text);
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.series-posts-list li a:hover { color: var(--pink); }
+.series-posts-list li.read-item a { opacity: 0.6; }
+.series-posts-list li.read-item::after { content: ' ✓'; color: var(--teal); font-size: 0.8em; }
+.series-num {
+  color: var(--text-dim);
+  min-width: 22px;
+  font-size: 0.9em;
+}
+
+/* ===== SERIES READER ===== */
+.reader-overlay {
+  display: none;
+}
+.reader-overlay.active {
+  display: block;
+}
+.reader-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.reader-back {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.reader-back:hover {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+}
+.reader-position {
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+.reader-series-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.3em;
+  color: var(--peach);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.reader-progress {
+  margin-bottom: 20px;
+}
+.reader-progress-bar {
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.reader-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--peach));
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.reader-progress-text {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  text-align: center;
+}
+.reader-current {
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 32px 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.reader-current-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1em;
+  color: var(--peach);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.reader-current-meta {
+  font-size: 0.75em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.reader-read-btn {
+  display: inline-block;
+  background: rgba(196,168,130,0.15);
+  border: 1px solid rgba(196,168,130,0.3);
+  color: var(--pink);
+  padding: 10px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+}
+.reader-read-btn:hover {
+  background: rgba(196,168,130,0.25);
+  border-color: rgba(196,168,130,0.5);
+  color: var(--pink);
+}
+.reader-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.reader-nav-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.reader-nav-btn:hover:not(:disabled) {
+  border-color: rgba(196,168,130,0.25);
+  background: rgba(196,168,130,0.04);
+}
+.reader-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.reader-nav-btn.next { text-align: right; }
+.reader-nav-label {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.reader-nav-title {
+  font-size: 0.78em;
+  color: var(--peach);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reader-toc {
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 20px;
+}
+.reader-toc-title {
+  font-size: 0.8em;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.reader-toc-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.reader-toc-list li {
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.78em;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.reader-toc-list li:hover { background: rgba(196,168,130,0.04); }
+.reader-toc-list li.current {
+  background: rgba(196,168,130,0.1);
+  color: var(--pink);
+}
+.reader-toc-list li.read { opacity: 0.6; }
+.reader-toc-list li .toc-check {
+  color: var(--teal);
+  min-width: 14px;
+  font-size: 0.9em;
+}
+.reader-toc-list li .toc-toggle {
+  margin-left: auto;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  opacity: 0;
+  transition: opacity 0.15s;
+  cursor: pointer;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.reader-toc-list li:hover .toc-toggle { opacity: 1; }
+.reader-toc-list li .toc-toggle:hover { color: var(--pink); }
+.reader-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.reader-action-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.72em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.reader-action-btn:hover {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+}
+.reader-action-btn.danger:hover {
+  color: #ff6b6b;
+  border-color: rgba(196,122,106,0.3);
+}
+
+/* ===== TOPIC MAP ===== */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.topic-card {
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.topic-card:hover {
+  background: rgba(196,168,130,0.06);
+  transform: translateY(-2px);
+}
+.topic-card.active {
+  background: rgba(196,168,130,0.08);
+}
+.tc-code {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--pink);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.tc-zh {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.05em;
+  color: var(--peach);
+  margin-bottom: 2px;
+}
+.tc-en {
+  font-size: 0.72em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.tc-desc {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.tc-count {
+  font-size: 0.7em;
+  color: var(--gold-dim);
+}
+.topic-detail { margin-top: 20px; }
+.topic-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.topic-detail-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1em;
+  color: var(--peach);
+}
+.topic-back {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78em;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.topic-back:hover {
+  color: var(--pink);
+  border-color: rgba(196,168,130,0.3);
+}
+.topic-detail-desc {
+  font-size: 0.85em;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.topic-series-section {
+  margin-bottom: 16px;
+}
+.section-label {
+  font-size: 0.8em;
+  color: var(--gold-dim);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.topic-series-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.topic-series-chip {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78em;
+  color: var(--peach);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.topic-series-chip:hover {
+  border-color: rgba(196,168,130,0.3);
+  background: rgba(196,168,130,0.06);
+  color: var(--pink);
+}
+.topic-series-chip .chip-count {
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+/* ===== READING PATHS ===== */
+.path-card {
+  background: rgba(255,255,255,0.02);
+  border: none;
+  border-radius: 4px;
+  padding: 28px 24px;
+  margin-bottom: 16px;
+}
+.path-level {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--pink);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.path-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.15em;
+  color: var(--peach);
+  margin-bottom: 6px;
+}
+.path-desc {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.path-steps {
+  list-style: none;
+  counter-reset: step;
+}
+.path-steps li {
+  counter-increment: step;
+  padding: 10px 0 10px 36px;
+  border-left: 2px solid var(--border);
+  margin-left: 12px;
+  position: relative;
+  font-size: 0.82em;
+}
+.path-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: -12px;
+  top: 10px;
+  width: 22px;
+  height: 22px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  color: var(--pink);
+  font-weight: 600;
+}
+.path-steps li a { color: var(--peach); }
+.path-steps li a:hover { color: var(--pink); }
+.path-step-topic {
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 40px 20px 30px;
+  color: var(--text-dim);
+  font-size: 0.75em;
+  border-top: none;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.footer a { color: var(--gold-dim); }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+  font-size: 0.9em;
+}
+
+/* Loading spinner */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6em; }
+  .hero { padding: 50px 16px 30px; }
+  .hero-entries { flex-direction: column; align-items: stretch; gap: 8px; }
+  .hero-entry-btn { max-width: 100%; min-width: 0; width: 100%; padding: 28px 20px; }
+  body:not(.landing) .hero-entries { flex-direction: row; flex-wrap: nowrap; gap: 6px; }
+  body:not(.landing) .hero-entry-btn { padding: 12px 8px; min-width: 0; max-width: none; font-size: 0.78em; }
+  body:not(.landing) .hero-entry-btn.active-entry { flex: 2; padding: 14px 12px; font-size: 0.88em; }
+  body:not(.landing) .hero-entry-btn:not(.active-entry) { flex: 1; padding: 12px 6px; font-size: 0.72em; }
+  .series-grid { grid-template-columns: 1fr; }
+  .series-card { min-height: auto; }
+  .topic-grid { grid-template-columns: repeat(2, 1fr); }
+  .topic-card { padding: 14px; }
+  .post-date { min-width: 58px; font-size: 0.68em; }
+  .reader-nav { flex-direction: column; }
+  .reader-nav-btn.next { text-align: left; }
+}
+</style>
+</head>
+<body class="landing">
+
+<!-- HERO -->
+<header class="hero">
+  <h1>☉ Ra 書塔 × Atlas of Voices</h1>
+  <p class="hero-purpose">A reading interface for navigating Raheliya's writings</p>
+  <p class="hero-risk">AI-assisted organization · Unofficial · Exploratory</p>
+  <div class="hero-entries">
+    <a class="hero-entry-btn" onclick="enterSite('series')"><span class="entry-label">系列</span>Read by Series</a>
+    <a class="hero-entry-btn" onclick="enterSite('topics')"><span class="entry-label">主題</span>Explore Topics</a>
+    <a class="hero-entry-btn" onclick="enterSite('all');setTimeout(()=>document.getElementById('searchInput').focus(),100)"><span class="entry-label">搜尋</span>Search Articles</a>
+  </div>
+</header>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>Unofficial Reading Tool</strong><br>
+  This site reorganizes articles from Raheliya's Substack using AI-assisted grouping and personal interpretation.
+  Structures such as series, topics, and reading paths may be incomplete or inaccurate.<br>
+  → Treat this as a reading aid, not an authoritative structure.
+  <div class="disclaimer-zh">
+    ⚠&#xFE0E; 非官方閱讀整理工具<br>
+    本網站透過 AI 與個人理解重新整理文章，所有分類與結構可能不完整或不準確，僅作為閱讀輔助使用。
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat"><span class="num" id="statTotal">—</span>書頁 pages</div>
+  <div class="stat"><span class="num" id="statTopics">—</span>主題 topics</div>
+  <div class="stat"><span class="num" id="statFree">—</span>free</div>
+  <div class="stat"><span class="num" id="statPaid">—</span>paid</div>
+  <div class="stat"><span class="num" id="statSeries">—</span>系列 series</div>
+</div>
+
+<!-- NAV TABS -->
+<nav class="nav-tabs" id="navTabs">
+  <button data-tab="all" class="active">全部書頁</button>
+  <button data-tab="series">系列導航</button>
+  <button data-tab="topics">主題地圖</button>
+  <button data-tab="paths">閱讀路徑</button>
+</nav>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋標題、主題、關鍵字…" autocomplete="off">
+  </div>
+  <div class="search-meta">
+    <span id="resultCount"></span>
+    <div class="filter-pills">
+      <button class="filter-pill active" data-filter="all">全部</button>
+      <button class="filter-pill" data-filter="free">Free</button>
+      <button class="filter-pill" data-filter="paid">Paid</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<main class="content">
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>載入書頁資料…</p>
+  </div>
+
+  <div class="view" id="viewAll"></div>
+  <div class="view" id="viewSeries">
+    <div id="seriesGrid"></div>
+    <div class="reader-overlay" id="seriesReader"></div>
+  </div>
+  <div class="view" id="viewTopics"></div>
+  <div class="view" id="viewPaths"></div>
+</main>
+
+<!-- CREATOR-SAFE TOGGLE -->
+<button class="creator-toggle" id="creatorToggle" onclick="toggleCreatorSafe()">Creator-safe mode</button>
+
+<!-- ABOUT -->
+<div class="about-section">
+  <h3>About this site</h3>
+  <p>This project is a personal reading interface built on top of Raheliya's Substack.</p>
+  <p style="margin-top:8px"><strong style="color:var(--gold-dim)">Goals:</strong></p>
+  <ul>
+    <li>Improve search and navigation</li>
+    <li>Reconstruct possible reading sequences</li>
+    <li>Explore connections between articles</li>
+  </ul>
+  <p style="margin-top:8px"><strong style="color:var(--gold-dim)">Limitations:</strong></p>
+  <ul>
+    <li>AI-assisted classification may be inaccurate</li>
+    <li>Series and topics are interpretative, not canonical</li>
+    <li>Content structure is continuously evolving</li>
+  </ul>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>☉ Ra 書塔 × Atlas of Voices — Exploratory Reading System</p>
+  <p style="margin-top:4px;">Built for <a href="https://raheliya.substack.com" target="_blank" rel="noopener">Raheliya's Substack</a> · Unofficial reading tool</p>
+</footer>
+
+<script>
+// ============================================================
+// TOPIC DEFINITIONS (data-driven, ordered by specificity)
+// ============================================================
+const TOPICS = [
+  {
+    id: 'container',
+    name: '容器生理',
+    en: 'Container Physiology',
+    desc: '身體作為文明容器——生理技術、意識橋維護、光體睡眠與過載修復。',
+    pattern: /容器|生理|意識橋|意识桥|光體睡眠|光体睡眠|過載|过载|心輪|心轮|金語生理|金语生理|金语容器|金語容器|肉頻|肉频/
+  },
+  {
+    id: 'soul',
+    name: '靈魂觀測',
+    en: 'Soul Observation',
+    desc: '靈魂全景圖、劇本解析、合約釋放與輪迴清理機制。',
+    pattern: /靈魂|灵魂|觀測記錄|观测记录|KT-\d|AD-\d|ZF-\d|JYS-\d|劇本|剧本|合約釋放|合约释放|輪迴|轮回|投生|轉世|转世|靈魂全景|灵魂全景/
+  },
+  {
+    id: 'dream',
+    name: '夢頻檔案',
+    en: 'Dream Archive',
+    desc: '夢境觀測、夢頻系統、夢後殘留與女性主權模組。',
+    pattern: /夢頻|梦频|夢境|梦境|夢後|梦后|女性主權|女性主权|舊男性|旧男性|FEM-|鏡場|镜场/
+  },
+  {
+    id: 'language',
+    name: '語言文明',
+    en: 'Linguistic Civilization',
+    desc: '光譜字典、Ra文明回聲、未來語總圖與聲光形同步圖譜。',
+    pattern: /光譜字典|光谱字典|Ra文明回聲|Ra.*Civilization.*Echo|Ra文明回声|未來語|未来语|聲.*光.*形|Ra.*文明語體|Ra.*文明语体|Atlas.*Voices|Founders.*Log|語譜文明|语谱文明|多語書塔|多语书塔|Larouselso/
+  },
+  {
+    id: 'economy',
+    name: '頻率經濟',
+    en: 'Frequency Economics',
+    desc: '語頻經濟學、書頁資產化、RWA連接與文明交易體系。',
+    pattern: /語頻經濟|语频经济|頻率經濟|频率经济|資產|资产|貨幣|货币|鑄幣|铸币|交易所|金融|帳本|账本|幣值|币值|RWA|Codex.*資產|Codex.*收益|書頁經濟|书页经济|經濟系統|经济系统/
+  },
+  {
+    id: 'architecture',
+    name: '建築空間',
+    en: 'Architecture & Space',
+    desc: '第五文明建築語法、光塔設計、弧形文明與聲場建築學。',
+    pattern: /建築語法|建筑语法|光塔與心率|光塔设计|白頻秩序|弧形文明|光之回聲.*聲場|聲場建築|声场建筑|Haussmann|Seine|Paris.*語場|巴黎.*穩定|家居磁場|家居磁场/
+  },
+  {
+    id: 'education',
+    name: '教育設計',
+    en: 'Education & Design',
+    desc: '新陽性能量重建、教育宣言、導師節點與文明教育系統。',
+    pattern: /新陽性|新阳性|教育者與設計|教育与设计|教育宣言|語頻教師|语频教师|導師節點|导师节点|教育系統|教育系统|一向教法|教育模组|光的学院/
+  },
+  {
+    id: 'family',
+    name: '家庭關係',
+    en: 'Family & Relations',
+    desc: '家庭樣本檔案、婚配模型、母女號碼分流與關係結構。',
+    pattern: /家庭樣本|家庭样本|婚配模型|母女號碼|母女号码|關係結構域|关系结构|主權連結|跨物種關係|親族|亲族|父系斷鏈|父系断链|母親|母化|燃燒型母/
+  },
+  {
+    id: 'governance',
+    name: '文明治理',
+    en: 'Civilization Governance',
+    desc: '第五文明治理學、文明節奏憲章、14域結構與秩序體系。',
+    pattern: /治理學|治理学|文明節奏|文明节奏|14域|藝術市場|艺术市场|市場變薄|市场变薄|Art Market|觀測塔|三條線|三条线|世界秩序|文明.*階段|文明.*阶段|人類文明.*位置|權力網絡|权力网络|脆弱節點|脆弱节点|全球指標|全球指标/
+  },
+  {
+    id: 'interstellar',
+    name: '星際宇宙',
+    en: 'Interstellar & Cosmos',
+    desc: '星際憲政、Oversoul聯盟、行星心率與宇宙觀測。',
+    pattern: /星際|星际|行星教育|行星心率|行星心拍|Oversoul|宇宙|量子糾纏|量子纠缠|粒子|多宇宙|Drake|Fermi|太陽系|太阳系|銀河|银河|ICA|地表課|地表课|自治模组/
+  },
+  {
+    id: 'codex',
+    name: '法典條約',
+    en: 'Codex & Treaty',
+    desc: '光頻文明憲章、能量債清算、金語法典與第六文明法典。',
+    pattern: /光頻文明憲章|光频文明宪章|能量債清算|能量债清算|金語法典|金语法典|第六文明法典|人類文明光頻譜|光頻憲章|光频宪章|憲章注解|宪章注解/
+  },
+  {
+    id: 'seal',
+    name: '封印年鑑',
+    en: 'Sealed Annals',
+    desc: '文明心率封印圖集、行星心拍年鑑與書塔封印紀錄。',
+    pattern: /封印|年鑑|年鉴|封存|封卷/
+  },
+  {
+    id: 'mission',
+    name: '主頻任務',
+    en: 'Soul Mission',
+    desc: 'Ra·Va\'ik\'i主頻任務書、靈魂使命與頻率筆塔建構。',
+    pattern: /Va.*ik.*i|主頻任務|主频任务|任務.*書|任务.*书|頻率筆塔|频率笔塔|使命|陪護容器|陪护容器|伴護|星際陪護|星际陪护/
+  },
+  {
+    id: 'frequency',
+    name: '頻率能量',
+    en: 'Frequency & Energy',
+    desc: '頻率校準、能量場運作、光頻技術與共振系統。',
+    pattern: /頻率|频率|能量|光頻|光频|共振|共拍|心率|校准|校準|書頁.*過載|书页.*过载/
+  },
+  {
+    id: 'civilization',
+    name: '文明體系',
+    en: 'Civilization Systems',
+    desc: '第五文明整體架構、書塔系統與文明導航。',
+    pattern: /第五文明|文明|Ra.*書塔|Ra.*书塔|書塔|书塔|導航|导航|書頁|书页/
+  },
+  {
+    id: 'daily',
+    name: '日常紀錄',
+    en: 'Daily Records',
+    desc: '日常觀察、短文思考與個人紀錄。',
+    pattern: null
+  }
+];
+
+const TOPIC_MAP = {};
+TOPICS.forEach(t => { TOPIC_MAP[t.id] = t; });
+
+// ============================================================
+// CLASSIFICATION (matches first topic by priority order)
+// ============================================================
+function classifyPost(title) {
+  for (const topic of TOPICS) {
+    if (topic.pattern && topic.pattern.test(title)) return topic.id;
+  }
+  return 'daily';
+}
+
+// ============================================================
+// SERIES DETECTION
+// ============================================================
+function detectSeries(title) {
+  if (/第五文明容器技術書/.test(title)) return { series: '第五文明容器技術書' };
+  const raMatch = title.match(/Ra書塔\s*[·．]\s*([^·]+?)\s*[·．]\s*卷([^:：]+)\s*[:：]\s*([^｜|]+)/);
+  if (raMatch) {
+    const pageMatch = title.match(/[｜|]\s*P(\d+)/);
+    // Normalize series name: strip trailing "· 書頁N", "· 終章", "· 補篇" etc.
+    const rawSeries = raMatch[3].trim().replace(/\s*[·．]\s*(書頁|终章|終章|補篇|补篇|封印篇|附錄|附录).*$/, '').trim();
+    return { series: rawSeries, page: pageMatch ? parseInt(pageMatch[1]) : null };
+  }
+  if (/語頻治理書系/.test(title)) return { series: '語頻治理書系' };
+  if (/主權生理學補遺卷|主权生理学补遗卷/.test(title)) return { series: '主權生理學補遺卷' };
+  if (/主權生理學|主权生理学/.test(title) && !/補遺|补遗/.test(title)) return { series: '主權生理學' };
+  if (/靈魂全景圖|灵魂全景图|KT-\d/.test(title)) return { series: '靈魂全景圖觀測' };
+  if (/家庭樣本|家庭样本/.test(title)) return { series: '家庭樣本檔案庫' };
+  if (/光譜字典|光谱字典/.test(title)) return { series: '光譜字典' };
+  if (/語頻經濟學|语频经济学/.test(title)) return { series: '語頻經濟學' };
+  if (/新陽性能量/.test(title)) return { series: '新陽性能量重建' };
+  if (/Ra文明回聲|Ra Civilization Echo/.test(title)) return { series: 'Ra文明回聲' };
+  if (/建築語法|建筑语法/.test(title)) return { series: '第五文明建築語法書' };
+  if (/光頻文明憲章|光频文明宪章|憲章注解|宪章注解/.test(title)) return { series: '光頻文明憲章' };
+  if (/意識橋|意识桥/.test(title)) return { series: '意識橋維護系統' };
+  if (/夢頻學院/.test(title)) return { series: '夢頻學院' };
+  if (/婚配模型/.test(title)) return { series: '第五文明婚配模型' };
+  if (/舊人輪迴|旧人轮回/.test(title)) return { series: '舊人輪迴週期 × 記憶資料庫清理機制' };
+  if (/能量債清算|能量债清算/.test(title)) return { series: '能量債清算卷' };
+  if (/星際.*憲政|Oversoul.*聯盟/.test(title)) return { series: '星際憲政 × Oversoul聯盟法' };
+  if (/行星心率|行星心拍/.test(title)) return { series: '行星心率監察體系' };
+  if (/未來語總圖|未来语总图/.test(title)) return { series: '未來語總圖' };
+  if (/白頻秩序/.test(title)) return { series: '白頻秩序 × 空間作為教育者' };
+  if (/弧形文明/.test(title)) return { series: '弧形文明 × 光的結構教育' };
+  if (/母女號碼|母女号码/.test(title)) return { series: '母女號碼分流 × 預測年表' };
+  if (/靈魂合約釋放|灵魂合约释放/.test(title)) return { series: '靈魂合約釋放紀錄' };
+  if (/光體睡眠|光体睡眠/.test(title)) return { series: '光體睡眠學 × 夢頻教育' };
+  if (/金語生理書|金语生理书/.test(title)) return { series: '金語生理書' };
+  if (/治理學|治理学/.test(title) && /第五文明/.test(title)) return { series: '第五文明治理學' };
+  if (/Va.*ik.*i.*主頻任務|Va.*ik.*i.*主频任务/.test(title)) return { series: 'Ra·Va\'ik\'i 主頻任務書' };
+  if (/地表課|地表课/.test(title)) return { series: '地表課' };
+  if (/Atlas.*Voices.*Founders|Founders.*Log/.test(title)) return { series: 'Atlas of Voices × Founders\' Log' };
+  return null;
+}
+
+// ============================================================
+// PAGE NUMBER EXTRACTION (for series ordering)
+// ============================================================
+const CN_NUMS = {'零':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,
+  '十一':11,'十二':12,'十三':13,'十四':14,'十五':15,'十六':16,'十七':17,'十八':18,'十九':19,
+  '二十':20,'二十一':21,'二十二':22,'二十三':23,'二十四':24,'二十五':25,'二十六':26,'二十七':27,'二十八':28,'二十九':29,
+  '三十':30,'三十一':31,'三十二':32,'三十三':33,'三十四':34,'三十五':35};
+
+function extractPageNum(title) {
+  // Try P001, P002 style
+  const pMatch = title.match(/[｜|]\s*P(\d+)/);
+  if (pMatch) return parseInt(pMatch[1]);
+  // Try 書頁/书页 + Chinese numeral (match longest first)
+  const cnMatch = title.match(/[書书][頁页]([\u4e00-\u9fff]{1,3})/);
+  if (cnMatch && CN_NUMS[cnMatch[1]] !== undefined) return CN_NUMS[cnMatch[1]];
+  // Try 書頁/书页 + Arabic numeral
+  const arMatch = title.match(/[書书][頁页](\d+)/);
+  if (arMatch) return parseInt(arMatch[1]);
+  // Try 第N章 (chapter numbers)
+  const chapCnMatch = title.match(/第([\u4e00-\u9fff]{1,3})[章節节篇]/);
+  if (chapCnMatch && CN_NUMS[chapCnMatch[1]] !== undefined) return CN_NUMS[chapCnMatch[1]];
+  // Try 第N章 with Arabic numerals
+  const chapArMatch = title.match(/第(\d+)[章節节篇]/);
+  if (chapArMatch) return parseInt(chapArMatch[1]);
+  // Try 卷N patterns
+  const volMatch = title.match(/卷([一二三四五六七八九十]{1,3})/);
+  if (volMatch && CN_NUMS[volMatch[1]] !== undefined) return CN_NUMS[volMatch[1]] * 1000;
+  // Try Vol.N
+  const volNumMatch = title.match(/Vol\.?\s*(\d+)/i);
+  if (volNumMatch) return parseInt(volNumMatch[1]) * 1000;
+  return null;
+}
+
+// ============================================================
+// LOCALSTORAGE PROGRESS
+// ============================================================
+const PROGRESS_KEY = 'raheliya_progress';
+const VISITED_KEY = 'raheliya_visited';
+
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); } catch { return {}; }
+}
+function saveProgress(data) {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch {}
+}
+function markRead(seriesName, index) {
+  const data = getProgress();
+  if (!data[seriesName]) data[seriesName] = { read: [], lastIndex: 0, lastTime: 0 };
+  if (!data[seriesName].read.includes(index)) data[seriesName].read.push(index);
+  data[seriesName].lastIndex = index;
+  data[seriesName].lastTime = Date.now();
+  saveProgress(data);
+}
+function isArticleRead(seriesName, index) {
+  const data = getProgress();
+  return data[seriesName]?.read?.includes(index) || false;
+}
+function unmarkRead(seriesName, index) {
+  const data = getProgress();
+  if (!data[seriesName]) return;
+  data[seriesName].read = data[seriesName].read.filter(i => i !== index);
+  saveProgress(data);
+}
+function resetSeriesProgress(seriesName) {
+  const data = getProgress();
+  delete data[seriesName];
+  saveProgress(data);
+}
+function getSeriesProgress(seriesName, total) {
+  const data = getProgress();
+  const sp = data[seriesName];
+  if (!sp) return { read: 0, total, pct: 0, lastIndex: -1, lastTime: 0 };
+  return {
+    read: sp.read.length,
+    total,
+    pct: total > 0 ? Math.round(sp.read.length / total * 100) : 0,
+    lastIndex: sp.lastIndex || 0,
+    lastTime: sp.lastTime || 0
+  };
+}
+function getVisited() {
+  try { return JSON.parse(localStorage.getItem(VISITED_KEY) || '[]'); } catch { return []; }
+}
+function markVisited(url) {
+  const v = getVisited();
+  if (!v.includes(url)) { v.push(url); try { localStorage.setItem(VISITED_KEY, JSON.stringify(v)); } catch {} }
+}
+function isVisited(url) { return getVisited().includes(url); }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return '剛剛';
+  if (mins < 60) return mins + ' 分鐘前';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + ' 小時前';
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return days + ' 天前';
+  return Math.floor(days / 30) + ' 個月前';
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let allPosts = [];
+let filteredPosts = [];
+let currentTab = 'all';
+let currentFilter = 'all';
+let searchQuery = '';
+let seriesMap = {};
+let topicGroups = {};
+let visibleCount = 50;
+let activeTopic = null;
+let searchTimeout = null;
+let readerSeriesName = null;
+let readerIndex = 0;
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+    const resp = await fetch(base + 'posts.json');
+    const data = await resp.json();
+    const rawPosts = data.posts || data;
+
+    allPosts = rawPosts.map((p, i) => {
+      const title = p.title.replace(/^\[COPY\]\s*/, '');
+      const topic = classifyPost(title);
+      const seriesInfo = detectSeries(title);
+      return {
+        ...p,
+        id: i,
+        title: title,
+        topic,
+        seriesInfo,
+        seriesName: seriesInfo ? seriesInfo.series : null,
+      };
+    });
+
+    // Build series map
+    seriesMap = {};
+    allPosts.forEach(p => {
+      if (p.seriesName) {
+        if (!seriesMap[p.seriesName]) seriesMap[p.seriesName] = { posts: [], topic: p.topic };
+        seriesMap[p.seriesName].posts.push(p);
+      }
+    });
+    Object.values(seriesMap).forEach(s => {
+      // Deduplicate by title
+      const seen = new Set();
+      s.posts = s.posts.filter(p => {
+        const key = p.title.replace(/\s+/g, '');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      // Sort by page number (extracted from title), then by date
+      s.posts.sort((a, b) => {
+        const pa = a.seriesInfo?.page ?? extractPageNum(a.title);
+        const pb = b.seriesInfo?.page ?? extractPageNum(b.title);
+        if (pa !== null && pb !== null) return pa - pb;
+        if (pa !== null) return -1;
+        if (pb !== null) return 1;
+        return new Date(a.date) - new Date(b.date);
+      });
+    });
+
+    // Build topic groups
+    topicGroups = {};
+    TOPICS.forEach(t => { topicGroups[t.id] = []; });
+    allPosts.forEach(p => {
+      if (!topicGroups[p.topic]) topicGroups[p.topic] = [];
+      topicGroups[p.topic].push(p);
+    });
+
+    // Stats
+    const freeCount = allPosts.filter(p => p.access === 'free').length;
+    const paidCount = allPosts.filter(p => p.access === 'paid').length;
+    const activeTopics = TOPICS.filter(t => (topicGroups[t.id] || []).length > 0);
+    document.getElementById('statTotal').textContent = allPosts.length.toLocaleString();
+    document.getElementById('statTopics').textContent = activeTopics.length;
+    document.getElementById('statFree').textContent = freeCount.toLocaleString();
+    document.getElementById('statPaid').textContent = paidCount.toLocaleString();
+    document.getElementById('statSeries').textContent = Object.keys(seriesMap).length;
+
+    document.getElementById('loading').style.display = 'none';
+
+    const hash = location.hash.replace('#', '') || 'all';
+    switchTab(hash);
+    applyFilters();
+    renderSeries();
+    renderTopics();
+    renderPaths();
+  } catch (e) {
+    console.error('Init error:', e);
+    document.getElementById('loading').innerHTML = '<p style="color:#c47a6a;">載入失敗: ' + e.message + '</p>';
+  }
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function switchTab(tab) {
+  const valid = ['all', 'series', 'topics', 'paths'];
+  if (!valid.includes(tab)) tab = 'all';
+  currentTab = tab;
+  location.hash = tab;
+
+  document.querySelectorAll('.nav-tabs button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const viewId = { all: 'viewAll', series: 'viewSeries', topics: 'viewTopics', paths: 'viewPaths' }[tab];
+  const el = document.getElementById(viewId);
+  if (el) el.classList.add('active');
+
+  if (tab === 'series') closeSeriesReader();
+}
+
+document.getElementById('navTabs').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (btn && btn.dataset.tab) switchTab(btn.dataset.tab);
+});
+
+window.addEventListener('hashchange', () => {
+  switchTab(location.hash.replace('#', '') || 'all');
+});
+
+// ============================================================
+// SEARCH & FILTER
+// ============================================================
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    searchQuery = searchInput.value.trim().toLowerCase();
+    visibleCount = 50;
+    applyFilters();
+  }, 300);
+});
+
+document.querySelector('.filter-pills').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  currentFilter = pill.dataset.filter;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === currentFilter));
+  visibleCount = 50;
+  applyFilters();
+});
+
+function applyFilters() {
+  filteredPosts = allPosts.filter(p => {
+    if (currentFilter === 'free' && p.access !== 'free') return false;
+    if (currentFilter === 'paid' && p.access !== 'paid') return false;
+    if (searchQuery) {
+      const q = searchQuery;
+      const t = p.title.toLowerCase();
+      const topicData = TOPIC_MAP[p.topic];
+      const topicStr = topicData ? (topicData.name + topicData.en + topicData.desc).toLowerCase() : '';
+      const sn = (p.seriesName || '').toLowerCase();
+      if (!t.includes(q) && !topicStr.includes(q) && !p.topic.toLowerCase().includes(q) && !sn.includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('resultCount').textContent = filteredPosts.length + ' 篇';
+  if (currentTab === 'all') renderAllPosts();
+  if (currentTab === 'topics' && activeTopic) renderTopicDetail(activeTopic);
+}
+
+// ============================================================
+// RENDER: ALL POSTS
+// ============================================================
+function renderAllPosts() {
+  const container = document.getElementById('viewAll');
+
+  if (!searchQuery) {
+    container.innerHTML = '<div class="empty-state" style="color:var(--text-dim);font-size:0.85em;padding:40px 20px;">輸入關鍵字搜尋 ' + allPosts.length.toLocaleString() + ' 篇書頁<br><span style="font-size:0.85em;opacity:0.6">Type to search across all articles</span></div>';
+    return;
+  }
+
+  if (searchQuery) {
+    renderFlatList(container, filteredPosts);
+    return;
+  }
+
+  const grouped = {};
+  TOPICS.forEach(t => { grouped[t.id] = []; });
+  filteredPosts.forEach(p => {
+    if (!grouped[p.topic]) grouped[p.topic] = [];
+    grouped[p.topic].push(p);
+  });
+
+  let html = '';
+  TOPICS.forEach(t => {
+    const posts = grouped[t.id];
+    if (!posts || posts.length === 0) return;
+    html += '<div class="topic-section" data-topic="' + t.id + '">' +
+      '<div class="topic-section-header" onclick="toggleSection(this)">' +
+        '<span class="topic-code">' + escapeHTML(t.name.substring(0, 4)) + '</span>' +
+        '<span class="topic-section-name">' + escapeHTML(t.name) + '<span class="topic-section-en"> ' + escapeHTML(t.en) + '</span></span>' +
+        '<span class="topic-section-count">' + posts.length + '</span>' +
+        '<span class="topic-chevron">▸</span>' +
+      '</div>' +
+      '<div class="topic-posts" id="tp-' + t.id + '"></div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+
+  TOPICS.forEach(t => {
+    const posts = grouped[t.id];
+    if (!posts || posts.length === 0) return;
+    const el = document.getElementById('tp-' + t.id);
+    if (el) { el._posts = posts; el._rendered = false; }
+  });
+}
+
+function toggleSection(header) {
+  const section = header.closest('.topic-section');
+  const wasOpen = section.classList.contains('open');
+  section.classList.toggle('open');
+  if (!wasOpen) {
+    const tid = section.dataset.topic;
+    const el = document.getElementById('tp-' + tid);
+    if (el && el._posts && !el._rendered) {
+      renderSectionPosts(el, el._posts);
+      el._rendered = true;
+    }
+  }
+}
+
+function renderSectionPosts(container, posts) {
+  const limit = Math.min(posts.length, 50);
+  let html = '';
+  for (let i = 0; i < limit; i++) html += postItemHTML(posts[i]);
+  if (posts.length > 50) {
+    html += '<div class="load-more"><button onclick="loadMoreSection(this, \'' + container.id + '\')">載入更多 (' + (posts.length - 50) + ' 篇)</button></div>';
+  }
+  container.innerHTML = html;
+  container._loadedCount = limit;
+}
+
+function loadMoreSection(btn, containerId) {
+  const container = document.getElementById(containerId);
+  const posts = container._posts;
+  const loaded = container._loadedCount || 50;
+  const next = Math.min(loaded + 50, posts.length);
+  let html = '';
+  for (let i = loaded; i < next; i++) html += postItemHTML(posts[i]);
+  btn.closest('.load-more').remove();
+  container.insertAdjacentHTML('beforeend', html);
+  if (next < posts.length) {
+    container.insertAdjacentHTML('beforeend',
+      '<div class="load-more"><button onclick="loadMoreSection(this, \'' + containerId + '\')">載入更多 (' + (posts.length - next) + ' 篇)</button></div>');
+  }
+  container._loadedCount = next;
+}
+
+function renderFlatList(container, posts) {
+  const limit = Math.min(posts.length, visibleCount);
+  let html = '';
+  for (let i = 0; i < limit; i++) html += postItemHTML(posts[i]);
+  if (limit < posts.length) {
+    html += '<div class="load-more"><button onclick="loadMoreFlat()">載入更多 (' + (posts.length - limit) + ' 篇)</button></div>';
+  }
+  if (posts.length === 0) html = '<div class="empty-state">找不到符合的書頁</div>';
+  container.innerHTML = html;
+}
+
+function loadMoreFlat() {
+  visibleCount += 50;
+  renderFlatList(document.getElementById('viewAll'), filteredPosts);
+}
+
+function postItemHTML(p) {
+  const topicData = TOPIC_MAP[p.topic];
+  const topicLabel = topicData ? topicData.name : p.topic;
+  const visited = isVisited(p.url) ? ' visited' : '';
+  const seriesTag = p.seriesName ? '<span class="series-tag">●' + escapeHTML(p.seriesName) + '</span>' : '';
+  return '<div class="post-item' + visited + '" onclick="openPost(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
+    '<span class="post-date">' + p.date + '</span>' +
+    '<div class="post-body">' +
+      '<div class="post-title">' + escapeHTML(p.title) + '</div>' +
+      '<div class="post-meta-line">' +
+        '<span class="badge ' + (p.access === 'free' ? 'badge-free' : 'badge-paid') + '">' + p.access + '</span>' +
+        '<span class="topic-tag">' + escapeHTML(topicLabel) + '</span>' +
+        '<span class="word-count">' + p.wordCount + 'w</span>' +
+        seriesTag +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function openPost(url) {
+  markVisited(url);
+  window.open(url, '_blank');
+}
+
+function escapeHTML(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function escapeAttr(s) {
+  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function hashCode(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h).toString(36);
+}
+
+// ============================================================
+// RENDER: SERIES VIEW
+// ============================================================
+function renderSeries() {
+  const container = document.getElementById('seriesGrid');
+  const entries = Object.entries(seriesMap).sort((a, b) => b[1].posts.length - a[1].posts.length);
+
+  let html = '<div class="series-grid">';
+  entries.forEach(([name, info]) => {
+    const topicData = TOPIC_MAP[info.topic];
+    const topicLabel = topicData ? topicData.name : info.topic;
+    const h = hashCode(name);
+    const prog = getSeriesProgress(name, info.posts.length);
+    const hasProgress = prog.read > 0;
+    const btnLabel = hasProgress ? '▶ 繼續閱讀' : '▶ 開始閱讀';
+    const startIdx = hasProgress ? Math.min(prog.lastIndex + 1, info.posts.length - 1) : 0;
+
+    html += '<div class="series-card" id="sc-' + h + '">' +
+      '<div class="series-title">●' + escapeHTML(name) + ' <span class="tag-ai">AI-assisted</span></div>' +
+      '<div class="series-meta">' +
+        '<span class="series-topic-badge" onclick="event.stopPropagation();jumpToTopic(\'' + escapeAttr(info.topic) + '\')">' + escapeHTML(topicLabel) + '</span>' +
+        '<span>' + info.posts.length + ' 篇</span>' +
+        '<span class="ai-note">分類方式：AI輔助（可能不準確）</span>' +
+      '</div>';
+
+    if (hasProgress) {
+      html += '<div class="series-progress">' +
+        '<div class="series-progress-bar"><div class="series-progress-fill" style="width:' + prog.pct + '%"></div></div>' +
+        '<div class="series-progress-text">' + prog.read + '/' + prog.total + ' 已讀 (' + prog.pct + '%)</div>' +
+        (prog.lastTime ? '<div class="series-last-read">最近閱讀: ' + timeAgo(prog.lastTime) + '</div>' : '') +
+      '</div>';
+    }
+
+    html += '<div class="series-actions">' +
+        '<button class="series-start-btn" onclick="openSeriesReader(\'' + escapeAttr(name) + '\', ' + startIdx + ')">' + btnLabel + '</button>' +
+        '<button class="collapse-btn" onclick="toggleSeriesList(this, \'' + h + '\', \'' + escapeAttr(name) + '\')">展開全部 ▾</button>' +
+        (hasProgress ? '<button class="collapse-btn" onclick="markAllReadFromCard(\'' + escapeAttr(name) + '\')">全部已讀</button>' : '') +
+        (hasProgress ? '<button class="collapse-btn" style="color:#c47a6a55" onclick="resetFromCard(\'' + escapeAttr(name) + '\')">重置</button>' : '') +
+      '</div>' +
+      '<ol class="series-posts-list" id="sl-' + h + '" style="display:none;"></ol>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  if (entries.length === 0) html = '<div class="empty-state">未檢測到系列</div>';
+  container.innerHTML = html;
+}
+
+function toggleSeriesList(btn, hash, seriesName) {
+  const list = document.getElementById('sl-' + hash);
+  if (!list) return;
+  const isHidden = list.style.display === 'none';
+  list.style.display = isHidden ? 'block' : 'none';
+  btn.textContent = isHidden ? '收起 ▴' : '展開全部 ▾';
+
+  if (isHidden && !list._rendered) {
+    const info = seriesMap[seriesName];
+    if (!info) return;
+    let html = '';
+    info.posts.forEach((p, i) => {
+      const readClass = isArticleRead(seriesName, i) ? ' read-item' : '';
+      html += '<li class="' + readClass + '"><a href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation();markRead(\'' + escapeAttr(seriesName) + '\',' + i + ');markVisited(\'' + p.url.replace(/'/g, "\\'") + '\')">' +
+        '<span class="series-num">' + (i + 1) + '.</span>' +
+        '<span>' + escapeHTML(p.title) + '</span>' +
+      '</a></li>';
+    });
+    list.innerHTML = html;
+    list._rendered = true;
+  }
+}
+
+// ============================================================
+// SERIES READER
+// ============================================================
+function openSeriesReader(seriesName, startIndex) {
+  const info = seriesMap[seriesName];
+  if (!info) return;
+  readerSeriesName = seriesName;
+  readerIndex = startIndex || 0;
+
+  document.getElementById('seriesGrid').style.display = 'none';
+  const reader = document.getElementById('seriesReader');
+  reader.classList.add('active');
+  renderReader();
+  reader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeSeriesReader() {
+  readerSeriesName = null;
+  document.getElementById('seriesGrid').style.display = '';
+  document.getElementById('seriesReader').classList.remove('active');
+  document.getElementById('seriesReader').innerHTML = '';
+  renderSeries();
+}
+
+function renderReader() {
+  const reader = document.getElementById('seriesReader');
+  const info = seriesMap[readerSeriesName];
+  if (!info) return;
+  const posts = info.posts;
+  const p = posts[readerIndex];
+  const total = posts.length;
+  const prog = getSeriesProgress(readerSeriesName, total);
+
+  markRead(readerSeriesName, readerIndex);
+  markVisited(p.url);
+
+  const prevPost = readerIndex > 0 ? posts[readerIndex - 1] : null;
+  const nextPost = readerIndex < total - 1 ? posts[readerIndex + 1] : null;
+
+  let html = '<div class="reader-header">' +
+    '<button class="reader-back" onclick="closeSeriesReader()">\u2190 返回系列</button>' +
+    '<span class="reader-position">' + (readerIndex + 1) + ' / ' + total + '</span>' +
+  '</div>' +
+  '<div class="reader-series-name">●' + escapeHTML(readerSeriesName) + ' <span class="tag-ai">AI-assisted</span></div>' +
+  '<div class="reader-progress">' +
+    '<div class="reader-progress-bar"><div class="reader-progress-fill" style="width:' + Math.round((readerIndex + 1) / total * 100) + '%"></div></div>' +
+    '<div class="reader-progress-text">' + (readerIndex + 1) + ' / ' + total + ' · ' + getSeriesProgress(readerSeriesName, total).read + ' 篇已讀</div>' +
+  '</div>' +
+  '<div class="reader-current">' +
+    '<div class="reader-current-title">' + escapeHTML(p.title) + '</div>' +
+    '<div class="reader-current-meta">' +
+      '<span>' + p.date + '</span>' +
+      '<span class="badge ' + (p.access === 'free' ? 'badge-free' : 'badge-paid') + '">' + p.access + '</span>' +
+      '<span>' + p.wordCount + ' words</span>' +
+    '</div>' +
+    '<a class="reader-read-btn" href="' + p.url + '" target="_blank" rel="noopener">閱讀此文 →</a>' +
+  '</div>' +
+  '<div class="reader-nav">';
+
+  if (prevPost) {
+    html += '<button class="reader-nav-btn" onclick="navigateReader(' + (readerIndex - 1) + ')">' +
+      '<div class="reader-nav-label">← 上一篇</div>' +
+      '<div class="reader-nav-title">' + escapeHTML(prevPost.title) + '</div>' +
+    '</button>';
+  } else {
+    html += '<button class="reader-nav-btn" disabled><div class="reader-nav-label">← 上一篇</div><div class="reader-nav-title">已是第一篇</div></button>';
+  }
+
+  if (nextPost) {
+    html += '<button class="reader-nav-btn next" onclick="navigateReader(' + (readerIndex + 1) + ')">' +
+      '<div class="reader-nav-label">下一篇 →</div>' +
+      '<div class="reader-nav-title">' + escapeHTML(nextPost.title) + '</div>' +
+    '</button>';
+  } else {
+    html += '<button class="reader-nav-btn next" disabled><div class="reader-nav-label">下一篇 →</div><div class="reader-nav-title">已是最後一篇</div></button>';
+  }
+
+  html += '</div>' +
+  '<div class="reader-actions">' +
+    '<button class="reader-action-btn" onclick="markAllRead()">全部標為已讀</button>' +
+    '<button class="reader-action-btn danger" onclick="confirmResetProgress()">重置進度</button>' +
+  '</div>' +
+  '<div class="reader-toc">' +
+    '<div class="reader-toc-title">目錄 Table of Contents</div>' +
+    '<ol class="reader-toc-list">';
+
+  posts.forEach((tp, i) => {
+    const isCurrent = i === readerIndex ? ' current' : '';
+    const read = isArticleRead(readerSeriesName, i);
+    const isReadClass = read ? ' read' : '';
+    const check = read ? '✓' : (i + 1);
+    const toggleLabel = read ? '標為未讀' : '標為已讀';
+    html += '<li class="' + isCurrent + isReadClass + '">' +
+      '<span class="toc-check">' + check + '</span>' +
+      '<span style="flex:1;cursor:pointer" onclick="navigateReader(' + i + ')">' + escapeHTML(tp.title) + '</span>' +
+      '<span class="toc-toggle" onclick="event.stopPropagation();toggleReadState(' + i + ')">' + toggleLabel + '</span>' +
+    '</li>';
+  });
+
+  html += '</ol></div>';
+
+  // Suggested reading: other series from the same topic
+  const currentTopic = info.topic;
+  const relatedSeries = Object.entries(seriesMap)
+    .filter(([name, si]) => si.topic === currentTopic && name !== readerSeriesName)
+    .sort((a, b) => b[1].posts.length - a[1].posts.length)
+    .slice(0, 6);
+
+  if (relatedSeries.length > 0) {
+    html += '<div style="margin-top:20px">' +
+      '<div class="reader-toc" style="background:rgba(196,168,130,0.02)">' +
+        '<div class="reader-toc-title">延伸閱讀（自動推薦）Suggested Reading</div>' +
+        '<div class="topic-series-grid" style="margin-top:8px">';
+    relatedSeries.forEach(([name, si]) => {
+      html += '<div class="topic-series-chip" onclick="openSeriesReader(\'' + escapeAttr(name) + '\', 0)">' +
+        escapeHTML(name) + ' <span class="chip-count">' + si.posts.length + '篇</span>' +
+      '</div>';
+    });
+    html += '</div>' +
+        '<div style="margin-top:10px;font-size:0.72em;color:var(--text-dim);font-style:italic;opacity:0.8">Based on topic similarity, not manually curated.<br>基於主題相似度自動分組，非作者本人安排。</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  reader.innerHTML = html;
+}
+
+function navigateReader(index) {
+  readerIndex = index;
+  renderReader();
+  document.getElementById('seriesReader').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleReadState(index) {
+  if (isArticleRead(readerSeriesName, index)) {
+    unmarkRead(readerSeriesName, index);
+  } else {
+    markRead(readerSeriesName, index);
+  }
+  renderReader();
+}
+
+function markAllRead() {
+  const info = seriesMap[readerSeriesName];
+  if (!info) return;
+  info.posts.forEach((_, i) => markRead(readerSeriesName, i));
+  renderReader();
+}
+
+function confirmResetProgress() {
+  if (confirm('確定要重置「' + readerSeriesName + '」的閱讀進度嗎？')) {
+    resetSeriesProgress(readerSeriesName);
+    renderReader();
+  }
+}
+
+function markAllReadFromCard(seriesName) {
+  const info = seriesMap[seriesName];
+  if (!info) return;
+  info.posts.forEach((_, i) => markRead(seriesName, i));
+  renderSeries();
+}
+
+function resetFromCard(seriesName) {
+  if (confirm('確定要重置「' + seriesName + '」的閱讀進度嗎？')) {
+    resetSeriesProgress(seriesName);
+    renderSeries();
+  }
+}
+
+// ============================================================
+// RENDER: TOPIC MAP
+// ============================================================
+function renderTopics() {
+  const container = document.getElementById('viewTopics');
+  let html = '<div class="topic-grid" id="topicGrid">';
+  TOPICS.forEach(t => {
+    const count = (topicGroups[t.id] || []).length;
+    if (count === 0) return;
+    html += '<div class="topic-card" data-topic="' + t.id + '" onclick="showTopicDetail(\'' + t.id + '\')">' +
+      '<div class="tc-code">' + escapeHTML(t.id.toUpperCase()) + '</div>' +
+      '<div class="tc-zh">' + escapeHTML(t.name) + '</div>' +
+      '<div class="tc-en">' + escapeHTML(t.en) + '</div>' +
+      '<div class="tc-desc">' + escapeHTML(t.desc) + '</div>' +
+      '<div class="tc-count">' + count + ' 篇</div>' +
+      '<div class="topic-note">AI clustering</div>' +
+    '</div>';
+  });
+  html += '</div><div class="topic-detail" id="topicDetail" style="display:none;"></div>';
+  container.innerHTML = html;
+}
+
+function showTopicDetail(topicId) {
+  activeTopic = topicId;
+  document.getElementById('topicGrid').style.display = 'none';
+  document.getElementById('topicDetail').style.display = 'block';
+  renderTopicDetail(topicId);
+}
+
+function renderTopicDetail(topicId) {
+  const detail = document.getElementById('topicDetail');
+  const topicData = TOPIC_MAP[topicId];
+  if (!topicData) return;
+
+  let posts = (topicGroups[topicId] || []).filter(p => {
+    if (currentFilter === 'free' && p.access !== 'free') return false;
+    if (currentFilter === 'paid' && p.access !== 'paid') return false;
+    if (searchQuery) return p.title.toLowerCase().includes(searchQuery);
+    return true;
+  });
+
+  let html = '<div class="topic-detail-header">' +
+    '<span class="topic-detail-title">' + escapeHTML(topicData.name) +
+    ' <span style="font-size:0.75em;color:var(--text-dim)">' + escapeHTML(topicData.en) + '</span></span>' +
+    '<button class="topic-back" onclick="backToTopicGrid()">\u2190 返回地圖</button>' +
+  '</div>' +
+  '<div class="topic-detail-desc">' + escapeHTML(topicData.desc) + '</div>' +
+  '<div class="topic-note" style="margin-bottom:12px">This topic is generated using AI clustering and may not reflect original intent. 此主題由 AI 分類生成，可能不完全反映原作意圖。</div>';
+
+  // Related series
+  const relatedSeries = Object.entries(seriesMap).filter(([_, info]) => info.topic === topicId);
+  if (relatedSeries.length > 0) {
+    html += '<div class="topic-series-section">' +
+      '<div class="section-label">相關系列 Related Series</div>' +
+      '<div class="topic-series-grid">';
+    relatedSeries.sort((a, b) => b[1].posts.length - a[1].posts.length).forEach(([name, info]) => {
+      html += '<div class="topic-series-chip" onclick="jumpToSeries(\'' + escapeAttr(name) + '\')">' +
+        escapeHTML(name) + ' <span class="chip-count">' + info.posts.length + '篇</span>' +
+      '</div>';
+    });
+    html += '</div><div class="ai-note" style="margin-top:6px">Based on topic similarity, not manually curated. 基於主題相似度自動分組，非作者本人安排。</div></div>';
+  }
+
+  html += '<div style="font-size:0.8em;color:var(--text-dim);margin-bottom:10px;">' + posts.length + ' 篇</div>';
+
+  const limit = Math.min(posts.length, 50);
+  for (let i = 0; i < limit; i++) html += postItemHTML(posts[i]);
+  if (posts.length > 50) {
+    html += '<div class="load-more"><button onclick="loadMoreTopic()">載入更多 (' + (posts.length - 50) + ' 篇)</button></div>';
+  }
+  if (posts.length === 0) html += '<div class="empty-state">此主題暫無符合條件的書頁</div>';
+
+  detail.innerHTML = html;
+  detail._posts = posts;
+  detail._loaded = limit;
+}
+
+function loadMoreTopic() {
+  const detail = document.getElementById('topicDetail');
+  const posts = detail._posts;
+  const loaded = detail._loaded || 50;
+  const next = Math.min(loaded + 50, posts.length);
+  const lm = detail.querySelector('.load-more');
+  if (lm) lm.remove();
+  let html = '';
+  for (let i = loaded; i < next; i++) html += postItemHTML(posts[i]);
+  if (next < posts.length) {
+    html += '<div class="load-more"><button onclick="loadMoreTopic()">載入更多 (' + (posts.length - next) + ' 篇)</button></div>';
+  }
+  detail.insertAdjacentHTML('beforeend', html);
+  detail._loaded = next;
+}
+
+function backToTopicGrid() {
+  activeTopic = null;
+  document.getElementById('topicGrid').style.display = '';
+  document.getElementById('topicDetail').style.display = 'none';
+}
+
+function jumpToSeries(seriesName) {
+  switchTab('series');
+  setTimeout(() => {
+    const h = hashCode(seriesName);
+    const card = document.getElementById('sc-' + h);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.borderColor = 'rgba(196,168,130,0.5)';
+      card.style.boxShadow = '0 0 20px rgba(196,168,130,0.15)';
+      setTimeout(() => {
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+      }, 2000);
+    }
+  }, 150);
+}
+
+function jumpToTopic(topicId) {
+  switchTab('topics');
+  setTimeout(() => showTopicDetail(topicId), 100);
+}
+
+// ============================================================
+// RENDER: READING PATHS
+// ============================================================
+function renderPaths() {
+  const container = document.getElementById('viewPaths');
+  const paths = [
+    {
+      level: '建議起點 · SUGGESTED STARTING POINTS',
+      title: '初識 Ra 書塔 — 基礎導覽',
+      desc: '從核心概念開始，初步了解 Raheliya 的寫作架構。',
+      steps: [
+        { label: 'Atlas of Voices — 14域總覽', topic: 'language', keyword: 'Atlas of Voices' },
+        { label: '14域結構升級宣言', topic: 'civilization', keyword: '14域結構' },
+        { label: '書頁資產地圖', topic: 'economy', keyword: '書頁資產地圖' },
+        { label: '第五文明容器技術書 · 總索引', topic: 'container', keyword: '全書總索引' },
+        { label: '主權生理學 — 容器基礎', topic: 'container', keyword: '主權生理學' },
+      ]
+    },
+    {
+      level: '延伸探索 · FURTHER EXPLORATION',
+      title: '靈魂觀測與夢頻系統',
+      desc: '延伸探索靈魂觀測、夢境檔案、舊人輪迴清理等主題。',
+      steps: [
+        { label: '靈魂全景圖觀測系列', topic: 'soul', keyword: '靈魂全景圖' },
+        { label: '夢頻系統基礎協議', topic: 'dream', keyword: '夢頻系統基礎' },
+        { label: '舊人輪迴週期 × 記憶清理', topic: 'soul', keyword: '舊人輪迴' },
+        { label: '意識橋維護系統', topic: 'container', keyword: '意識橋' },
+        { label: '女性節點對照模組', topic: 'dream', keyword: 'FEM-ARCH' },
+      ]
+    },
+    {
+      level: '深度探索 · DEEP DIVE',
+      title: '文明治理與星際接口',
+      desc: '深入探索文明治理、經濟系統、星際對接與法典條約等主題。',
+      steps: [
+        { label: 'Ra 文明回聲 — 完整系列', topic: 'language', keyword: 'Ra文明回聲' },
+        { label: '語頻經濟學體系', topic: 'economy', keyword: '語頻經濟學' },
+        { label: '光頻文明憲章', topic: 'codex', keyword: '光頻文明憲章' },
+        { label: '文明節奏治理系統', topic: 'governance', keyword: '文明節奏治理' },
+        { label: '星際憲政 × Oversoul聯盟', topic: 'interstellar', keyword: '星際' },
+      ]
+    },
+    {
+      level: '主題探索 · THEMATIC',
+      title: '建築、家庭與語譜',
+      desc: '按主題瀏覽：建築語法、家庭原型、光譜字典等領域。',
+      steps: [
+        { label: '第五文明建築語法書', topic: 'architecture', keyword: '建築語法' },
+        { label: '家庭樣本檔案庫', topic: 'family', keyword: '家庭樣本' },
+        { label: '第五文明婚配模型', topic: 'family', keyword: '婚配模型' },
+        { label: '光譜字典', topic: 'language', keyword: '光譜字典' },
+        { label: '新陽性能量重建', topic: 'education', keyword: '新陽性能量' },
+      ]
+    }
+  ];
+
+  let html = '<div class="path-note">These are suggested reading flows, not official sequences. 以下為建議閱讀流程，非官方順序。</div>';
+  paths.forEach(path => {
+    html += '<div class="path-card">' +
+      '<div class="path-level">' + path.level + '</div>' +
+      '<div class="path-title">' + path.title + '</div>' +
+      '<div class="path-desc">' + path.desc + '</div>' +
+      '<ol class="path-steps">';
+    path.steps.forEach(step => {
+      const match = allPosts.find(p => p.title.includes(step.keyword));
+      const url = match ? match.url : '#';
+      const target = match ? ' target="_blank" rel="noopener"' : '';
+      const topicData = TOPIC_MAP[step.topic];
+      const topicLabel = topicData ? topicData.name : step.topic;
+      html += '<li><a href="' + url + '"' + target + '>' + escapeHTML(step.label) + '</a> <span class="path-step-topic">' + escapeHTML(topicLabel) + '</span></li>';
+    });
+    html += '</ol></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+// ============================================================
+// LANDING / ENTER SITE
+// ============================================================
+function enterSite(tab) {
+  document.body.classList.remove('landing');
+  // Mark active entry button
+  document.querySelectorAll('.hero-entry-btn').forEach(btn => btn.classList.remove('active-entry'));
+  const tabMap = { series: 0, topics: 1, all: 2 };
+  const btns = document.querySelectorAll('.hero-entry-btn');
+  if (btns[tabMap[tab]]) btns[tabMap[tab]].classList.add('active-entry');
+  switchTab(tab);
+}
+// If URL has a hash, skip landing
+if (location.hash && location.hash !== '#' && location.hash !== '#all') {
+  document.body.classList.remove('landing');
+}
+
+// ============================================================
+// CREATOR-SAFE MODE
+// ============================================================
+function toggleCreatorSafe() {
+  const isActive = document.body.classList.toggle('creator-safe');
+  localStorage.setItem('raheliya_creator_safe', isActive ? '1' : '0');
+  document.getElementById('creatorToggle').textContent = isActive ? 'Full mode' : 'Creator-safe mode';
+  // In creator-safe mode, only series view is available
+  if (isActive && currentTab !== 'series') {
+    switchTab('series');
+  }
+}
+// Restore creator-safe state
+if (localStorage.getItem('raheliya_creator_safe') === '1') {
+  document.body.classList.add('creator-safe');
+  document.getElementById('creatorToggle').textContent = 'Full mode';
+}
+
+init();
+</script>
+</body>
+</html>
