@@ -1599,6 +1599,11 @@ function applyFilters() {
 function renderAllPosts() {
   const container = document.getElementById('viewAll');
 
+  if (!searchQuery) {
+    container.innerHTML = '<div class="empty-state" style="color:var(--text-dim);font-size:0.85em;padding:40px 20px;">輸入關鍵字搜尋 ' + allPosts.length.toLocaleString() + ' 篇書頁<br><span style="font-size:0.85em;opacity:0.6">Type to search across all articles</span></div>';
+    return;
+  }
+
   if (searchQuery) {
     renderFlatList(container, filteredPosts);
     return;
