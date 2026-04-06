@@ -83,38 +83,18 @@ a:hover { color: var(--pink); }
   padding: 48px 20px;
   border-radius: 4px;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Noto Serif TC', serif;
   font-size: 1.1em;
-  font-weight: 300;
   letter-spacing: 0.04em;
   transition: all 0.25s;
   text-decoration: none;
   text-align: center;
   line-height: 1.4;
-  position: relative;
-  overflow: hidden;
-}
-.hero-entry-btn::before {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  width: 120px;
-  height: 120px;
-  transform: translateX(-50%);
-  background: conic-gradient(from 180deg, transparent 0deg, rgba(196,168,130,0.08) 10deg, transparent 20deg, transparent 30deg, rgba(196,168,130,0.06) 40deg, transparent 50deg, transparent 60deg, rgba(196,168,130,0.07) 70deg, transparent 80deg, transparent 90deg, rgba(196,168,130,0.05) 100deg, transparent 110deg, transparent 120deg, rgba(196,168,130,0.08) 130deg, transparent 140deg, transparent 150deg, rgba(196,168,130,0.06) 160deg, transparent 170deg, transparent 180deg);
-  border-radius: 50%;
-  opacity: 0.6;
-  transition: opacity 0.3s;
-  pointer-events: none;
 }
 .hero-entry-btn:hover {
   background: rgba(196,168,130,0.08);
   color: var(--peach);
   transform: translateY(-2px);
-}
-.hero-entry-btn:hover::before {
-  opacity: 1;
 }
 .hero-entry-btn .entry-label {
   font-size: 0.65em;
@@ -335,7 +315,7 @@ body.landing .content { display: none; }
 .search-box { position: relative; }
 .search-box input {
   width: 100%;
-  padding: 14px 18px 14px 44px;
+  padding: 14px 18px;
   background: rgba(255,255,255,0.03);
   border: none;
   border-radius: 4px;
@@ -535,28 +515,10 @@ body.landing .content { display: none; }
   display: flex;
   flex-direction: column;
   transition: background 0.2s, transform 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.series-card::after {
-  content: '';
-  position: absolute;
-  bottom: -30px;
-  right: -30px;
-  width: 100px;
-  height: 100px;
-  background: conic-gradient(from 200deg, transparent 0deg, rgba(196,168,130,0.06) 8deg, transparent 16deg, transparent 24deg, rgba(196,168,130,0.04) 32deg, transparent 40deg, transparent 48deg, rgba(196,168,130,0.05) 56deg, transparent 64deg, transparent 72deg, rgba(196,168,130,0.06) 80deg, transparent 88deg, transparent 96deg, rgba(196,168,130,0.04) 104deg, transparent 112deg, transparent 180deg);
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.5;
-  transition: opacity 0.3s;
 }
 .series-card:hover {
   background: rgba(196,168,130,0.06);
   transform: translateY(-2px);
-}
-.series-card:hover::after {
-  opacity: 1;
 }
 .series-title {
   font-family: 'Noto Serif TC', serif;
@@ -904,28 +866,11 @@ body.landing .content { display: none; }
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.topic-card::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  width: 80px;
-  height: 80px;
-  transform: translateX(-50%);
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(196,168,130,0.05) 10deg, transparent 20deg, transparent 30deg, rgba(196,168,130,0.04) 40deg, transparent 50deg, transparent 60deg, rgba(196,168,130,0.05) 70deg, transparent 80deg, transparent 90deg, rgba(196,168,130,0.04) 100deg, transparent 110deg, transparent 180deg);
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.4;
-  transition: opacity 0.3s;
 }
 .topic-card:hover {
   background: rgba(196,168,130,0.06);
   transform: translateY(-2px);
 }
-.topic-card:hover::before { opacity: 0.8; }
 .topic-card.active {
   background: rgba(196,168,130,0.08);
 }
@@ -1192,7 +1137,6 @@ body.landing .content { display: none; }
 <!-- SEARCH -->
 <div class="search-wrap">
   <div class="search-box">
-    <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" placeholder="搜尋標題、主題、關鍵字…" autocomplete="off">
   </div>
   <div class="search-meta">
