@@ -148,7 +148,7 @@ a:hover { color: var(--pink); }
 }
 body.creator-safe .nav-tabs button[data-tab="topics"],
 body.creator-safe .nav-tabs button[data-tab="paths"] { display: none; }
-body.creator-safe .nav-tabs button[data-tab="all"] { display: none; }
+body.creator-safe .topic-section { display: none; }
 body.creator-safe .disclaimer { display: none; }
 body.creator-safe .about-section { display: none; }
 body.creator-safe .topic-tag { display: none; }
@@ -1923,7 +1923,7 @@ function renderReader() {
       '</div>';
     });
     html += '</div>' +
-        '<div class="ai-note" style="margin-top:8px">Based on topic similarity, not manually curated. 基於主題相似度，非作者本人安排。</div>' +
+        '<div class="ai-note" style="margin-top:8px">Based on topic similarity, not manually curated. 基於主題相似度自動分組，非作者本人安排。</div>' +
       '</div>' +
     '</div>';
   }
