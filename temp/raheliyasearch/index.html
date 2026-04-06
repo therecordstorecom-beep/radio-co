@@ -120,6 +120,36 @@ a:hover { color: var(--pink); }
   content: '- ';
   color: var(--text-dim);
 }
+.ai-note {
+  font-size: 0.68em;
+  color: rgba(255,180,60,0.55);
+  font-style: italic;
+}
+.creator-toggle {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 200;
+  background: rgba(15,27,46,0.9);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.72em;
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+.creator-toggle:hover {
+  color: var(--pink);
+  border-color: rgba(235,150,255,0.3);
+}
+body.creator-safe .nav-tabs button[data-tab="topics"],
+body.creator-safe .nav-tabs button[data-tab="paths"] { display: none; }
+body.creator-safe .disclaimer { display: none; }
+body.creator-safe .about-section { display: none; }
 
 /* ===== HERO ===== */
 .hero {
@@ -1083,6 +1113,9 @@ a:hover { color: var(--pink); }
   <div class="view" id="viewPaths"></div>
 </main>
 
+<!-- CREATOR-SAFE TOGGLE -->
+<button class="creator-toggle" id="creatorToggle" onclick="toggleCreatorSafe()">Creator-safe mode</button>
+
 <!-- ABOUT -->
 <div class="about-section">
   <h3>About this site</h3>
@@ -1716,6 +1749,7 @@ function renderSeries() {
       '<div class="series-meta">' +
         '<span class="series-topic-badge" onclick="event.stopPropagation();jumpToTopic(\'' + escapeAttr(info.topic) + '\')">' + escapeHTML(topicLabel) + '</span>' +
         '<span>' + info.posts.length + ' 篇</span>' +
+        '<span class="ai-note">分類方式：AI輔助（可能不準確）</span>' +
       '</div>';
 
     if (hasProgress) {
@@ -1970,7 +2004,7 @@ function renderTopicDetail(topicId) {
         escapeHTML(name) + ' <span class="chip-count">' + info.posts.length + '篇</span>' +
       '</div>';
     });
-    html += '</div></div>';
+    html += '</div><div class="ai-note" style="margin-top:6px">Based on topic similarity, not manually curated. 基於主題相似度自動分組，非作者本人安排。</div></div>';
   }
 
   html += '<div style="font-size:0.8em;color:var(--text-dim);margin-bottom:10px;">' + posts.length + ' 篇</div>';
@@ -2111,6 +2145,24 @@ function renderPaths() {
 // ============================================================
 // BOOT
 // ============================================================
+// ============================================================
+// CREATOR-SAFE MODE
+// ============================================================
+function toggleCreatorSafe() {
+  const isActive = document.body.classList.toggle('creator-safe');
+  localStorage.setItem('raheliya_creator_safe', isActive ? '1' : '0');
+  document.getElementById('creatorToggle').textContent = isActive ? 'Full mode' : 'Creator-safe mode';
+  // If currently on a hidden tab, switch to series
+  if (isActive && (currentTab === 'topics' || currentTab === 'paths')) {
+    switchTab('series');
+  }
+}
+// Restore creator-safe state
+if (localStorage.getItem('raheliya_creator_safe') === '1') {
+  document.body.classList.add('creator-safe');
+  document.getElementById('creatorToggle').textContent = 'Full mode';
+}
+
 init();
 </script>
 </body>
