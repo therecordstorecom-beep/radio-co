@@ -1444,7 +1444,8 @@ let readerIndex = 0;
 // ============================================================
 async function init() {
   try {
-    const resp = await fetch('posts.json');
+    const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+    const resp = await fetch(base + 'posts.json');
     const data = await resp.json();
     const rawPosts = data.posts || data;
 
