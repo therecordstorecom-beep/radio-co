@@ -46,6 +46,48 @@ body {
 a { color: var(--peach); text-decoration: none; transition: color 0.2s; }
 a:hover { color: var(--pink); }
 
+/* ===== HERO ENTRY BUTTONS ===== */
+.hero-purpose {
+  color: var(--text);
+  font-size: 0.92em;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+.hero-risk {
+  font-size: 0.78em;
+  opacity: 0.6;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.hero-entries {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.hero-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(235,150,255,0.08);
+  border: 1px solid rgba(235,150,255,0.2);
+  color: var(--peach);
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.hero-entry-btn:hover {
+  background: rgba(235,150,255,0.15);
+  border-color: rgba(235,150,255,0.4);
+  color: var(--pink);
+  transform: translateY(-1px);
+}
+
 /* ===== DISCLAIMER ===== */
 .disclaimer {
   max-width: 700px;
@@ -156,6 +198,8 @@ body.creator-safe .series-tag { display: none; }
 body.creator-safe .ai-note { display: none; }
 body.creator-safe .tag-ai { display: none; }
 body.creator-safe .topic-note { display: none; }
+body.creator-safe .hero-entry-btn[onclick*="topics"] { display: none; }
+body.creator-safe .hero-risk { display: none; }
 
 /* ===== HERO ===== */
 .hero {
@@ -174,6 +218,14 @@ body.creator-safe .topic-note { display: none; }
   background: radial-gradient(ellipse, rgba(235,150,255,0.08) 0%, rgba(140,80,200,0.03) 50%, transparent 70%);
   pointer-events: none;
 }
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
 .hero h1 {
   font-family: 'Noto Serif TC', serif;
   font-size: 2.2em;
@@ -1054,8 +1106,13 @@ body.creator-safe .topic-note { display: none; }
 <!-- HERO -->
 <header class="hero">
   <h1>☉ Ra 書塔 × Atlas of Voices</h1>
-  <p class="subtitle">Exploratory Reading System — 可探索的閱讀系統</p>
-  <p class="author">Raheliya · Substack Archive</p>
+  <p class="hero-purpose">A reading interface for navigating Raheliya's writings</p>
+  <p class="hero-risk">AI-assisted organization · Unofficial · Exploratory</p>
+  <div class="hero-entries">
+    <a class="hero-entry-btn" onclick="switchTab('series')">📖 Read by Series</a>
+    <a class="hero-entry-btn" onclick="switchTab('topics')">🌐 Explore Topics</a>
+    <a class="hero-entry-btn" onclick="switchTab('all');document.getElementById('searchInput').focus()">🔍 Search Articles</a>
+  </div>
 </header>
 
 <!-- DISCLAIMER -->
