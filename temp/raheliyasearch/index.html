@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☉ Ra 書塔 × Atlas of Voices — Knowledge Navigation</title>
+<title>☉ Ra 書塔 × Atlas of Voices — Exploratory Reading System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -45,6 +45,81 @@ body {
 
 a { color: var(--peach); text-decoration: none; transition: color 0.2s; }
 a:hover { color: var(--pink); }
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  max-width: 700px;
+  margin: 0 auto 0;
+  padding: 14px 20px;
+  background: rgba(255,180,60,0.06);
+  border: 1px solid rgba(255,180,60,0.15);
+  border-radius: 10px;
+  font-size: 0.78em;
+  line-height: 1.6;
+  color: var(--text-dim);
+  text-align: center;
+}
+.disclaimer strong {
+  color: rgba(255,180,60,0.85);
+  font-size: 1.05em;
+}
+.disclaimer-zh {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95em;
+}
+.tag-ai {
+  display: inline-block;
+  background: rgba(255,180,60,0.1);
+  border: 1px solid rgba(255,180,60,0.2);
+  color: rgba(255,180,60,0.7);
+  padding: 0px 6px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.topic-note {
+  font-size: 0.68em;
+  color: var(--text-dim);
+  opacity: 0.6;
+  font-style: italic;
+  margin-top: 4px;
+}
+.path-note {
+  font-size: 0.78em;
+  color: var(--text-dim);
+  opacity: 0.7;
+  font-style: italic;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.about-section {
+  max-width: 700px;
+  margin: 30px auto 0;
+  padding: 20px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  font-size: 0.75em;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.about-section h3 {
+  font-size: 1.1em;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.about-section ul {
+  list-style: none;
+  padding: 0;
+}
+.about-section ul li::before {
+  content: '- ';
+  color: var(--text-dim);
+}
 
 /* ===== HERO ===== */
 .hero {
@@ -943,9 +1018,21 @@ a:hover { color: var(--pink); }
 <!-- HERO -->
 <header class="hero">
   <h1>☉ Ra 書塔 × Atlas of Voices</h1>
-  <p class="subtitle">Knowledge Navigation Layer — 知識導航層</p>
+  <p class="subtitle">Exploratory Reading System — 可探索的閱讀系統</p>
   <p class="author">Raheliya · Substack Archive</p>
 </header>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>Unofficial Reading Tool</strong><br>
+  This site reorganizes articles from Raheliya's Substack using AI-assisted grouping and personal interpretation.
+  Structures such as series, topics, and reading paths may be incomplete or inaccurate.<br>
+  → Treat this as a reading aid, not an authoritative structure.
+  <div class="disclaimer-zh">
+    ⚠ 非官方閱讀整理工具<br>
+    本網站透過 AI 與個人理解重新整理文章，所有分類與結構可能不完整或不準確，僅作為閱讀輔助使用。
+  </div>
+</div>
 
 <!-- STATS -->
 <div class="stats-bar" id="statsBar">
@@ -996,10 +1083,28 @@ a:hover { color: var(--pink); }
   <div class="view" id="viewPaths"></div>
 </main>
 
+<!-- ABOUT -->
+<div class="about-section">
+  <h3>About this site</h3>
+  <p>This project is a personal reading interface built on top of Raheliya's Substack.</p>
+  <p style="margin-top:8px"><strong style="color:var(--gold-dim)">Goals:</strong></p>
+  <ul>
+    <li>Improve search and navigation</li>
+    <li>Reconstruct possible reading sequences</li>
+    <li>Explore connections between articles</li>
+  </ul>
+  <p style="margin-top:8px"><strong style="color:var(--gold-dim)">Limitations:</strong></p>
+  <ul>
+    <li>AI-assisted classification may be inaccurate</li>
+    <li>Series and topics are interpretative, not canonical</li>
+    <li>Content structure is continuously evolving</li>
+  </ul>
+</div>
+
 <!-- FOOTER -->
 <footer class="footer">
-  <p>☉ Ra 書塔 × Atlas of Voices — Knowledge Navigation Layer</p>
-  <p style="margin-top:4px;">Built for <a href="https://raheliya.substack.com" target="_blank" rel="noopener">Raheliya's Substack</a></p>
+  <p>☉ Ra 書塔 × Atlas of Voices — Exploratory Reading System</p>
+  <p style="margin-top:4px;">Built for <a href="https://raheliya.substack.com" target="_blank" rel="noopener">Raheliya's Substack</a> · Unofficial reading tool</p>
 </footer>
 
 <script>
@@ -1607,7 +1712,7 @@ function renderSeries() {
     const startIdx = hasProgress ? Math.min(prog.lastIndex + 1, info.posts.length - 1) : 0;
 
     html += '<div class="series-card" id="sc-' + h + '">' +
-      '<div class="series-title">\u{1F4D6} ' + escapeHTML(name) + '</div>' +
+      '<div class="series-title">\u{1F4D6} ' + escapeHTML(name) + ' <span class="tag-ai">AI-assisted</span></div>' +
       '<div class="series-meta">' +
         '<span class="series-topic-badge" onclick="event.stopPropagation();jumpToTopic(\'' + escapeAttr(info.topic) + '\')">' + escapeHTML(topicLabel) + '</span>' +
         '<span>' + info.posts.length + ' 篇</span>' +
@@ -1702,7 +1807,7 @@ function renderReader() {
     '<button class="reader-back" onclick="closeSeriesReader()">\u2190 返回系列</button>' +
     '<span class="reader-position">' + (readerIndex + 1) + ' / ' + total + '</span>' +
   '</div>' +
-  '<div class="reader-series-name">\u{1F4D6} ' + escapeHTML(readerSeriesName) + '</div>' +
+  '<div class="reader-series-name">\u{1F4D6} ' + escapeHTML(readerSeriesName) + ' <span class="tag-ai">AI-assisted</span></div>' +
   '<div class="reader-progress">' +
     '<div class="reader-progress-bar"><div class="reader-progress-fill" style="width:' + Math.round((readerIndex + 1) / total * 100) + '%"></div></div>' +
     '<div class="reader-progress-text">' + (readerIndex + 1) + ' / ' + total + ' · ' + getSeriesProgress(readerSeriesName, total).read + ' 篇已讀</div>' +
@@ -1820,6 +1925,7 @@ function renderTopics() {
       '<div class="tc-en">' + escapeHTML(t.en) + '</div>' +
       '<div class="tc-desc">' + escapeHTML(t.desc) + '</div>' +
       '<div class="tc-count">' + count + ' 篇</div>' +
+      '<div class="topic-note">AI clustering</div>' +
     '</div>';
   });
   html += '</div><div class="topic-detail" id="topicDetail" style="display:none;"></div>';
@@ -1850,7 +1956,8 @@ function renderTopicDetail(topicId) {
     ' <span style="font-size:0.75em;color:var(--text-dim)">' + escapeHTML(topicData.en) + '</span></span>' +
     '<button class="topic-back" onclick="backToTopicGrid()">\u2190 返回地圖</button>' +
   '</div>' +
-  '<div class="topic-detail-desc">' + escapeHTML(topicData.desc) + '</div>';
+  '<div class="topic-detail-desc">' + escapeHTML(topicData.desc) + '</div>' +
+  '<div class="topic-note" style="margin-bottom:12px">This topic is generated using AI clustering and may not reflect original intent. 此主題由 AI 分類生成，可能不完全反映原作意圖。</div>';
 
   // Related series
   const relatedSeries = Object.entries(seriesMap).filter(([_, info]) => info.topic === topicId);
@@ -1931,9 +2038,9 @@ function renderPaths() {
   const container = document.getElementById('viewPaths');
   const paths = [
     {
-      level: '入門 · BEGINNER',
+      level: '建議起點 · SUGGESTED STARTING POINTS',
       title: '初識 Ra 書塔 — 基礎導覽',
-      desc: '從核心概念開始，了解 Raheliya 的知識體系架構與基本觀念。',
+      desc: '從核心概念開始，初步了解 Raheliya 的寫作架構。',
       steps: [
         { label: 'Atlas of Voices — 14域總覽', topic: 'language', keyword: 'Atlas of Voices' },
         { label: '14域結構升級宣言', topic: 'civilization', keyword: '14域結構' },
@@ -1943,9 +2050,9 @@ function renderPaths() {
       ]
     },
     {
-      level: '進階 · INTERMEDIATE',
+      level: '延伸探索 · FURTHER EXPLORATION',
       title: '靈魂觀測與夢頻系統',
-      desc: '深入靈魂觀測、夢境檔案、舊人輪迴清理等進階系統。',
+      desc: '延伸探索靈魂觀測、夢境檔案、舊人輪迴清理等主題。',
       steps: [
         { label: '靈魂全景圖觀測系列', topic: 'soul', keyword: '靈魂全景圖' },
         { label: '夢頻系統基礎協議', topic: 'dream', keyword: '夢頻系統基礎' },
@@ -1955,9 +2062,9 @@ function renderPaths() {
       ]
     },
     {
-      level: '深度 · ADVANCED',
+      level: '深度探索 · DEEP DIVE',
       title: '文明治理與星際接口',
-      desc: '探索文明治理、經濟系統、星際對接與法典條約的完整架構。',
+      desc: '深入探索文明治理、經濟系統、星際對接與法典條約等主題。',
       steps: [
         { label: 'Ra 文明回聲 — 完整系列', topic: 'language', keyword: 'Ra文明回聲' },
         { label: '語頻經濟學體系', topic: 'economy', keyword: '語頻經濟學' },
@@ -1967,9 +2074,9 @@ function renderPaths() {
       ]
     },
     {
-      level: '專題 · SPECIAL',
+      level: '主題探索 · THEMATIC',
       title: '建築、家庭與語譜',
-      desc: '特殊主題路徑：建築語法、家庭原型、光譜字典等獨特領域。',
+      desc: '按主題瀏覽：建築語法、家庭原型、光譜字典等領域。',
       steps: [
         { label: '第五文明建築語法書', topic: 'architecture', keyword: '建築語法' },
         { label: '家庭樣本檔案庫', topic: 'family', keyword: '家庭樣本' },
@@ -1980,7 +2087,7 @@ function renderPaths() {
     }
   ];
 
-  let html = '';
+  let html = '<div class="path-note">These are suggested reading flows, not official sequences. 以下為建議閱讀流程，非官方順序。</div>';
   paths.forEach(path => {
     html += '<div class="path-card">' +
       '<div class="path-level">' + path.level + '</div>' +
