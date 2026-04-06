@@ -148,8 +148,14 @@ a:hover { color: var(--pink); }
 }
 body.creator-safe .nav-tabs button[data-tab="topics"],
 body.creator-safe .nav-tabs button[data-tab="paths"] { display: none; }
+body.creator-safe .nav-tabs button[data-tab="all"] { display: none; }
 body.creator-safe .disclaimer { display: none; }
 body.creator-safe .about-section { display: none; }
+body.creator-safe .topic-tag { display: none; }
+body.creator-safe .series-tag { display: none; }
+body.creator-safe .ai-note { display: none; }
+body.creator-safe .tag-ai { display: none; }
+body.creator-safe .topic-note { display: none; }
 
 /* ===== HERO ===== */
 .hero {
@@ -2152,8 +2158,8 @@ function toggleCreatorSafe() {
   const isActive = document.body.classList.toggle('creator-safe');
   localStorage.setItem('raheliya_creator_safe', isActive ? '1' : '0');
   document.getElementById('creatorToggle').textContent = isActive ? 'Full mode' : 'Creator-safe mode';
-  // If currently on a hidden tab, switch to series
-  if (isActive && (currentTab === 'topics' || currentTab === 'paths')) {
+  // In creator-safe mode, only series view is available
+  if (isActive && currentTab !== 'series') {
     switchTab('series');
   }
 }
