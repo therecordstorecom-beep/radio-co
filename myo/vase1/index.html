@@ -41,9 +41,18 @@
       align-items: start;
     }
 
+    .mobile-label {
+      display: none;
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #999; padding-bottom: 12px;
+    }
+    .mobile-label strong { color: #000; }
+
     @media (max-width: 768px) {
       .hero { grid-template-columns: 1fr; }
       .viewer-wrap { order: -1; }
+      .mobile-label { display: block; }
+      .project-label { display: none; }
     }
 
     /* ── SIDE VIEWER ── */
@@ -285,6 +294,7 @@
   </nav>
 
   <div class="page">
+    <div class="mobile-label">myo_ / vase-1 <strong>PULSE</strong></div>
     <div class="hero">
       <!-- LEFT: Controls -->
       <div class="controls">
