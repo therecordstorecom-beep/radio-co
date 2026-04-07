@@ -762,10 +762,11 @@
         const lastW = state.allSegments[enabledIndices[enabledIndices.length - 1]].width;
         // Cap slope must not exceed 30 degrees: max width diff = CAP_HEIGHT * tan(30°) ≈ 34.6mm
         const maxCapDiff = Math.floor(CAP_HEIGHT * Math.tan(30 * Math.PI / 180));
-        const minMouth = Math.max(MIN_MOUTH, lastW - maxCapDiff);
-        state.mouthWidth = clamp(state.mouthWidth, minMouth, lastW - 5);
+        const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - maxCapDiff) / 5) * 5;
+        const maxMouth = Math.floor((lastW - 5) / 5) * 5;
+        state.mouthWidth = clamp(Math.round(state.mouthWidth / 5) * 5, minMouth, maxMouth);
         const ms = document.getElementById('s-mouth');
-        if (ms) { ms.min = minMouth; ms.max = lastW - 5; ms.value = state.mouthWidth; }
+        if (ms) { ms.min = minMouth; ms.max = maxMouth; ms.value = state.mouthWidth; }
         document.getElementById('v-mouth').textContent = state.mouthWidth;
       }
     }
@@ -922,7 +923,9 @@
       if (state.hasCap) {
         const active = getActiveSegments();
         const lastW = active[active.length - 1].width;
-        state.mouthWidth = clamp(MIN_MOUTH + Math.floor(Math.random() * (lastW - MIN_MOUTH - 5)), MIN_MOUTH, lastW - 5);
+        const rMin = Math.ceil(MIN_MOUTH / 5) * 5;
+        const rMax = Math.floor((lastW - 5) / 5) * 5;
+        state.mouthWidth = rMin + Math.floor(Math.random() * ((rMax - rMin) / 5 + 1)) * 5;
         document.getElementById('s-mouth').value = state.mouthWidth;
         document.getElementById('v-mouth').textContent = state.mouthWidth;
       }
