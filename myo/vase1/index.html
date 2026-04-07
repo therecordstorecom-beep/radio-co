@@ -205,12 +205,12 @@
       flex: 1; height: 8px;
       -webkit-appearance: none; appearance: none;
       background: transparent; outline: none;
-      /* Tick marks via gradient — 9 evenly spaced ticks */
+      /* Tick marks — 10 ticks for 10 positions (35,40,45,...,80) */
       background-image:
         linear-gradient(#ddd, #ddd),
-        repeating-linear-gradient(90deg, #bbb 0px, #bbb 1px, transparent 1px, transparent 11.11%);
-      background-size: 100% 2px, calc(100% - 12px) 8px;
-      background-position: center, 6px center;
+        repeating-linear-gradient(90deg, #bbb 0px, #bbb 1px, transparent 1px, transparent calc(100% / 10));
+      background-size: 100% 2px, 100% 8px;
+      background-position: center, left center;
       background-repeat: no-repeat;
     }
     .seg-slider-wrap input[type="range"]::-webkit-slider-thumb {
@@ -302,11 +302,7 @@
 
         <div style="height: 28px;"></div>
 
-        <div class="seg-list" id="seg-list">
-          <!-- Dynamically generated -->
-        </div>
-
-        <div class="cap-row" id="cap-row">
+        <div class="cap-row" id="cap-row" style="border-top:none; border-bottom:1px solid #eee;">
           <input type="checkbox" class="seg-cb" id="cb-cap" checked>
           <span class="seg-label">cap</span>
           <span class="contour-picker" style="visibility:hidden;"></span>
@@ -314,6 +310,10 @@
             <input type="range" id="s-mouth" min="15" max="75" value="25" step="5">
             <span class="val" id="v-mouth">25</span>
           </div>
+        </div>
+
+        <div class="seg-list" id="seg-list">
+          <!-- Dynamically generated -->
         </div>
 
         <div class="dimensions" id="dimensions">
@@ -761,16 +761,20 @@
       const list = document.getElementById('seg-list');
       list.innerHTML = '';
 
-      // Count active segments for renumbering
-      let activeNum = 0;
+      // Count total active for numbering (bottom=1, top=highest)
+      const totalActive = state.enabled.filter(Boolean).length;
+      let activeCountdown = totalActive;
 
-      state.allSegments.forEach((seg, idx) => {
+      // Render in reverse order (top segment first) to match 3D side view
+      const indices = [];
+      for (let i = 6; i >= 0; i--) indices.push(i);
+
+      indices.forEach(idx => {
+        const seg = state.allSegments[idx];
         const isOn = state.enabled[idx];
 
         // Hide seg 6+7 (idx 5,6) when cap is on
         if (state.hasCap && idx >= 5) return;
-
-        if (isOn) activeNum++;
 
         const row = document.createElement('div');
         row.className = 'seg-row' + (isOn ? '' : ' disabled');
@@ -791,10 +795,15 @@
         });
         row.appendChild(cb);
 
-        // Label — show sequential number if on, blank if off
+        // Label — numbered from bottom (1) to top (highest), displayed in reverse
         const label = document.createElement('span');
         label.className = 'seg-label';
-        label.textContent = isOn ? `${activeNum}` : '';
+        if (isOn) {
+          label.textContent = `${activeCountdown}`;
+          activeCountdown--;
+        } else {
+          label.textContent = '';
+        }
         row.appendChild(label);
 
         // Contour picker
