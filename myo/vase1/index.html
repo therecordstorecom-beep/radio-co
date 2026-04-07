@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MYO_ VASE-1 | (radio)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; min-height: 100%;
+      background: #ffffff;
+      font-family: 'Space Mono', monospace;
+      color: #000;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #eee;
+    }
+    nav a { color: #000; text-decoration: none; font-size: 10px; letter-spacing: 0.15em; text-transform: lowercase; }
+    nav a:hover { opacity: 0.5; }
+    .nav-title { font-weight: 700; font-size: 14px; letter-spacing: 0.1em; }
+
+    /* ── LAYOUT ── */
+    .page { padding: 100px 32px 60px; max-width: 1200px; margin: 0 auto; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      min-height: 70vh;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .viewer-wrap { order: -1; }
+    }
+
+    /* ── SIDE VIEWER ── */
+    .viewer-wrap {
+      position: sticky; top: 80px;
+      width: 100%;
+      aspect-ratio: 1;
+      background: #ffffff;
+      /* Grid: thick lines every 100px, thin lines every 20px, centered */
+      background-image:
+        linear-gradient(rgba(0,0,0,0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+      background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+      background-position: center center;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    #vase-canvas { width: 100%; height: 100%; display: block; }
+
+    .viewer-hint {
+      position: absolute; bottom: 12px; left: 0; right: 0;
+      text-align: center; font-size: 9px; letter-spacing: 0.2em;
+      color: #999; pointer-events: none;
+    }
+
+    /* 3D popup button */
+    .btn-3d-view {
+      position: absolute; top: 12px; right: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid rgba(0,0,0,0.3); background: rgba(255,255,255,0.85);
+      color: #333; cursor: pointer; transition: all 0.15s;
+      backdrop-filter: blur(4px);
+    }
+    .btn-3d-view:hover { background: #000; color: #fff; border-color: #000; }
+
+    /* ── 3D POPUP MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      width: 80vw; height: 80vh; max-width: 900px;
+      background: #f5f5f5; border-radius: 4px; position: relative; overflow: hidden;
+    }
+    .modal-box canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+    .modal-box canvas:active { cursor: grabbing; }
+    .modal-close {
+      position: absolute; top: 12px; right: 16px;
+      font-family: 'Space Mono', monospace; font-size: 18px;
+      background: none; border: none; cursor: pointer; color: #666;
+      z-index: 10;
+    }
+    .modal-close:hover { color: #000; }
+
+    /* ── CONTROLS ── */
+    .controls { display: flex; flex-direction: column; gap: 28px; }
+
+    .project-label {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #999;
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: #999;
+      padding-bottom: 6px; border-bottom: 1px solid #eee;
+    }
+
+    /* ── SEGMENT ROWS ── */
+    .seg-list { display: flex; flex-direction: column; gap: 0; }
+
+    .seg-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 0;
+      border-bottom: 1px solid #f0f0f0;
+      transition: opacity 0.2s;
+    }
+    .seg-row.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .seg-row.disabled .contour-btn,
+    .seg-row.disabled input[type="range"] { pointer-events: none; }
+
+    .seg-label {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #999; width: 38px; flex-shrink: 0;
+    }
+
+    /* Inline checkbox */
+    .seg-cb {
+      -webkit-appearance: none; appearance: none;
+      width: 12px; height: 12px; flex-shrink: 0;
+      border: 1.5px solid #ccc; background: #fff;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .seg-cb:checked { border-color: #000; background: #000; }
+    .seg-cb:checked::after {
+      content: ''; display: block;
+      width: 4px; height: 4px; background: #fff; border-radius: 1px;
+    }
+
+    /* Contour type picker — SVG icons */
+    .contour-picker {
+      display: flex; gap: 4px; flex-shrink: 0;
+    }
+    .contour-btn {
+      width: 28px; height: 28px;
+      padding: 4px;
+      border: 1px solid #ddd; background: #fff;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .contour-btn svg { width: 18px; height: 18px; }
+    .contour-btn svg path, .contour-btn svg circle, .contour-btn svg polygon, .contour-btn svg rect {
+      fill: none; stroke: #bbb; stroke-width: 1.5;
+    }
+    .contour-btn.active {
+      border-color: #000; background: #000;
+    }
+    .contour-btn.active svg path, .contour-btn.active svg circle,
+    .contour-btn.active svg polygon, .contour-btn.active svg rect {
+      stroke: #fff;
+    }
+    .contour-btn:hover:not(.active) {
+      border-color: #999;
+    }
+    .contour-btn:hover:not(.active) svg path,
+    .contour-btn:hover:not(.active) svg circle,
+    .contour-btn:hover:not(.active) svg polygon,
+    .contour-btn:hover:not(.active) svg rect {
+      stroke: #555;
+    }
+
+    /* Width slider */
+    .seg-slider-wrap {
+      flex: 1; display: flex; align-items: center; gap: 6px;
+    }
+    .seg-slider-wrap input[type="range"] {
+      flex: 1; height: 8px;
+      -webkit-appearance: none; appearance: none;
+      background: transparent; outline: none;
+      /* Tick marks via gradient — 9 evenly spaced ticks */
+      background-image:
+        linear-gradient(#ddd, #ddd),
+        repeating-linear-gradient(90deg, #bbb 0px, #bbb 1px, transparent 1px, transparent 11.11%);
+      background-size: 100% 2px, calc(100% - 12px) 8px;
+      background-position: center, 6px center;
+      background-repeat: no-repeat;
+    }
+    .seg-slider-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #000; cursor: pointer;
+    }
+    .seg-slider-wrap .val {
+      font-size: 10px; width: 28px; text-align: right; color: #999;
+      font-variant-numeric: tabular-nums; letter-spacing: 0.15em;
+    }
+
+    /* ── CAP ROW ── */
+    .cap-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 0;
+      border-top: 1px solid #eee;
+    }
+    /* Cap slider — smooth continuous, no ticks */
+    .cap-row .seg-slider-wrap input[type="range"] {
+      background-image: linear-gradient(#ccc, #ccc);
+      background-size: 100% 1px;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 8px;
+    }
+
+    /* ── BUTTONS ── */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 0.15em; text-transform: lowercase;
+      padding: 10px 20px;
+      border: 1px solid #000; background: #000; color: #fff;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn:hover { background: #333; }
+    .btn.outline { background: transparent; color: #000; }
+    .btn.outline:hover { background: #000; color: #fff; }
+
+    /* ── DIMENSIONS ── */
+    .dimensions {
+      font-size: 10px; color: #999; letter-spacing: 0.15em;
+    }
+    .dimensions span { color: #000; font-weight: 700; }
+
+    /* ── INFO PANEL ── */
+    .info-section {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid #eee;
+    }
+    .info-section h2 {
+      font-size: 14px; font-weight: 700; margin-bottom: 20px;
+      letter-spacing: 0.1em;
+    }
+    .info-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .info-card {
+      padding: 20px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    .info-card h3 {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #999; margin-bottom: 8px;
+    }
+    .info-card p {
+      font-size: 11px; line-height: 1.7; color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-title">(radio)</a>
+    <a href="/">home</a>
+  </nav>
+
+  <div class="page">
+    <div class="hero">
+      <!-- LEFT: Controls -->
+      <div class="controls">
+        <div class="project-label">myo_ / vase-1</div>
+
+        <div style="height: 28px;"></div>
+
+        <div class="seg-list" id="seg-list">
+          <!-- Dynamically generated -->
+        </div>
+
+        <div class="cap-row" id="cap-row">
+          <input type="checkbox" class="seg-cb" id="cb-cap" checked>
+          <span class="seg-label">cap</span>
+          <span class="contour-picker" style="visibility:hidden;"></span>
+          <div class="seg-slider-wrap" id="mouth-slider-wrap">
+            <input type="range" id="s-mouth" min="15" max="75" value="25" step="5">
+            <span class="val" id="v-mouth">25</span>
+          </div>
+        </div>
+
+        <div class="dimensions" id="dimensions">
+          height: <span id="dim-height">210</span>mm &middot; max width: <span id="dim-width">100</span>mm
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="btn-randomize">randomize</button>
+          <button class="btn outline" id="btn-export">export stl</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Side view -->
+      <div class="viewer-wrap">
+        <canvas id="vase-canvas"></canvas>
+        <button class="btn-3d-view" id="btn-3d-view">3D</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D POPUP MODAL -->
+  <div class="modal-overlay" id="modal-3d">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <canvas id="vase-canvas-3d"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ════════════════════════════════════════
+    // CONFIG
+    // ════════════════════════════════════════
+    const SEGMENT_HEIGHT = 30;
+    const CAP_HEIGHT = 60;
+    const ANG_RES = 480;
+    const LAYERS_PER_SEG = 10;
+    const CAP_LAYERS = 20;
+    const MAX_WIDTH_DIFF = 15;
+    const MIN_WIDTH = 35;
+    const MAX_WIDTH = 80;
+    const MIN_MOUTH = 15;
+    const CONTOUR_TYPES = ['flower', 'sun', 'rect'];
+
+    // ════════════════════════════════════════
+    // STATE
+    // ════════════════════════════════════════
+    const state = {
+      allSegments: [
+        { contour: 'flower', width: 50 },
+        { contour: 'sun',    width: 55 },
+        { contour: 'rect',   width: 60 },
+        { contour: 'sun',    width: 55 },
+        { contour: 'flower', width: 50 },
+        { contour: 'rect',   width: 50 },
+        { contour: 'flower', width: 50 },
+      ],
+      enabled: [true, true, true, true, true, false, false],
+      hasCap: true,
+      mouthWidth: 25,
+    };
+
+    function getActiveSegments() {
+      return state.allSegments.filter((_, i) => state.enabled[i]);
+    }
+
+    // ════════════════════════════════════════
+    // CONTOUR FUNCTIONS — all 12 elements
+    // ════════════════════════════════════════
+
+    // ── CONTOUR CONSTRUCTION ──
+    // Inner circle (radius = scale), outer circle (radius = scale + 6mm offset)
+    // 24 outer points (every 15°), 48 inner points (every 7.5°)
+    // Each protrusion: 1 outer point connects to 2 flanking inner points
+    // Shape of protrusion differs by type: arc (flower), triangle (sun), rectangle (rect)
+
+    const PROTRUSIONS = 24;
+    const OFFSET = 6; // mm outward from inner circle
+
+    // Each contour returns a bump value 0..1 at a given angle.
+    // 0 = inner circle, 1 = outer circle.
+    // The actual radius is computed as: width + OFFSET * bump(theta)
+
+    function getLocalT(theta) {
+      const sliceAngle = (2 * Math.PI) / PROTRUSIONS;
+      const phase = ((theta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      return (phase / sliceAngle) % 1.0;
+    }
+
+    function flowerBump(theta) {
+      // Arc: semicircle bump
+      return Math.sin(getLocalT(theta) * Math.PI);
+    }
+
+    function sunBump(theta) {
+      // Triangle spike
+      return 1.0 - 2.0 * Math.abs(getLocalT(theta) - 0.5);
+    }
+
+    function rectBump(theta) {
+      // Flat-topped rectangular tab — sharp/edgy transitions
+      const t = getLocalT(theta);
+      const s = 80;
+      return 1.0 / (1.0 + Math.exp(-s * (t - 0.18)))
+           - 1.0 / (1.0 + Math.exp(-s * (t - 0.82)));
+    }
+
+    const bumpFn = { flower: flowerBump, sun: sunBump, rect: rectBump };
+
+    // ════════════════════════════════════════
+    // GEOMETRY — NO BLENDING, LINEAR EXTRUSION
+    // ════════════════════════════════════════
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    // Radius = innerWidth + OFFSET * bump(theta)
+    // innerWidth interpolates linearly from prev seg's width to this seg's width
+    function getSegmentRadius(theta, segIndex, localT, activeSegs) {
+      const thisSeg = activeSegs[segIndex];
+      const bump = bumpFn[thisSeg.contour](theta);
+
+      const bottomWidth = segIndex > 0 ? activeSegs[segIndex - 1].width : thisSeg.width;
+      const topWidth = thisSeg.width;
+      const w = lerp(bottomWidth, topWidth, localT);
+
+      return w + OFFSET * bump;
+    }
+
+    function getCapRadius(theta, localT, activeSegs) {
+      const lastSeg = activeSegs[activeSegs.length - 1];
+      const lastWidth = lastSeg.width;
+      const bump = bumpFn[lastSeg.contour](theta);
+
+      // Bump fades to 0 (circle) over first 60% of cap
+      const bumpFade = 1.0 - clamp(localT / 0.6, 0, 1);
+      // Width tapers from last width to mouth width
+      const w = lerp(lastWidth, state.mouthWidth, localT);
+
+      return w + OFFSET * bump * bumpFade;
+    }
+
+    // ════════════════════════════════════════
+    // BUILD VASE GEOMETRY
+    // ════════════════════════════════════════
+
+    function buildVaseGeometry() {
+      const activeSegs = getActiveSegments();
+      const numSegs = activeSegs.length;
+      if (numSegs === 0) return new THREE.BufferGeometry();
+
+      const geo = new THREE.BufferGeometry();
+      const vertices = [];
+      const indices = [];
+      let ringCount = 0;
+
+      for (let seg = 0; seg < numSegs; seg++) {
+        for (let layer = 0; layer <= LAYERS_PER_SEG; layer++) {
+          const localT = layer / LAYERS_PER_SEG;
+          const z = seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
+
+          for (let a = 0; a < ANG_RES; a++) {
+            const theta = (2 * Math.PI * a) / ANG_RES;
+            const r = getSegmentRadius(theta, seg, localT, activeSegs);
+            vertices.push(r * Math.cos(theta), z, r * Math.sin(theta));
+          }
+          ringCount++;
+        }
+        // DON'T connect last ring of this segment to first ring of next —
+        // they're at the same Z but different contours. We'll skip that face strip below.
+      }
+
+      // Track segment ring boundaries for face generation
+      const ringsPerSeg = LAYERS_PER_SEG + 1;
+
+      if (state.hasCap) {
+        const capBase = numSegs * SEGMENT_HEIGHT;
+        for (let layer = 1; layer <= CAP_LAYERS; layer++) {
+          const localT = layer / CAP_LAYERS;
+          const z = capBase + localT * CAP_HEIGHT;
+
+          for (let a = 0; a < ANG_RES; a++) {
+            const theta = (2 * Math.PI * a) / ANG_RES;
+            const r = getCapRadius(theta, localT, activeSegs);
+            vertices.push(r * Math.cos(theta), z, r * Math.sin(theta));
+          }
+          ringCount++;
+        }
+      }
+
+      // Build faces — skip gaps between segment boundaries (not the last seg→cap connection)
+      const bodyRings = numSegs * ringsPerSeg;
+      for (let i = 0; i < ringCount - 1; i++) {
+        // Skip face strips between segments (not the last one connecting to cap)
+        const isSegBoundary = (i + 1) % ringsPerSeg === 0;
+        const isLastSegTop = (i === bodyRings - 1);
+        if (isSegBoundary && !isLastSegTop && i < bodyRings) continue;
+
+        for (let j = 0; j < ANG_RES; j++) {
+          const curr = i * ANG_RES + j;
+          const next = i * ANG_RES + (j + 1) % ANG_RES;
+          const above = (i + 1) * ANG_RES + j;
+          const aboveNext = (i + 1) * ANG_RES + (j + 1) % ANG_RES;
+          indices.push(curr, next, aboveNext);
+          indices.push(curr, aboveNext, above);
+        }
+      }
+
+      // Bottom cap
+      const bottomCenter = vertices.length / 3;
+      vertices.push(0, 0, 0);
+      for (let j = 0; j < ANG_RES; j++) {
+        indices.push(bottomCenter, (j + 1) % ANG_RES, j);
+      }
+
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    // Build edge ring points at a segment boundary
+    function edgeRingPoints(bumpType, width, z) {
+      const pts = [];
+      const bump = bumpFn[bumpType];
+      for (let a = 0; a <= ANG_RES; a++) {
+        const theta = (2 * Math.PI * a) / ANG_RES;
+        const r = width + OFFSET * bump(theta);
+        pts.push(new THREE.Vector3(r * Math.cos(theta), z, r * Math.sin(theta)));
+      }
+      return pts;
+    }
+
+    // ════════════════════════════════════════
+    // THREE.JS SCENE
+    // ════════════════════════════════════════
+
+    // ── SVG ICON GENERATORS — minimal shapes ──
+    function flowerSVG() {
+      return `<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6"/></svg>`;
+    }
+    function sunSVG() {
+      return `<svg viewBox="0 0 20 20"><polygon points="10,2 17,16 3,16"/></svg>`;
+    }
+    function gearSVG() {
+      return `<svg viewBox="0 0 20 20"><rect x="4" y="4" width="12" height="12"/></svg>`;
+    }
+    const contourSVGs = { flower: flowerSVG, sun: sunSVG, rect: gearSVG };
+
+    // ════════════════════════════════════════
+    // THREE.JS SCENE — Main (side view)
+    // ════════════════════════════════════════
+
+    const canvas = document.getElementById('vase-canvas');
+    const wrap = canvas.parentElement;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0); // transparent — CSS grid shows through
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 1, 1, 2000);
+
+    // Lighting — fixed to camera, strong contrast
+    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambient);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.1);
+    scene.add(fillLight);
+
+    const topLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    scene.add(topLight);
+
+    // ── SIDE VIEW: white technical drawing with shading ──
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.95,
+      metalness: 0.0,
+      side: THREE.DoubleSide,
+    });
+
+    // Contour outline material
+    const outlineMaterial = new THREE.LineBasicMaterial({
+      color: 0x555555,
+      transparent: true,
+      opacity: 0.5,
+    });
+
+    // Segment boundary edges — prominent
+    const edgeMaterial = new THREE.LineBasicMaterial({
+      color: 0x333333,
+      transparent: true,
+      opacity: 0.7,
+    });
+
+    let vaseMesh, outlineLines, edgeLines = [];
+
+    function rebuildVase() {
+      if (vaseMesh) { scene.remove(vaseMesh); vaseMesh.geometry.dispose(); }
+      if (outlineLines) { scene.remove(outlineLines); outlineLines.geometry.dispose(); }
+      edgeLines.forEach(l => { scene.remove(l); l.geometry.dispose(); });
+      edgeLines = [];
+
+      const geo = buildVaseGeometry();
+      vaseMesh = new THREE.Mesh(geo, material);
+      scene.add(vaseMesh);
+
+      // Contour edges — only show edges where faces meet at >15 degrees
+      const edgesGeo = new THREE.EdgesGeometry(geo, 15);
+      outlineLines = new THREE.LineSegments(edgesGeo, outlineMaterial);
+      scene.add(outlineLines);
+
+      // Add edge rings at segment boundaries
+      const activeSegs = getActiveSegments();
+      for (let seg = 0; seg <= activeSegs.length; seg++) {
+        const z = seg * SEGMENT_HEIGHT;
+        let bumpType, width;
+
+        if (seg === 0) {
+          bumpType = activeSegs[0].contour;
+          width = activeSegs[0].width;
+        } else {
+          bumpType = activeSegs[seg - 1].contour;
+          width = activeSegs[seg - 1].width;
+        }
+
+        const pts = edgeRingPoints(bumpType, width, z);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const line = new THREE.Line(lineGeo, edgeMaterial);
+        scene.add(line);
+        edgeLines.push(line);
+      }
+
+      updateDimensions();
+    }
+
+    rebuildVase();
+
+    function resize() {
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      renderer.setSize(rect.width, rect.height);
+      camera.aspect = rect.width / rect.height;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    // Delayed resize to catch layout settling
+    setTimeout(resize, 100);
+
+    // ── FIXED SIDE VIEW (no orbit, auto-zoom to fit) ──
+
+    function getTotalHeight() {
+      return getActiveSegments().length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
+    }
+
+    // Auto-calculate distance so vase always fits in view
+    function getSideDist() {
+      const h = getTotalHeight();
+      const maxW = getActiveSegments().length > 0
+        ? (Math.max(...getActiveSegments().map(s => s.width)) + OFFSET) * 2
+        : 100;
+      // Use the larger dimension, account for actual viewport aspect
+      const viewerRect = wrap.getBoundingClientRect();
+      const aspect = viewerRect.width / (viewerRect.height || 1);
+      const fovRad = (camera.fov * Math.PI) / 180;
+      // Vertical fit
+      const distForHeight = (h / 2) / Math.tan(fovRad / 2);
+      // Horizontal fit
+      const distForWidth = (maxW / 2) / (Math.tan(fovRad / 2) * aspect);
+      // Use whichever needs more distance, plus 30% margin
+      return Math.max(distForHeight, distForWidth) * 1.5;
+    }
+
+    let sideRotY = 0;
+
+    function animate() {
+      sideRotY += 0.003;
+      const cy = getTotalHeight() * 0.5;
+      const dist = getSideDist();
+      const camX = dist * Math.sin(sideRotY);
+      const camZ = dist * Math.cos(sideRotY);
+      camera.position.set(camX, cy, camZ);
+      camera.lookAt(0, cy, 0);
+
+      // Keep lights fixed from the viewer's left side
+      // Left = perpendicular to camera direction, rotated -90 degrees
+      const leftX = -Math.cos(sideRotY);
+      const leftZ = Math.sin(sideRotY);
+      keyLight.position.set(leftX * 200 + camX * 0.3, cy + 150, leftZ * 200 + camZ * 0.3);
+      fillLight.position.set(-leftX * 100 + camX * 0.2, cy - 30, -leftZ * 100 + camZ * 0.2);
+      topLight.position.set(0, cy + 300, 0);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ════════════════════════════════════════
+    // WIDTH CONSTRAINT ENFORCEMENT
+    // ════════════════════════════════════════
+
+    function enforceWidthConstraints(changedGlobalIndex) {
+      const enabledIndices = state.enabled.map((e, i) => e ? i : -1).filter(i => i >= 0);
+      const posInActive = enabledIndices.indexOf(changedGlobalIndex);
+      if (posInActive < 0) return;
+
+      for (let p = posInActive + 1; p < enabledIndices.length; p++) {
+        const curr = enabledIndices[p], prev = enabledIndices[p - 1];
+        state.allSegments[curr].width = clamp(
+          state.allSegments[curr].width,
+          state.allSegments[prev].width - MAX_WIDTH_DIFF,
+          state.allSegments[prev].width + MAX_WIDTH_DIFF
+        );
+      }
+      for (let p = posInActive - 1; p >= 0; p--) {
+        const curr = enabledIndices[p], next = enabledIndices[p + 1];
+        state.allSegments[curr].width = clamp(
+          state.allSegments[curr].width,
+          state.allSegments[next].width - MAX_WIDTH_DIFF,
+          state.allSegments[next].width + MAX_WIDTH_DIFF
+        );
+      }
+      if (state.hasCap && enabledIndices.length > 0) {
+        const lastW = state.allSegments[enabledIndices[enabledIndices.length - 1]].width;
+        // Cap slope must not exceed 30 degrees: max width diff = CAP_HEIGHT * tan(30°) ≈ 34.6mm
+        const maxCapDiff = Math.floor(CAP_HEIGHT * Math.tan(30 * Math.PI / 180));
+        const minMouth = Math.max(MIN_MOUTH, lastW - maxCapDiff);
+        state.mouthWidth = clamp(state.mouthWidth, minMouth, lastW - 5);
+        const ms = document.getElementById('s-mouth');
+        if (ms) { ms.min = minMouth; ms.max = lastW - 5; ms.value = state.mouthWidth; }
+        document.getElementById('v-mouth').textContent = state.mouthWidth;
+      }
+    }
+
+    // ════════════════════════════════════════
+    // UI: RENDER ALL 7 SEGMENT ROWS + INLINE CHECKBOXES
+    // ════════════════════════════════════════
+
+    function renderSegmentList() {
+      const list = document.getElementById('seg-list');
+      list.innerHTML = '';
+
+      // Count active segments for renumbering
+      let activeNum = 0;
+
+      state.allSegments.forEach((seg, idx) => {
+        const isOn = state.enabled[idx];
+
+        // Hide seg 6+7 (idx 5,6) when cap is on
+        if (state.hasCap && idx >= 5) return;
+
+        if (isOn) activeNum++;
+
+        const row = document.createElement('div');
+        row.className = 'seg-row' + (isOn ? '' : ' disabled');
+
+        // Checkbox
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'seg-cb';
+        cb.checked = isOn;
+        cb.style.pointerEvents = 'auto';
+        cb.addEventListener('change', () => {
+          state.enabled[idx] = cb.checked;
+          const count = state.enabled.filter(Boolean).length;
+          if (count < 3) { state.enabled[idx] = true; cb.checked = true; return; }
+          if (state.hasCap && count > 5) { state.enabled[idx] = false; cb.checked = false; return; }
+          renderSegmentList();
+          rebuildVase();
+        });
+        row.appendChild(cb);
+
+        // Label — show sequential number if on, blank if off
+        const label = document.createElement('span');
+        label.className = 'seg-label';
+        label.textContent = isOn ? `${activeNum}` : '';
+        row.appendChild(label);
+
+        // Contour picker
+        const picker = document.createElement('span');
+        picker.className = 'contour-picker';
+        CONTOUR_TYPES.forEach(type => {
+          const btn = document.createElement('button');
+          btn.className = 'contour-btn' + (seg.contour === type ? ' active' : '');
+          btn.innerHTML = contourSVGs[type]();
+          btn.title = type === 'rect' ? 'gear' : type;
+          btn.addEventListener('click', () => {
+            seg.contour = type;
+            renderSegmentList();
+            rebuildVase();
+          });
+          picker.appendChild(btn);
+        });
+        row.appendChild(picker);
+
+        // Width slider
+        const sliderWrap = document.createElement('div');
+        sliderWrap.className = 'seg-slider-wrap';
+
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = MIN_WIDTH; slider.max = MAX_WIDTH;
+        slider.value = seg.width; slider.step = 5;
+
+        const val = document.createElement('span');
+        val.className = 'val';
+        val.textContent = seg.width;
+
+        slider.addEventListener('input', () => {
+          seg.width = parseInt(slider.value);
+          enforceWidthConstraints(idx);
+          renderSegmentList();
+          rebuildVase();
+        });
+
+        sliderWrap.appendChild(slider);
+        sliderWrap.appendChild(val);
+        row.appendChild(sliderWrap);
+        list.appendChild(row);
+      });
+
+      // Cap row always visible; dim mouth slider when cap is off
+      const mouthWrap = document.getElementById('mouth-slider-wrap');
+      mouthWrap.style.opacity = state.hasCap ? '1' : '0.3';
+      mouthWrap.style.pointerEvents = state.hasCap ? 'auto' : 'none';
+    }
+
+    function updateDimensions() {
+      const active = getActiveSegments();
+      const h = active.length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
+      const maxW = active.length > 0 ? Math.max(...active.map(s => s.width)) * 2 : 0;
+      document.getElementById('dim-height').textContent = h;
+      document.getElementById('dim-width').textContent = maxW;
+    }
+
+    // ════════════════════════════════════════
+    // EVENT HANDLERS
+    // ════════════════════════════════════════
+
+    // Cap checkbox
+    document.getElementById('cb-cap').addEventListener('change', (e) => {
+      state.hasCap = e.target.checked;
+      // When cap turns on, disable seg 6+7
+      if (state.hasCap) {
+        state.enabled[5] = false;
+        state.enabled[6] = false;
+      }
+      renderSegmentList();
+      rebuildVase();
+    });
+
+    // Mouth width slider
+    document.getElementById('s-mouth').addEventListener('input', (e) => {
+      state.mouthWidth = parseInt(e.target.value);
+      document.getElementById('v-mouth').textContent = state.mouthWidth;
+      rebuildVase();
+    });
+
+    // Randomize
+    document.getElementById('btn-randomize').addEventListener('click', () => {
+      const maxOn = state.hasCap ? 5 : 7;
+      const count = 3 + Math.floor(Math.random() * (maxOn - 2));
+      for (let i = 0; i < 7; i++) state.enabled[i] = i < count;
+
+      let prevWidth = 35 + Math.floor(Math.random() * 45);
+      for (let i = 0; i < 7; i++) {
+        state.allSegments[i].contour = CONTOUR_TYPES[Math.floor(Math.random() * 3)];
+        const minW = Math.max(MIN_WIDTH, prevWidth - MAX_WIDTH_DIFF);
+        const maxW = Math.min(MAX_WIDTH, prevWidth + MAX_WIDTH_DIFF);
+        const rawW = minW + Math.floor(Math.random() * (maxW - minW + 1));
+        state.allSegments[i].width = Math.round(rawW / 5) * 5;
+        prevWidth = state.allSegments[i].width;
+      }
+
+      if (state.hasCap) {
+        const active = getActiveSegments();
+        const lastW = active[active.length - 1].width;
+        state.mouthWidth = clamp(MIN_MOUTH + Math.floor(Math.random() * (lastW - MIN_MOUTH - 5)), MIN_MOUTH, lastW - 5);
+        document.getElementById('s-mouth').value = state.mouthWidth;
+        document.getElementById('v-mouth').textContent = state.mouthWidth;
+      }
+
+      renderSegmentList();
+      rebuildVase();
+    });
+
+    // ════════════════════════════════════════
+    // EXPORT STL
+    // ════════════════════════════════════════
+
+    document.getElementById('btn-export').addEventListener('click', () => {
+      if (!vaseMesh) return;
+      const geo = vaseMesh.geometry;
+      const pos = geo.attributes.position;
+      const idx = geo.index;
+      const numTriangles = idx.count / 3;
+      const bufferLength = 80 + 4 + numTriangles * 50;
+      const buffer = new ArrayBuffer(bufferLength);
+      const view = new DataView(buffer);
+      let offset = 80;
+      view.setUint32(offset, numTriangles, true); offset += 4;
+      const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
+      const normal = new THREE.Vector3(), edge1 = new THREE.Vector3(), edge2 = new THREE.Vector3();
+      for (let i = 0; i < numTriangles; i++) {
+        const a = idx.getX(i*3), b = idx.getX(i*3+1), c = idx.getX(i*3+2);
+        vA.fromBufferAttribute(pos,a); vB.fromBufferAttribute(pos,b); vC.fromBufferAttribute(pos,c);
+        edge1.subVectors(vB,vA); edge2.subVectors(vC,vA); normal.crossVectors(edge1,edge2).normalize();
+        view.setFloat32(offset,normal.x,true); offset+=4;
+        view.setFloat32(offset,normal.y,true); offset+=4;
+        view.setFloat32(offset,normal.z,true); offset+=4;
+        [vA,vB,vC].forEach(v=>{
+          view.setFloat32(offset,v.x,true); offset+=4;
+          view.setFloat32(offset,v.y,true); offset+=4;
+          view.setFloat32(offset,v.z,true); offset+=4;
+        });
+        view.setUint16(offset,0,true); offset+=2;
+      }
+      const blob = new Blob([buffer],{type:'application/octet-stream'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download=`myo-vase1-${Date.now()}.stl`; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ════════════════════════════════════════
+    // 3D POPUP MODAL
+    // ════════════════════════════════════════
+
+    const modal = document.getElementById('modal-3d');
+    const canvas3d = document.getElementById('vase-canvas-3d');
+    let renderer3d, scene3d, camera3d, vaseMesh3d, animating3d = false;
+
+    document.getElementById('btn-3d-view').addEventListener('click', () => {
+      modal.classList.add('open');
+      if (!renderer3d) init3dModal();
+      rebuild3dVase();
+      if (!animating3d) { animating3d = true; animate3d(); }
+    });
+
+    document.getElementById('modal-close').addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+
+    // 3D popup material — ceramic printed look
+    const WALL_THICKNESS = 3; // mm nozzle/wall width
+
+    const renderMaterial = new THREE.MeshStandardMaterial({
+      color: 0xc9b9a5,
+      roughness: 0.82,
+      metalness: 0.0,
+      side: THREE.DoubleSide,
+    });
+
+    const layerLineMaterial = new THREE.LineBasicMaterial({
+      color: 0x9a8a78,
+      transparent: true,
+      opacity: 0.35,
+    });
+
+    function init3dModal() {
+      renderer3d = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true });
+      renderer3d.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer3d.setClearColor(0xffffff);
+      renderer3d.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer3d.toneMappingExposure = 1.3;
+      renderer3d.outputEncoding = THREE.sRGBEncoding;
+
+      scene3d = new THREE.Scene();
+      camera3d = new THREE.PerspectiveCamera(35, 1, 1, 2000);
+
+      // Rich lighting for ceramic render
+      scene3d.add(new THREE.AmbientLight(0xffffff, 0.45));
+      const k = new THREE.DirectionalLight(0xffffff, 0.95); k.position.set(80,250,180); scene3d.add(k);
+      const f = new THREE.DirectionalLight(0xeee8e0, 0.45); f.position.set(-120,80,-60); scene3d.add(f);
+      const r = new THREE.DirectionalLight(0xffffff, 0.55); r.position.set(0,50,-200); scene3d.add(r);
+      const t = new THREE.DirectionalLight(0xfdf8f0, 0.3); t.position.set(0,300,0); scene3d.add(t);
+
+      // Orbit for 3d modal
+      let drag3d = false, px3d = 0, py3d = 0;
+      canvas3d.addEventListener('pointerdown', e => { drag3d = true; px3d = e.clientX; py3d = e.clientY; });
+      window.addEventListener('pointerup', () => drag3d = false);
+      window.addEventListener('pointermove', e => {
+        if (!drag3d) return;
+        rotY3d += (e.clientX - px3d) * 0.008;
+        rotX3d += (e.clientY - py3d) * 0.008;
+        rotX3d = Math.max(-1.2, Math.min(1.2, rotX3d));
+        px3d = e.clientX; py3d = e.clientY;
+      });
+      canvas3d.addEventListener('wheel', e => {
+        e.preventDefault();
+        dist3d = Math.max(150, Math.min(800, dist3d + e.deltaY * 0.5));
+      }, { passive: false });
+    }
+
+    let rotY3d = 0.5, rotX3d = 0.4, dist3d = 350;
+
+    let layerLines3d = [];
+
+    function buildInnerGeometry() {
+      // Build same geometry but with radius reduced by WALL_THICKNESS
+      const activeSegs = getActiveSegments();
+      const numSegs = activeSegs.length;
+      if (numSegs === 0) return new THREE.BufferGeometry();
+
+      const geo = new THREE.BufferGeometry();
+      const vertices = [];
+      const indices = [];
+      let ringCount = 0;
+      const ringsPerSeg = LAYERS_PER_SEG + 1;
+
+      for (let seg = 0; seg < numSegs; seg++) {
+        for (let layer = 0; layer <= LAYERS_PER_SEG; layer++) {
+          const localT = layer / LAYERS_PER_SEG;
+          const z = seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
+          for (let a = 0; a < ANG_RES; a++) {
+            const theta = (2 * Math.PI * a) / ANG_RES;
+            const r = Math.max(getSegmentRadius(theta, seg, localT, activeSegs) - WALL_THICKNESS, 2);
+            vertices.push(r * Math.cos(theta), z, r * Math.sin(theta));
+          }
+          ringCount++;
+        }
+      }
+
+      if (state.hasCap) {
+        const capBase = numSegs * SEGMENT_HEIGHT;
+        for (let layer = 1; layer <= CAP_LAYERS; layer++) {
+          const localT = layer / CAP_LAYERS;
+          const z = capBase + localT * CAP_HEIGHT;
+          for (let a = 0; a < ANG_RES; a++) {
+            const theta = (2 * Math.PI * a) / ANG_RES;
+            const r = Math.max(getCapRadius(theta, localT, activeSegs) - WALL_THICKNESS, 2);
+            vertices.push(r * Math.cos(theta), z, r * Math.sin(theta));
+          }
+          ringCount++;
+        }
+      }
+
+      // Faces — reversed winding for inner surface (normals face inward)
+      // NO boundary skipping on inner wall — it should be continuous
+      for (let i = 0; i < ringCount - 1; i++) {
+        for (let j = 0; j < ANG_RES; j++) {
+          const curr = i * ANG_RES + j;
+          const next = i * ANG_RES + (j + 1) % ANG_RES;
+          const above = (i + 1) * ANG_RES + j;
+          const aboveNext = (i + 1) * ANG_RES + (j + 1) % ANG_RES;
+          indices.push(curr, aboveNext, next);
+          indices.push(curr, above, aboveNext);
+        }
+      }
+
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    function rebuild3dVase() {
+      if (!scene3d) return;
+      if (vaseMesh3d) { scene3d.remove(vaseMesh3d); vaseMesh3d.geometry.dispose(); }
+      layerLines3d.forEach(l => { scene3d.remove(l); l.geometry.dispose(); });
+      layerLines3d = [];
+
+      // Outer wall
+      const geo = buildVaseGeometry();
+      vaseMesh3d = new THREE.Mesh(geo, renderMaterial);
+      scene3d.add(vaseMesh3d);
+
+      // Inner wall
+      const innerGeo = buildInnerGeometry();
+      const innerMesh = new THREE.Mesh(innerGeo, renderMaterial);
+      scene3d.add(innerMesh);
+      layerLines3d.push(innerMesh);
+
+      // Top rim — connects outer to inner wall (solid ring at the top)
+      const activeSegsLocal = getActiveSegments();
+      const numSegsLocal = activeSegsLocal.length;
+      const topZ = state.hasCap
+        ? numSegsLocal * SEGMENT_HEIGHT + CAP_HEIGHT
+        : numSegsLocal * SEGMENT_HEIGHT;
+
+      const rimVerts = [];
+      const rimIndices = [];
+
+      for (let a = 0; a < ANG_RES; a++) {
+        const theta = (2 * Math.PI * a) / ANG_RES;
+        let rOuter, rInner;
+        if (state.hasCap) {
+          rOuter = getCapRadius(theta, 1.0, activeSegsLocal);
+          rInner = Math.max(rOuter - WALL_THICKNESS, 2);
+        } else {
+          rOuter = getSegmentRadius(theta, numSegsLocal - 1, 1.0, activeSegsLocal);
+          rInner = Math.max(rOuter - WALL_THICKNESS, 2);
+        }
+        rimVerts.push(rOuter * Math.cos(theta), topZ, rOuter * Math.sin(theta));
+        rimVerts.push(rInner * Math.cos(theta), topZ, rInner * Math.sin(theta));
+      }
+
+      for (let a = 0; a < ANG_RES; a++) {
+        const o1 = a * 2, i1 = a * 2 + 1;
+        const o2 = ((a + 1) % ANG_RES) * 2, i2 = ((a + 1) % ANG_RES) * 2 + 1;
+        rimIndices.push(o1, o2, i2);
+        rimIndices.push(o1, i2, i1);
+      }
+
+      const rimGeo = new THREE.BufferGeometry();
+      rimGeo.setAttribute('position', new THREE.Float32BufferAttribute(rimVerts, 3));
+      rimGeo.setIndex(rimIndices);
+      rimGeo.computeVertexNormals();
+      const rimMesh = new THREE.Mesh(rimGeo, renderMaterial);
+      scene3d.add(rimMesh);
+      layerLines3d.push(rimMesh);
+
+      // Layer lines — horizontal rings every 1.5mm (typical clay layer height)
+      const activeSegs = getActiveSegments();
+      const totalH = getTotalHeight();
+      const layerStep = 1.5;
+      for (let z = 0; z <= totalH; z += layerStep) {
+        // Determine which segment this z falls in
+        const segIdx = Math.min(Math.floor(z / SEGMENT_HEIGHT), activeSegs.length - 1);
+        const localT = (z - segIdx * SEGMENT_HEIGHT) / SEGMENT_HEIGHT;
+
+        if (segIdx >= activeSegs.length) continue;
+        const isInCap = z > activeSegs.length * SEGMENT_HEIGHT;
+
+        const pts = [];
+        for (let a = 0; a <= ANG_RES; a++) {
+          const theta = (2 * Math.PI * a) / ANG_RES;
+          let r;
+          if (isInCap) {
+            const capT = (z - activeSegs.length * SEGMENT_HEIGHT) / CAP_HEIGHT;
+            r = getCapRadius(theta, capT, activeSegs);
+          } else {
+            r = getSegmentRadius(theta, segIdx, clamp(localT, 0, 1), activeSegs);
+          }
+          // Slight outward bump to prevent z-fighting
+          r += 0.15;
+          pts.push(new THREE.Vector3(r * Math.cos(theta), z, r * Math.sin(theta)));
+        }
+
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const line = new THREE.Line(lineGeo, layerLineMaterial);
+        scene3d.add(line);
+        layerLines3d.push(line);
+      }
+    }
+
+    function animate3d() {
+      if (!modal.classList.contains('open')) { animating3d = false; return; }
+      requestAnimationFrame(animate3d);
+      const box = canvas3d.parentElement.getBoundingClientRect();
+      renderer3d.setSize(box.width, box.height);
+      camera3d.aspect = box.width / box.height;
+      camera3d.updateProjectionMatrix();
+      const cy = getTotalHeight() * 0.45;
+      camera3d.position.set(
+        dist3d * Math.sin(rotY3d) * Math.cos(rotX3d),
+        cy + dist3d * Math.sin(rotX3d),
+        dist3d * Math.cos(rotY3d) * Math.cos(rotX3d)
+      );
+      camera3d.lookAt(0, cy, 0);
+      renderer3d.render(scene3d, camera3d);
+    }
+
+    // ════════════════════════════════════════
+    // INIT
+    // ════════════════════════════════════════
+    renderSegmentList();
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Exports & test STLs (generated, not source)
+exports/
+project-1/
+
+# Local config
+.claude/
+*.3dm
+*.3dmbak
+*.rhl
+
+# OS files
+.DS_Store
+Thumbs.db
