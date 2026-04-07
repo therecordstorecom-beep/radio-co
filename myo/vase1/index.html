@@ -302,9 +302,63 @@
     .info-card p {
       font-size: 11px; line-height: 1.7; color: #333;
     }
+    /* ── PASSWORD GATE — REMOVE WHEN GOING LIVE ── */
+    .pw-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+    }
+    .pw-gate.hidden { display: none; }
+    .pw-gate label {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #999;
+    }
+    .pw-gate input {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px; letter-spacing: 0.15em;
+      text-align: center;
+      padding: 10px 20px;
+      border: 1px solid #ddd; background: #fff;
+      outline: none; width: 200px;
+    }
+    .pw-gate input:focus { border-color: #000; }
+    .pw-gate .pw-error {
+      font-size: 9px; letter-spacing: 0.2em; color: #cc0000; opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .pw-gate .pw-error.show { opacity: 1; }
   </style>
 </head>
 <body>
+
+  <!-- PASSWORD GATE — REMOVE THIS BLOCK WHEN GOING LIVE -->
+  <div class="pw-gate" id="pw-gate">
+    <label>enter password</label>
+    <input type="password" id="pw-input" placeholder="--------" autofocus>
+    <div class="pw-error" id="pw-error">incorrect</div>
+  </div>
+  <script>
+    (function(){
+      // REMOVE THIS SCRIPT BLOCK WHEN GOING LIVE
+      const gate = document.getElementById('pw-gate');
+      const input = document.getElementById('pw-input');
+      const error = document.getElementById('pw-error');
+      if (sessionStorage.getItem('myo_auth') === '1') { gate.classList.add('hidden'); }
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          if (input.value === '10011991') {
+            sessionStorage.setItem('myo_auth', '1');
+            gate.classList.add('hidden');
+          } else {
+            error.classList.add('show');
+            setTimeout(function(){ error.classList.remove('show'); }, 1500);
+            input.value = '';
+          }
+        }
+      });
+    })();
+  </script>
 
   <nav style="justify-content: center;">
     <a href="/" class="nav-title">(radio)</a>
