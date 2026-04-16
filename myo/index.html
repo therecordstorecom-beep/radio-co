@@ -54,23 +54,18 @@
 
     .hero-cta {
       font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.2em;
+      font-size: 10px;
+      letter-spacing: 0.15em;
       text-transform: lowercase;
-      color: #999;
+      color: #fff;
+      background: #000;
       text-decoration: none;
-      transition: color 0.2s;
+      transition: all 0.2s;
       margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
+      padding: 6px 20px;
+      border: 1px solid #000;
     }
-    .hero-cta:hover { color: #000; }
-    .hero-cta .arrow {
-      font-size: 14px;
-      line-height: 1;
-    }
+    .hero-cta:hover { background: #333; }
 
     /* ── SYSTEM BOX ── */
     .system-box {
@@ -192,10 +187,7 @@
   <div class="hero">
     <div class="hero-title">Make your own object.</div>
     <div class="hero-sub">Design your own ceramic form with simple controls, then bring it into reality.</div>
-    <a href="#system" class="hero-cta">
-      enter the system
-      <span class="arrow">v</span>
-    </a>
+    <a href="#system" class="hero-cta">enter the system &#8595;</a>
   </div>
 
   <!-- SYSTEM BOX -->
