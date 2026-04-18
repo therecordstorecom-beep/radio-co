@@ -205,9 +205,13 @@
       flex: 1; height: 8px;
       -webkit-appearance: none; appearance: none;
       background: transparent; outline: none;
-      /* Track line + 5 tick marks (20, 25, 30, 35, 40 = 5 stops, 4 gaps) */
+      /* Track line + 9 tick marks (diameter: 40,45,50,55,60,65,70,75,80 = 9 stops, 8 gaps) */
       background-image:
         linear-gradient(#ddd, #ddd),
+        linear-gradient(90deg, #bbb 1px, transparent 0),
+        linear-gradient(90deg, #bbb 1px, transparent 0),
+        linear-gradient(90deg, #bbb 1px, transparent 0),
+        linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
@@ -215,10 +219,12 @@
         linear-gradient(90deg, #bbb 1px, transparent 0);
       background-size:
         100% 2px,
-        1px 8px, 1px 8px, 1px 8px, 1px 8px, 1px 8px;
+        1px 8px, 1px 8px, 1px 8px, 1px 8px, 1px 8px,
+        1px 8px, 1px 8px, 1px 8px, 1px 8px;
       background-position:
         center,
-        0% center, 25% center, 50% center, 75% center, 100% center;
+        0% center, 12.5% center, 25% center, 37.5% center, 50% center,
+        62.5% center, 75% center, 87.5% center, 100% center;
       background-repeat: no-repeat;
     }
     .seg-slider-wrap input[type="range"]::-webkit-slider-thumb {
@@ -369,8 +375,8 @@
           <span class="seg-label">cap</span>
           <span class="contour-picker" style="visibility:hidden;"></span>
           <div class="seg-slider-wrap" id="mouth-slider-wrap">
-            <input type="range" id="s-mouth" min="10" max="35" value="15" step="5">
-            <span class="val" id="v-mouth">25</span>
+            <input type="range" id="s-mouth" min="20" max="70" value="30" step="5">
+            <span class="val" id="v-mouth">30</span>
           </div>
         </div>
 
@@ -809,10 +815,10 @@
         const maxCapDiff = Math.floor(CAP_HEIGHT * Math.tan(30 * Math.PI / 180));
         const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - maxCapDiff) / 5) * 5;
         const maxMouth = Math.floor((lastW - 5) / 5) * 5;
-        state.mouthWidth = clamp(Math.round(state.mouthWidth / 5) * 5, minMouth, maxMouth);
+        state.mouthWidth = clamp(Math.round(state.mouthWidth / 2.5) * 2.5, minMouth, maxMouth);
         const ms = document.getElementById('s-mouth');
-        if (ms) { ms.min = minMouth; ms.max = maxMouth; ms.value = state.mouthWidth; }
-        document.getElementById('v-mouth').textContent = state.mouthWidth;
+        if (ms) { ms.min = minMouth * 2; ms.max = maxMouth * 2; ms.value = state.mouthWidth * 2; }
+        document.getElementById('v-mouth').textContent = state.mouthWidth * 2;
       }
     }
 
@@ -892,15 +898,16 @@
 
         const slider = document.createElement('input');
         slider.type = 'range';
-        slider.min = MIN_WIDTH; slider.max = MAX_WIDTH;
-        slider.value = seg.width; slider.step = 5;
+        // Slider operates in diameter (40-80mm, step 5mm) but we store radius internally
+        slider.min = MIN_WIDTH * 2; slider.max = MAX_WIDTH * 2;
+        slider.value = seg.width * 2; slider.step = 5;
 
         const val = document.createElement('span');
         val.className = 'val';
-        val.textContent = seg.width;
+        val.textContent = seg.width * 2;
 
         slider.addEventListener('input', () => {
-          seg.width = parseInt(slider.value);
+          seg.width = parseInt(slider.value) / 2;
           enforceWidthConstraints(idx);
           renderSegmentList();
           rebuildVase();
@@ -944,8 +951,9 @@
 
     // Mouth width slider
     document.getElementById('s-mouth').addEventListener('input', (e) => {
-      state.mouthWidth = parseInt(e.target.value);
-      document.getElementById('v-mouth').textContent = state.mouthWidth;
+      // Slider is in diameter, store as radius
+      state.mouthWidth = parseInt(e.target.value) / 2;
+      document.getElementById('v-mouth').textContent = parseInt(e.target.value);
       rebuildVase();
     });
 
@@ -955,24 +963,27 @@
       const count = 3 + Math.floor(Math.random() * (maxOn - 2));
       for (let i = 0; i < 7; i++) state.enabled[i] = i < count;
 
-      let prevWidth = 35 + Math.floor(Math.random() * 45);
+      let prevWidth = MIN_WIDTH + Math.floor(Math.random() * ((MAX_WIDTH - MIN_WIDTH) / 2.5 + 1)) * 2.5;
       for (let i = 0; i < 7; i++) {
         state.allSegments[i].contour = CONTOUR_TYPES[Math.floor(Math.random() * 3)];
         const minW = Math.max(MIN_WIDTH, prevWidth - MAX_WIDTH_DIFF);
         const maxW = Math.min(MAX_WIDTH, prevWidth + MAX_WIDTH_DIFF);
-        const rawW = minW + Math.floor(Math.random() * (maxW - minW + 1));
-        state.allSegments[i].width = Math.round(rawW / 5) * 5;
-        prevWidth = state.allSegments[i].width;
+        // Step in 2.5mm radius increments (5mm diameter)
+        const steps = Math.floor((maxW - minW) / 2.5);
+        const rawW = minW + Math.floor(Math.random() * (steps + 1)) * 2.5;
+        state.allSegments[i].width = rawW;
+        prevWidth = rawW;
       }
 
       if (state.hasCap) {
         const active = getActiveSegments();
         const lastW = active[active.length - 1].width;
-        const rMin = Math.ceil(MIN_MOUTH / 5) * 5;
-        const rMax = Math.floor((lastW - 5) / 5) * 5;
-        state.mouthWidth = rMin + Math.floor(Math.random() * ((rMax - rMin) / 5 + 1)) * 5;
-        document.getElementById('s-mouth').value = state.mouthWidth;
-        document.getElementById('v-mouth').textContent = state.mouthWidth;
+        const rMin = Math.ceil(MIN_MOUTH / 2.5) * 2.5;
+        const rMax = Math.floor((lastW - 2.5) / 2.5) * 2.5;
+        const mSteps = Math.floor((rMax - rMin) / 2.5);
+        state.mouthWidth = rMin + Math.floor(Math.random() * (mSteps + 1)) * 2.5;
+        document.getElementById('s-mouth').value = state.mouthWidth * 2;
+        document.getElementById('v-mouth').textContent = state.mouthWidth * 2;
       }
 
       renderSegmentList();
