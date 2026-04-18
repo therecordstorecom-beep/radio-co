@@ -205,16 +205,9 @@
       flex: 1; height: 8px;
       -webkit-appearance: none; appearance: none;
       background: transparent; outline: none;
-      /* Track line + tick marks at each 5mm step (35,40,...,80 = 10 stops, 9 gaps) */
-      --ticks:
-        #bbb 0px, #bbb 1px, transparent 1px, transparent 100%;
+      /* Track line + 5 tick marks (20, 25, 30, 35, 40 = 5 stops, 4 gaps) */
       background-image:
         linear-gradient(#ddd, #ddd),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
@@ -222,12 +215,10 @@
         linear-gradient(90deg, #bbb 1px, transparent 0);
       background-size:
         100% 2px,
-        1px 8px, 1px 8px, 1px 8px, 1px 8px, 1px 8px,
         1px 8px, 1px 8px, 1px 8px, 1px 8px, 1px 8px;
       background-position:
         center,
-        0% center, 11.11% center, 22.22% center, 33.33% center, 44.44% center,
-        55.56% center, 66.67% center, 77.78% center, 88.89% center, 100% center;
+        0% center, 25% center, 50% center, 75% center, 100% center;
       background-repeat: no-repeat;
     }
     .seg-slider-wrap input[type="range"]::-webkit-slider-thumb {
