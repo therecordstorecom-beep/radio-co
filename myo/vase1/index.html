@@ -378,7 +378,7 @@
           <span class="seg-label">cap</span>
           <span class="contour-picker" style="visibility:hidden;"></span>
           <div class="seg-slider-wrap" id="mouth-slider-wrap">
-            <input type="range" id="s-mouth" min="15" max="75" value="25" step="5">
+            <input type="range" id="s-mouth" min="10" max="35" value="15" step="5">
             <span class="val" id="v-mouth">25</span>
           </div>
         </div>
@@ -418,15 +418,15 @@
     // ════════════════════════════════════════
     // CONFIG
     // ════════════════════════════════════════
-    const SEGMENT_HEIGHT = 30;
-    const CAP_HEIGHT = 60;
+    const SEGMENT_HEIGHT = 15;
+    const CAP_HEIGHT = 30;
     const ANG_RES = 480;
     const LAYERS_PER_SEG = 10;
     const CAP_LAYERS = 20;
-    const MAX_WIDTH_DIFF = 15;
-    const MIN_WIDTH = 35;
-    const MAX_WIDTH = 80;
-    const MIN_MOUTH = 15;
+    const MAX_WIDTH_DIFF = 10;
+    const MIN_WIDTH = 20;
+    const MAX_WIDTH = 40;
+    const MIN_MOUTH = 10;
     const CONTOUR_TYPES = ['flower', 'sun', 'rect'];
 
     // ════════════════════════════════════════
@@ -434,17 +434,17 @@
     // ════════════════════════════════════════
     const state = {
       allSegments: [
-        { contour: 'flower', width: 50 },
-        { contour: 'sun',    width: 55 },
-        { contour: 'rect',   width: 60 },
-        { contour: 'sun',    width: 55 },
-        { contour: 'flower', width: 50 },
-        { contour: 'rect',   width: 50 },
-        { contour: 'flower', width: 50 },
+        { contour: 'flower', width: 25 },
+        { contour: 'sun',    width: 30 },
+        { contour: 'rect',   width: 30 },
+        { contour: 'sun',    width: 30 },
+        { contour: 'flower', width: 25 },
+        { contour: 'rect',   width: 25 },
+        { contour: 'flower', width: 25 },
       ],
       enabled: [true, true, true, true, true, false, false],
       hasCap: true,
-      mouthWidth: 25,
+      mouthWidth: 15,
     };
 
     function getActiveSegments() {
@@ -462,7 +462,7 @@
     // Shape of protrusion differs by type: arc (flower), triangle (sun), rectangle (rect)
 
     const PROTRUSIONS = 24;
-    const OFFSET = 6; // mm outward from inner circle
+    const OFFSET = 3; // mm outward from inner circle
 
     // Each contour returns a bump value 0..1 at a given angle.
     // 0 = inner circle, 1 = outer circle.
@@ -1009,13 +1009,14 @@
         const a = idx.getX(i*3), b = idx.getX(i*3+1), c = idx.getX(i*3+2);
         vA.fromBufferAttribute(pos,a); vB.fromBufferAttribute(pos,b); vC.fromBufferAttribute(pos,c);
         edge1.subVectors(vB,vA); edge2.subVectors(vC,vA); normal.crossVectors(edge1,edge2).normalize();
+        // Convert Three.js Y-up to STL/Cura Z-up: (x, y, z) → (x, -z, y)
         view.setFloat32(offset,normal.x,true); offset+=4;
+        view.setFloat32(offset,-normal.z,true); offset+=4;
         view.setFloat32(offset,normal.y,true); offset+=4;
-        view.setFloat32(offset,normal.z,true); offset+=4;
         [vA,vB,vC].forEach(v=>{
           view.setFloat32(offset,v.x,true); offset+=4;
+          view.setFloat32(offset,-v.z,true); offset+=4;
           view.setFloat32(offset,v.y,true); offset+=4;
-          view.setFloat32(offset,v.z,true); offset+=4;
         });
         view.setUint16(offset,0,true); offset+=2;
       }
@@ -1049,7 +1050,7 @@
     });
 
     // 3D popup material — ceramic printed look
-    const WALL_THICKNESS = 3; // mm nozzle/wall width
+    const WALL_THICKNESS = 2.2; // mm nozzle/wall width (12G nozzle)
 
     const renderMaterial = new THREE.MeshStandardMaterial({
       color: 0xc9b9a5,
