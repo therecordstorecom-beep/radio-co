@@ -544,10 +544,11 @@
       const lastWidth = lastSeg.width;
       const bottomBump = bumpFn[lastSeg.contour](theta);
 
-      // Underlying outline: linear lerp from lastWidth (bottom) to polygon-shaped mouth (top)
-      // This gives STRAIGHT side profile from any viewing angle
+      // Underlying outline: ease-in curve from lastWidth to polygon-shaped mouth
+      // Cap stays wider longer, then tapers near the top — chubby vase-neck profile
       const topR = getCapTopRadius(theta, state.mouthWidth);
-      const baseR = lerp(lastWidth, topR, localT);
+      const curvedT = localT * localT;
+      const baseR = lerp(lastWidth, topR, curvedT);
 
       // Contour protrusion bump fades out over first 60% of cap (segment shape "disappears")
       const bumpFade = 1.0 - clamp(localT / 0.6, 0, 1);
