@@ -386,8 +386,7 @@
 
         <!-- BASE row: always present, placeholder for future controls -->
         <div class="cap-row" id="base-row" style="border-top:1px solid #eee;">
-          <input type="checkbox" class="seg-cb" checked disabled style="opacity:0.4;">
-          <span class="seg-label">base</span>
+          <span class="seg-label" style="margin-left:20px;">base</span>
           <span class="contour-picker" style="visibility:hidden;"></span>
           <div class="seg-slider-wrap" style="opacity:0.3; pointer-events:none;">
             <input type="range" min="0" max="1" value="0" disabled>
@@ -545,16 +544,15 @@
       const lastWidth = lastSeg.width;
       const bottomBump = bumpFn[lastSeg.contour](theta);
 
-      // Bottom: full last-segment contour (24 protrusions)
-      const bottomR = lastWidth + OFFSET * bottomBump;
-
-      // Top: single polygon shape (circle/triangle/square)
+      // Underlying outline: linear lerp from lastWidth (bottom) to polygon-shaped mouth (top)
+      // This gives STRAIGHT side profile from any viewing angle
       const topR = getCapTopRadius(theta, state.mouthWidth);
+      const baseR = lerp(lastWidth, topR, localT);
 
-      // Smoothstep blend over full cap height
-      const t = clamp(localT, 0, 1);
-      const blend = t * t * (3 - 2 * t);
-      return lerp(bottomR, topR, blend);
+      // Contour protrusion bump fades out over first 60% of cap (segment shape "disappears")
+      const bumpFade = 1.0 - clamp(localT / 0.6, 0, 1);
+
+      return baseR + OFFSET * bottomBump * bumpFade;
     }
 
     // ════════════════════════════════════════
@@ -875,8 +873,9 @@
         const lastW = state.allSegments[enabledIndices[enabledIndices.length - 1]].width;
         // Cap slope must not exceed 30 degrees: max width diff = CAP_HEIGHT * tan(30°) ≈ 34.6mm
         const maxCapDiff = Math.floor(CAP_HEIGHT * Math.tan(30 * Math.PI / 180));
-        const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - maxCapDiff) / 5) * 5;
-        const maxMouth = Math.floor((lastW - 5) / 5) * 5;
+        const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - maxCapDiff) / 2.5) * 2.5;
+        // Mouth cannot exceed the last segment's width (no outward bloom)
+        const maxMouth = Math.floor(lastW / 2.5) * 2.5;
         state.mouthWidth = clamp(Math.round(state.mouthWidth / 2.5) * 2.5, minMouth, maxMouth);
         const ms = document.getElementById('s-mouth');
         if (ms) { ms.min = minMouth * 2; ms.max = maxMouth * 2; ms.value = state.mouthWidth * 2; }
