@@ -55,9 +55,17 @@
       .project-label { display: none; }
     }
 
+    /* ── RIGHT COLUMN (viewer + actions, sticky together) ── */
+    .viewer-column {
+      position: sticky; top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-self: flex-start;
+    }
+
     /* ── SIDE VIEWER ── */
     .viewer-wrap {
-      position: sticky; top: 80px;
       width: 100%;
       aspect-ratio: 1;
       background: #ffffff;
@@ -202,13 +210,14 @@
       flex: 1; display: flex; align-items: center; gap: 6px;
     }
     .seg-slider-wrap input[type="range"] {
-      flex: 1; height: 8px;
+      flex: 1; height: 12px;
       -webkit-appearance: none; appearance: none;
       background: transparent; outline: none;
-      /* Track line + 9 tick marks (diameter: 40,45,50,55,60,65,70,75,80 = 9 stops, 8 gaps) */
+      /* Middle tick FIRST (rendered on top), then track, then minor ticks.
+         All ticks 8px tall. Slider thumb still renders above all backgrounds. */
       background-image:
+        linear-gradient(90deg, #333, #333),
         linear-gradient(#ddd, #ddd),
-        linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0),
@@ -218,19 +227,28 @@
         linear-gradient(90deg, #bbb 1px, transparent 0),
         linear-gradient(90deg, #bbb 1px, transparent 0);
       background-size:
+        2px 8px,
         100% 2px,
-        1px 8px, 1px 8px, 1px 8px, 1px 8px, 1px 8px,
+        1px 8px, 1px 8px, 1px 8px, 1px 8px,
         1px 8px, 1px 8px, 1px 8px, 1px 8px;
       background-position:
+        50% center,
         center,
-        0% center, 12.5% center, 25% center, 37.5% center, 50% center,
+        0% center, 12.5% center, 25% center, 37.5% center,
         62.5% center, 75% center, 87.5% center, 100% center;
       background-repeat: no-repeat;
+    }
+    .seg-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
+      height: 12px; background: transparent; border: none;
+    }
+    .seg-slider-wrap input[type="range"]::-moz-range-track {
+      height: 12px; background: transparent; border: none;
     }
     .seg-slider-wrap input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
       width: 12px; height: 12px; border-radius: 50%;
       background: #000; cursor: pointer;
+      margin-top: 0; /* keep centered on the 12px track */
     }
     .seg-slider-wrap .val {
       font-size: 10px; width: 28px; text-align: right; color: #999;
@@ -249,7 +267,7 @@
       background-size: 100% 1px;
       background-position: center;
       background-repeat: no-repeat;
-      height: 8px;
+      height: 12px;
     }
 
     /* ── BUTTONS ── */
@@ -271,6 +289,44 @@
       font-size: 10px; color: #999; letter-spacing: 0.15em;
     }
     .dimensions span { color: #000; font-weight: 700; }
+
+    /* ── NOTES ── */
+    .notes {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .notes-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #999;
+    }
+    .notes ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notes li {
+      font-size: 10px;
+      line-height: 1.6;
+      color: #777;
+      padding-left: 12px;
+      position: relative;
+    }
+    .notes li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #aaa;
+    }
 
     /* ── INFO PANEL ── */
     .info-section {
@@ -375,8 +431,8 @@
           <span class="seg-label">cap</span>
           <span class="contour-picker" id="cap-shape-picker"></span>
           <div class="seg-slider-wrap" id="mouth-slider-wrap">
-            <input type="range" id="s-mouth" min="20" max="70" value="30" step="5">
-            <span class="val" id="v-mouth">30</span>
+            <input type="range" id="s-mouth" min="40" max="50" value="45" step="5">
+            <span class="val" id="v-mouth">45</span>
           </div>
         </div>
 
@@ -397,17 +453,29 @@
         <div class="dimensions" id="dimensions">
           height: <span id="dim-height">210</span>mm &middot; max width: <span id="dim-width">100</span>mm
         </div>
-
-        <div class="actions">
-          <button class="btn" id="btn-randomize">randomize</button>
-          <button class="btn outline" id="btn-export">export stl</button>
-        </div>
       </div>
 
-      <!-- RIGHT: Side view -->
-      <div class="viewer-wrap">
-        <canvas id="vase-canvas"></canvas>
-        <button class="btn-3d-view" id="btn-3d-view">3D</button>
+      <!-- RIGHT: Side view + actions (sticky together so buttons don't move) -->
+      <div class="viewer-column">
+        <div class="viewer-wrap">
+          <canvas id="vase-canvas"></canvas>
+          <button class="btn-3d-view" id="btn-3d-view">3D</button>
+        </div>
+        <div class="actions">
+          <button class="btn outline" id="btn-refresh">refresh</button>
+          <button class="btn outline" id="btn-randomize">randomize</button>
+          <button class="btn" id="btn-export" style="margin-left:auto;">export stl</button>
+        </div>
+
+        <div class="notes">
+          <div class="notes-label">NOTE</div>
+          <ul>
+            <li>Smaller diameters may slightly deform or squeeze the contour shapes.</li>
+            <li>較小的直徑可能會讓輪廓形狀略微變形或擠壓。</li>
+            <li>The final piece will visibly differ from this 3D preview. Natural variation occurs through the clay extrusion, drying, kiln firing, and glazing process.</li>
+            <li>實際成品會與 3D 預覽有明顯差異。陶土擠出、乾燥、燒製、上釉等製程都會帶來自然的變化。</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -431,7 +499,7 @@
     const ANG_RES = 480;
     const LAYERS_PER_SEG = 10;
     const CAP_LAYERS = 20;
-    const MAX_WIDTH_DIFF = 7.5;
+    const MAX_WIDTH_DIFF = 5;
     const MIN_WIDTH = 20;
     const MAX_WIDTH = 40;
     const MIN_MOUTH = 10;
@@ -442,17 +510,17 @@
     // ════════════════════════════════════════
     const state = {
       allSegments: [
-        { contour: 'flower', width: 25 },
-        { contour: 'sun',    width: 30 },
-        { contour: 'rect',   width: 30 },
-        { contour: 'sun',    width: 30 },
-        { contour: 'flower', width: 25 },
-        { contour: 'rect',   width: 25 },
-        { contour: 'flower', width: 25 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
+        { contour: 'flower', width: 30 },
       ],
       enabled: [true, true, true, true, true, false, false],
       hasCap: true,
-      mouthWidth: 15,
+      mouthWidth: 22.5, // 45mm diameter (= last seg 60 - 15)
       capShape: 'circle', // 'circle' | 'sun' | 'rect'
     };
 
@@ -484,10 +552,13 @@
     }
 
     function flowerBump(theta) {
-      // Extra chubby — flatter top, fuller petals (uses (2t-1)^4 instead of ^2)
+      // Chubby with curvy outer outline — valleys lifted so adjacent petals
+      // overlap softly (no flat/sharp join at the inner circle)
       const t = getLocalT(theta);
       const x = 2 * t - 1;
-      return Math.sqrt(Math.max(0, 1 - x * x * x * x));
+      const peak = Math.sqrt(Math.max(0, 1 - x * x * x * x));
+      // Floor at 0.4 — valleys never go below 40% of the peak
+      return 0.4 + 0.6 * peak;
     }
 
     function sunBump(theta) {
@@ -544,11 +615,9 @@
       const lastWidth = lastSeg.width;
       const bottomBump = bumpFn[lastSeg.contour](theta);
 
-      // Underlying outline: ease-in curve from lastWidth to polygon-shaped mouth
-      // Cap stays wider longer, then tapers near the top — chubby vase-neck profile
+      // Underlying outline: linear lerp (straight side profile)
       const topR = getCapTopRadius(theta, state.mouthWidth);
-      const curvedT = localT * localT;
-      const baseR = lerp(lastWidth, topR, curvedT);
+      const baseR = lerp(lastWidth, topR, localT);
 
       // Contour protrusion bump fades out over first 60% of cap (segment shape "disappears")
       const bumpFade = 1.0 - clamp(localT / 0.6, 0, 1);
@@ -573,7 +642,7 @@
       // ── BASE SECTION (always present, smooth circular cylinder) ──
       // Base radius = halfway between inner and outer of segment 1's contour
       const BASE_LAYERS = 6;
-      const baseWidth = activeSegs[0].width + OFFSET / 2;
+      const baseWidth = activeSegs[0].width + OFFSET * 0.75;
       for (let layer = 0; layer <= BASE_LAYERS; layer++) {
         const localT = layer / BASE_LAYERS;
         const z = localT * BASE_HEIGHT;
@@ -651,11 +720,21 @@
         }
       }
 
-      // Bottom cap (flat disk at z=0)
+      // Bottom cap (flat disk at z=0) — own vertex set so normal averaging
+      // doesn't darken the base side wall at the bottom edge
+      const bottomDiskRingStart = vertices.length / 3;
+      for (let a = 0; a < ANG_RES; a++) {
+        const theta = (2 * Math.PI * a) / ANG_RES;
+        vertices.push(baseWidth * Math.cos(theta), 0, baseWidth * Math.sin(theta));
+      }
       const bottomCenter = vertices.length / 3;
       vertices.push(0, 0, 0);
       for (let j = 0; j < ANG_RES; j++) {
-        indices.push(bottomCenter, (j + 1) % ANG_RES, j);
+        indices.push(
+          bottomCenter,
+          bottomDiskRingStart + (j + 1) % ANG_RES,
+          bottomDiskRingStart + j
+        );
       }
 
       geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -873,10 +952,10 @@
       if (state.hasCap && enabledIndices.length > 0) {
         const lastW = state.allSegments[enabledIndices[enabledIndices.length - 1]].width;
         // Cap slope must not exceed 30 degrees: max width diff = CAP_HEIGHT * tan(30°) ≈ 34.6mm
-        const maxCapDiff = Math.floor(CAP_HEIGHT * Math.tan(30 * Math.PI / 180));
-        const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - maxCapDiff) / 2.5) * 2.5;
-        // Mouth cannot exceed the last segment's width (no outward bloom)
-        const maxMouth = Math.floor(lastW / 2.5) * 2.5;
+        // Cap mouth must be narrower than last segment by 10-20mm (in diameter)
+        // = 5-10mm in radius. Keeps cap always tapered but slope not too deep.
+        const minMouth = Math.ceil(Math.max(MIN_MOUTH, lastW - 10) / 2.5) * 2.5;
+        const maxMouth = Math.floor((lastW - 5) / 2.5) * 2.5;
         state.mouthWidth = clamp(Math.round(state.mouthWidth / 2.5) * 2.5, minMouth, maxMouth);
         const ms = document.getElementById('s-mouth');
         if (ms) { ms.min = minMouth * 2; ms.max = maxMouth * 2; ms.value = state.mouthWidth * 2; }
@@ -956,7 +1035,7 @@
 
         // Width slider
         const sliderWrap = document.createElement('div');
-        sliderWrap.className = 'seg-slider-wrap';
+        sliderWrap.className = 'seg-slider-wrap has-accent';
 
         const slider = document.createElement('input');
         slider.type = 'range';
@@ -1051,8 +1130,29 @@
       rebuildVase();
     });
 
+    // Refresh — reset to default state
+    document.getElementById('btn-refresh').addEventListener('click', () => {
+      for (let i = 0; i < 7; i++) {
+        state.allSegments[i] = { contour: 'flower', width: 30 };
+      }
+      state.enabled = [true, true, true, true, true, false, false];
+      state.hasCap = true;
+      state.mouthWidth = 22.5; // 45mm diameter
+      state.capShape = 'circle';
+      document.getElementById('cb-cap').checked = true;
+      const ms = document.getElementById('s-mouth');
+      ms.min = 40; ms.max = 50; ms.value = 45;
+      document.getElementById('v-mouth').textContent = 45;
+      renderSegmentList();
+      rebuildVase();
+    });
+
     // Randomize
     document.getElementById('btn-randomize').addEventListener('click', () => {
+      // Randomize cap on/off
+      state.hasCap = Math.random() < 0.5;
+      document.getElementById('cb-cap').checked = state.hasCap;
+
       const maxOn = state.hasCap ? 5 : 7;
       const count = 3 + Math.floor(Math.random() * (maxOn - 2));
       for (let i = 0; i < 7; i++) state.enabled[i] = i < count;
@@ -1072,16 +1172,30 @@
       if (state.hasCap) {
         const active = getActiveSegments();
         const lastW = active[active.length - 1].width;
-        const rMin = Math.ceil(MIN_MOUTH / 2.5) * 2.5;
-        const rMax = Math.floor((lastW - 2.5) / 2.5) * 2.5;
-        const mSteps = Math.floor((rMax - rMin) / 2.5);
+        const rMin = Math.ceil(Math.max(MIN_MOUTH, lastW - 10) / 2.5) * 2.5;
+        const rMax = Math.floor((lastW - 5) / 2.5) * 2.5;
+        const mSteps = Math.max(0, Math.floor((rMax - rMin) / 2.5));
         state.mouthWidth = rMin + Math.floor(Math.random() * (mSteps + 1)) * 2.5;
-        document.getElementById('s-mouth').value = state.mouthWidth * 2;
+
+        // Update slider min/max AND value (otherwise stale attributes can show old value)
+        const ms = document.getElementById('s-mouth');
+        ms.min = rMin * 2;
+        ms.max = rMax * 2;
+        ms.value = state.mouthWidth * 2;
         document.getElementById('v-mouth').textContent = state.mouthWidth * 2;
+
+        // Randomize cap shape
+        state.capShape = CAP_SHAPES[Math.floor(Math.random() * CAP_SHAPES.length)];
       }
 
       renderSegmentList();
       rebuildVase();
+
+      // Defensive re-clamp: ensure mouth respects current segment widths
+      const enabledIndices = state.enabled.map((e, i) => e ? i : -1).filter(i => i >= 0);
+      if (enabledIndices.length > 0) {
+        enforceWidthConstraints(enabledIndices[enabledIndices.length - 1]);
+      }
     });
 
     // ════════════════════════════════════════
@@ -1214,7 +1328,7 @@
 
       // Inner wall for base (smooth circle, offset inward)
       const BASE_LAYERS = 6;
-      const baseInnerW = Math.max(activeSegs[0].width + OFFSET / 2 - WALL_THICKNESS, 2);
+      const baseInnerW = Math.max(activeSegs[0].width + OFFSET * 0.75 - WALL_THICKNESS, 2);
       for (let layer = 0; layer <= BASE_LAYERS; layer++) {
         const localT = layer / BASE_LAYERS;
         const z = localT * BASE_HEIGHT;
@@ -1339,7 +1453,7 @@
           let r;
           if (z < bodyStartZ) {
             // Base section — smooth circle, offset between inner and outer of seg 1
-            r = activeSegs[0].width + OFFSET / 2;
+            r = activeSegs[0].width + OFFSET * 0.75;
           } else if (z >= capStartZ && state.hasCap) {
             // Cap
             const capT = (z - capStartZ) / CAP_HEIGHT;
