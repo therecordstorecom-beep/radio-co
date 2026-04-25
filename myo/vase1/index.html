@@ -373,7 +373,7 @@
         <div class="cap-row" id="cap-row" style="border-top:none; border-bottom:1px solid #eee;">
           <input type="checkbox" class="seg-cb" id="cb-cap" checked>
           <span class="seg-label">cap</span>
-          <span class="contour-picker" style="visibility:hidden;"></span>
+          <span class="contour-picker" id="cap-shape-picker"></span>
           <div class="seg-slider-wrap" id="mouth-slider-wrap">
             <input type="range" id="s-mouth" min="20" max="70" value="30" step="5">
             <span class="val" id="v-mouth">30</span>
@@ -415,8 +415,9 @@
     // ════════════════════════════════════════
     // CONFIG
     // ════════════════════════════════════════
-    const SEGMENT_HEIGHT = 15;
-    const CAP_HEIGHT = 30;
+    const SEGMENT_HEIGHT = 12;
+    const CAP_HEIGHT = 24;
+    const BASE_HEIGHT = 18;
     const ANG_RES = 480;
     const LAYERS_PER_SEG = 10;
     const CAP_LAYERS = 20;
@@ -442,6 +443,7 @@
       enabled: [true, true, true, true, true, false, false],
       hasCap: true,
       mouthWidth: 15,
+      capShape: 'circle', // 'circle' | 'sun' | 'rect'
     };
 
     function getActiveSegments() {
@@ -472,13 +474,14 @@
     }
 
     function flowerBump(theta) {
-      // Arc: semicircle bump
-      return Math.sin(getLocalT(theta) * Math.PI);
+      // Chubby semicircular arc — fuller/rounder than sine, like overlapping petals
+      const t = getLocalT(theta);
+      return Math.sqrt(Math.max(0, 1 - (2 * t - 1) * (2 * t - 1)));
     }
 
     function sunBump(theta) {
-      // Triangle spike
-      return 1.0 - 2.0 * Math.abs(getLocalT(theta) - 0.5);
+      // Smooth sine arc (formerly the flower function)
+      return Math.sin(getLocalT(theta) * Math.PI);
     }
 
     function rectBump(theta) {
@@ -511,17 +514,28 @@
       return w + OFFSET * bump;
     }
 
+    // Cap top shape — circle (no bump), or sun/rect contour
+    function getCapTopBump(theta) {
+      if (state.capShape === 'sun') return sunBump(theta);
+      if (state.capShape === 'rect') return rectBump(theta);
+      return 0; // circle = no bump (smooth circular opening)
+    }
+
     function getCapRadius(theta, localT, activeSegs) {
       const lastSeg = activeSegs[activeSegs.length - 1];
       const lastWidth = lastSeg.width;
-      const bump = bumpFn[lastSeg.contour](theta);
+      const bottomBump = bumpFn[lastSeg.contour](theta);
+      const topBump = getCapTopBump(theta);
 
-      // Bump fades to 0 (circle) over first 60% of cap
-      const bumpFade = 1.0 - clamp(localT / 0.6, 0, 1);
+      // Lerp the bump from bottom (last seg's contour) to top (chosen cap shape)
+      // Transition over first 60% of cap, then hold steady at top shape
+      const blend = clamp(localT / 0.6, 0, 1);
+      const bump = lerp(bottomBump, topBump, blend);
+
       // Width tapers from last width to mouth width
       const w = lerp(lastWidth, state.mouthWidth, localT);
 
-      return w + OFFSET * bump * bumpFade;
+      return w + OFFSET * bump;
     }
 
     // ════════════════════════════════════════
@@ -538,10 +552,27 @@
       const indices = [];
       let ringCount = 0;
 
+      // ── BASE SECTION (always present, smooth circular cylinder) ──
+      // Width matches segment 1's width, no contour
+      const BASE_LAYERS = 6;
+      const baseWidth = activeSegs[0].width;
+      for (let layer = 0; layer <= BASE_LAYERS; layer++) {
+        const localT = layer / BASE_LAYERS;
+        const z = localT * BASE_HEIGHT;
+        for (let a = 0; a < ANG_RES; a++) {
+          const theta = (2 * Math.PI * a) / ANG_RES;
+          const r = baseWidth;
+          vertices.push(r * Math.cos(theta), z, r * Math.sin(theta));
+        }
+        ringCount++;
+      }
+      const baseRingsCount = BASE_LAYERS + 1;
+
+      // ── BODY SEGMENTS ──
       for (let seg = 0; seg < numSegs; seg++) {
         for (let layer = 0; layer <= LAYERS_PER_SEG; layer++) {
           const localT = layer / LAYERS_PER_SEG;
-          const z = seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
+          const z = BASE_HEIGHT + seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
 
           for (let a = 0; a < ANG_RES; a++) {
             const theta = (2 * Math.PI * a) / ANG_RES;
@@ -550,15 +581,13 @@
           }
           ringCount++;
         }
-        // DON'T connect last ring of this segment to first ring of next —
-        // they're at the same Z but different contours. We'll skip that face strip below.
       }
 
-      // Track segment ring boundaries for face generation
       const ringsPerSeg = LAYERS_PER_SEG + 1;
 
+      // ── CAP ──
       if (state.hasCap) {
-        const capBase = numSegs * SEGMENT_HEIGHT;
+        const capBase = BASE_HEIGHT + numSegs * SEGMENT_HEIGHT;
         for (let layer = 1; layer <= CAP_LAYERS; layer++) {
           const localT = layer / CAP_LAYERS;
           const z = capBase + localT * CAP_HEIGHT;
@@ -572,13 +601,27 @@
         }
       }
 
-      // Build faces — skip gaps between segment boundaries (not the last seg→cap connection)
-      const bodyRings = numSegs * ringsPerSeg;
+      // ── FACES ──
+      // Layout: [base rings (baseRingsCount)] [body rings (numSegs * ringsPerSeg)] [cap rings]
+      const bodyStart = baseRingsCount;
+      const bodyEnd = baseRingsCount + numSegs * ringsPerSeg;
+
       for (let i = 0; i < ringCount - 1; i++) {
-        // Skip face strips between segments (not the last one connecting to cap)
-        const isSegBoundary = (i + 1) % ringsPerSeg === 0;
-        const isLastSegTop = (i === bodyRings - 1);
-        if (isSegBoundary && !isLastSegTop && i < bodyRings) continue;
+        // Skip face strip between base top and segment 1 bottom (different contours)
+        // This is the boundary between ring (baseStart-1) and (baseStart)? Actually:
+        // - Last base ring index = baseRingsCount - 1
+        // - First body ring index = baseRingsCount = bodyStart
+        // We DO want to skip i = baseRingsCount - 1 (gap between base and seg 1)
+        // since base is a circle and seg 1 has contour.
+        if (i === baseRingsCount - 1) continue;
+
+        // Skip face strips between body segments (boundaries within body)
+        if (i >= bodyStart && i < bodyEnd) {
+          const segLocalIdx = i - bodyStart;
+          const isSegBoundary = (segLocalIdx + 1) % ringsPerSeg === 0;
+          const isLastSegTop = (i === bodyEnd - 1);
+          if (isSegBoundary && !isLastSegTop) continue;
+        }
 
         for (let j = 0; j < ANG_RES; j++) {
           const curr = i * ANG_RES + j;
@@ -590,7 +633,7 @@
         }
       }
 
-      // Bottom cap
+      // Bottom cap (flat disk at z=0)
       const bottomCenter = vertices.length / 3;
       vertices.push(0, 0, 0);
       for (let j = 0; j < ANG_RES; j++) {
@@ -699,10 +742,10 @@
       outlineLines = new THREE.LineSegments(edgesGeo, outlineMaterial);
       scene.add(outlineLines);
 
-      // Add edge rings at segment boundaries
+      // Add edge rings at segment boundaries (offset by BASE_HEIGHT)
       const activeSegs = getActiveSegments();
       for (let seg = 0; seg <= activeSegs.length; seg++) {
-        const z = seg * SEGMENT_HEIGHT;
+        const z = BASE_HEIGHT + seg * SEGMENT_HEIGHT;
         let bumpType, width;
 
         if (seg === 0) {
@@ -740,7 +783,7 @@
     // ── FIXED SIDE VIEW (no orbit, auto-zoom to fit) ──
 
     function getTotalHeight() {
-      return getActiveSegments().length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
+      return BASE_HEIGHT + getActiveSegments().length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
     }
 
     // Auto-calculate distance so vase always fits in view
@@ -923,11 +966,43 @@
       const mouthWrap = document.getElementById('mouth-slider-wrap');
       mouthWrap.style.opacity = state.hasCap ? '1' : '0.3';
       mouthWrap.style.pointerEvents = state.hasCap ? 'auto' : 'none';
+
+      // Render cap shape picker
+      renderCapShapePicker();
+    }
+
+    // Cap shape SVG icons (same as contour icons but for cap opening)
+    const capShapeIcons = {
+      circle: () => `<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6"/></svg>`,
+      sun:    () => `<svg viewBox="0 0 20 20"><polygon points="10,3 16,15 4,15"/></svg>`,
+      rect:   () => `<svg viewBox="0 0 20 20"><rect x="4" y="4" width="12" height="12"/></svg>`,
+    };
+    const CAP_SHAPES = ['circle', 'sun', 'rect'];
+
+    function renderCapShapePicker() {
+      const picker = document.getElementById('cap-shape-picker');
+      if (!picker) return;
+      picker.innerHTML = '';
+      picker.style.opacity = state.hasCap ? '1' : '0.3';
+      picker.style.pointerEvents = state.hasCap ? 'auto' : 'none';
+
+      CAP_SHAPES.forEach(shape => {
+        const btn = document.createElement('button');
+        btn.className = 'contour-btn' + (state.capShape === shape ? ' active' : '');
+        btn.innerHTML = capShapeIcons[shape]();
+        btn.title = shape;
+        btn.addEventListener('click', () => {
+          state.capShape = shape;
+          renderCapShapePicker();
+          rebuildVase();
+        });
+        picker.appendChild(btn);
+      });
     }
 
     function updateDimensions() {
       const active = getActiveSegments();
-      const h = active.length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
+      const h = BASE_HEIGHT + active.length * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
       const maxW = active.length > 0 ? Math.max(...active.map(s => s.width)) * 2 : 0;
       document.getElementById('dim-height').textContent = h;
       document.getElementById('dim-width').textContent = maxW;
@@ -1118,10 +1193,23 @@
       let ringCount = 0;
       const ringsPerSeg = LAYERS_PER_SEG + 1;
 
+      // Inner wall for base (smooth circle, offset inward)
+      const BASE_LAYERS = 6;
+      const baseInnerW = Math.max(activeSegs[0].width - WALL_THICKNESS, 2);
+      for (let layer = 0; layer <= BASE_LAYERS; layer++) {
+        const localT = layer / BASE_LAYERS;
+        const z = localT * BASE_HEIGHT;
+        for (let a = 0; a < ANG_RES; a++) {
+          const theta = (2 * Math.PI * a) / ANG_RES;
+          vertices.push(baseInnerW * Math.cos(theta), z, baseInnerW * Math.sin(theta));
+        }
+        ringCount++;
+      }
+
       for (let seg = 0; seg < numSegs; seg++) {
         for (let layer = 0; layer <= LAYERS_PER_SEG; layer++) {
           const localT = layer / LAYERS_PER_SEG;
-          const z = seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
+          const z = BASE_HEIGHT + seg * SEGMENT_HEIGHT + localT * SEGMENT_HEIGHT;
           for (let a = 0; a < ANG_RES; a++) {
             const theta = (2 * Math.PI * a) / ANG_RES;
             const r = Math.max(getSegmentRadius(theta, seg, localT, activeSegs) - WALL_THICKNESS, 2);
@@ -1132,7 +1220,7 @@
       }
 
       if (state.hasCap) {
-        const capBase = numSegs * SEGMENT_HEIGHT;
+        const capBase = BASE_HEIGHT + numSegs * SEGMENT_HEIGHT;
         for (let layer = 1; layer <= CAP_LAYERS; layer++) {
           const localT = layer / CAP_LAYERS;
           const z = capBase + localT * CAP_HEIGHT;
@@ -1184,9 +1272,7 @@
       // Top rim — connects outer to inner wall (solid ring at the top)
       const activeSegsLocal = getActiveSegments();
       const numSegsLocal = activeSegsLocal.length;
-      const topZ = state.hasCap
-        ? numSegsLocal * SEGMENT_HEIGHT + CAP_HEIGHT
-        : numSegsLocal * SEGMENT_HEIGHT;
+      const topZ = BASE_HEIGHT + numSegsLocal * SEGMENT_HEIGHT + (state.hasCap ? CAP_HEIGHT : 0);
 
       const rimVerts = [];
       const rimIndices = [];
@@ -1224,22 +1310,26 @@
       const activeSegs = getActiveSegments();
       const totalH = getTotalHeight();
       const layerStep = 1.5;
+      const bodyStartZ = BASE_HEIGHT;
+      const capStartZ = BASE_HEIGHT + activeSegs.length * SEGMENT_HEIGHT;
+
       for (let z = 0; z <= totalH; z += layerStep) {
-        // Determine which segment this z falls in
-        const segIdx = Math.min(Math.floor(z / SEGMENT_HEIGHT), activeSegs.length - 1);
-        const localT = (z - segIdx * SEGMENT_HEIGHT) / SEGMENT_HEIGHT;
-
-        if (segIdx >= activeSegs.length) continue;
-        const isInCap = z > activeSegs.length * SEGMENT_HEIGHT;
-
         const pts = [];
         for (let a = 0; a <= ANG_RES; a++) {
           const theta = (2 * Math.PI * a) / ANG_RES;
           let r;
-          if (isInCap) {
-            const capT = (z - activeSegs.length * SEGMENT_HEIGHT) / CAP_HEIGHT;
-            r = getCapRadius(theta, capT, activeSegs);
+          if (z < bodyStartZ) {
+            // Base section — smooth circle at first segment's width
+            r = activeSegs[0].width;
+          } else if (z >= capStartZ && state.hasCap) {
+            // Cap
+            const capT = (z - capStartZ) / CAP_HEIGHT;
+            r = getCapRadius(theta, clamp(capT, 0, 1), activeSegs);
           } else {
+            // Body segment
+            const bodyZ = z - bodyStartZ;
+            const segIdx = Math.min(Math.floor(bodyZ / SEGMENT_HEIGHT), activeSegs.length - 1);
+            const localT = (bodyZ - segIdx * SEGMENT_HEIGHT) / SEGMENT_HEIGHT;
             r = getSegmentRadius(theta, segIdx, clamp(localT, 0, 1), activeSegs);
           }
           // Slight outward bump to prevent z-fighting
