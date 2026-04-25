@@ -384,6 +384,17 @@
           <!-- Dynamically generated -->
         </div>
 
+        <!-- BASE row: always present, placeholder for future controls -->
+        <div class="cap-row" id="base-row" style="border-top:1px solid #eee;">
+          <input type="checkbox" class="seg-cb" checked disabled style="opacity:0.4;">
+          <span class="seg-label">base</span>
+          <span class="contour-picker" style="visibility:hidden;"></span>
+          <div class="seg-slider-wrap" style="opacity:0.3; pointer-events:none;">
+            <input type="range" min="0" max="1" value="0" disabled>
+            <span class="val">—</span>
+          </div>
+        </div>
+
         <div class="dimensions" id="dimensions">
           height: <span id="dim-height">210</span>mm &middot; max width: <span id="dim-width">100</span>mm
         </div>
@@ -474,9 +485,10 @@
     }
 
     function flowerBump(theta) {
-      // Chubby semicircular arc — fuller/rounder than sine, like overlapping petals
+      // Extra chubby — flatter top, fuller petals (uses (2t-1)^4 instead of ^2)
       const t = getLocalT(theta);
-      return Math.sqrt(Math.max(0, 1 - (2 * t - 1) * (2 * t - 1)));
+      const x = 2 * t - 1;
+      return Math.sqrt(Math.max(0, 1 - x * x * x * x));
     }
 
     function sunBump(theta) {
@@ -514,28 +526,35 @@
       return w + OFFSET * bump;
     }
 
-    // Cap top shape — circle (no bump), or sun/rect contour
-    function getCapTopBump(theta) {
-      if (state.capShape === 'sun') return sunBump(theta);
-      if (state.capShape === 'rect') return rectBump(theta);
-      return 0; // circle = no bump (smooth circular opening)
+    // Cap top radius for the chosen shape
+    // - circle: smooth circle of radius = mouthWidth
+    // - sun (triangle): single equilateral triangle inscribed in circle of radius = mouthWidth
+    // - rect (square): single square inscribed in circle of radius = mouthWidth
+    function getCapTopRadius(theta, mouthWidth) {
+      if (state.capShape === 'circle') return mouthWidth;
+      const N = state.capShape === 'sun' ? 3 : 4; // 3 = triangle, 4 = square
+      const sliceAngle = (2 * Math.PI) / N;
+      const phase = ((theta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const localAngle = (phase % sliceAngle) - sliceAngle / 2;
+      // Polygon radius: vertices reach mouthWidth, sides come in to mouthWidth * cos(π/N)
+      return mouthWidth * Math.cos(Math.PI / N) / Math.cos(localAngle);
     }
 
     function getCapRadius(theta, localT, activeSegs) {
       const lastSeg = activeSegs[activeSegs.length - 1];
       const lastWidth = lastSeg.width;
       const bottomBump = bumpFn[lastSeg.contour](theta);
-      const topBump = getCapTopBump(theta);
 
-      // Lerp the bump from bottom (last seg's contour) to top (chosen cap shape)
-      // Transition over first 60% of cap, then hold steady at top shape
-      const blend = clamp(localT / 0.6, 0, 1);
-      const bump = lerp(bottomBump, topBump, blend);
+      // Bottom: full last-segment contour (24 protrusions)
+      const bottomR = lastWidth + OFFSET * bottomBump;
 
-      // Width tapers from last width to mouth width
-      const w = lerp(lastWidth, state.mouthWidth, localT);
+      // Top: single polygon shape (circle/triangle/square)
+      const topR = getCapTopRadius(theta, state.mouthWidth);
 
-      return w + OFFSET * bump;
+      // Smoothstep blend over full cap height
+      const t = clamp(localT, 0, 1);
+      const blend = t * t * (3 - 2 * t);
+      return lerp(bottomR, topR, blend);
     }
 
     // ════════════════════════════════════════
@@ -553,9 +572,9 @@
       let ringCount = 0;
 
       // ── BASE SECTION (always present, smooth circular cylinder) ──
-      // Width matches segment 1's width, no contour
+      // Base radius = halfway between inner and outer of segment 1's contour
       const BASE_LAYERS = 6;
-      const baseWidth = activeSegs[0].width;
+      const baseWidth = activeSegs[0].width + OFFSET / 2;
       for (let layer = 0; layer <= BASE_LAYERS; layer++) {
         const localT = layer / BASE_LAYERS;
         const z = localT * BASE_HEIGHT;
@@ -1195,7 +1214,7 @@
 
       // Inner wall for base (smooth circle, offset inward)
       const BASE_LAYERS = 6;
-      const baseInnerW = Math.max(activeSegs[0].width - WALL_THICKNESS, 2);
+      const baseInnerW = Math.max(activeSegs[0].width + OFFSET / 2 - WALL_THICKNESS, 2);
       for (let layer = 0; layer <= BASE_LAYERS; layer++) {
         const localT = layer / BASE_LAYERS;
         const z = localT * BASE_HEIGHT;
@@ -1319,8 +1338,8 @@
           const theta = (2 * Math.PI * a) / ANG_RES;
           let r;
           if (z < bodyStartZ) {
-            // Base section — smooth circle at first segment's width
-            r = activeSegs[0].width;
+            // Base section — smooth circle, offset between inner and outer of seg 1
+            r = activeSegs[0].width + OFFSET / 2;
           } else if (z >= capStartZ && state.hasCap) {
             // Cap
             const capT = (z - capStartZ) / CAP_HEIGHT;
